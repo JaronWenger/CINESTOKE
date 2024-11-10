@@ -1,0 +1,16 @@
+import React from 'react'
+import videoBg from '../assets/Welcome.mov'
+
+const Main = () => {
+  return (
+    <div className='main'>
+        <div className='overlay'></div>
+        <video src={videoBg} autoPlay loop muted />
+            <div className='content'>
+                <h1>C I N E S T O K E</h1>
+            </div>
+    </div>
+  )
+}
+
+export default Main
