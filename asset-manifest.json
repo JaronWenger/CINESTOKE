@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/cinestoke/static/css/main.2a083e79.css",
+    "main.js": "/cinestoke/static/js/main.372525d5.js",
+    "static/media/Welcome.mov": "/cinestoke/static/media/Welcome.f077f398ef591d03b85a.mov",
+    "index.html": "/cinestoke/index.html",
+    "main.2a083e79.css.map": "/cinestoke/static/css/main.2a083e79.css.map",
+    "main.372525d5.js.map": "/cinestoke/static/js/main.372525d5.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2a083e79.css",
+    "static/js/main.372525d5.js"
+  ]
+}
