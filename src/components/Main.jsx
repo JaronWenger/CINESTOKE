@@ -1,5 +1,5 @@
 import React from 'react'
-import videoBg from '../assets/Welcome.mov'
+import videoBg from '../assets/Welcome.mp4'
 
 const Main = () => {
   return (
