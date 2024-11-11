@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/cinestoke/static/css/main.2a083e79.css",
-    "main.js": "/cinestoke/static/js/main.372525d5.js",
-    "static/media/Welcome.mov": "/cinestoke/static/media/Welcome.f077f398ef591d03b85a.mov",
+    "main.js": "/cinestoke/static/js/main.6f592f80.js",
+    "static/media/Welcome.mp4": "/cinestoke/static/media/Welcome.095db5889cadcf68431e.mp4",
     "index.html": "/cinestoke/index.html",
     "main.2a083e79.css.map": "/cinestoke/static/css/main.2a083e79.css.map",
-    "main.372525d5.js.map": "/cinestoke/static/js/main.372525d5.js.map"
+    "main.6f592f80.js.map": "/cinestoke/static/js/main.6f592f80.js.map"
   },
   "entrypoints": [
     "static/css/main.2a083e79.css",
-    "static/js/main.372525d5.js"
+    "static/js/main.6f592f80.js"
   ]
 }
