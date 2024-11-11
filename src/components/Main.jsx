@@ -9,7 +9,11 @@ const Main = () => {
             <div className='content'>
                 <h1>C I N E S T O K E</h1>
             </div>
+        <div className='welcome-message'>
+        <h2>Welcome</h2>
+      </div>
     </div>
+
   )
 }
 
