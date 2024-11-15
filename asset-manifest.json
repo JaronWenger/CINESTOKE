@@ -1,15 +1,21 @@
 {
   "files": {
     "main.css": "/static/css/main.cbfed96d.css",
-    "main.js": "/static/js/main.3b180a1b.js",
+    "main.js": "/static/js/main.aacfc3d8.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.bde3c0913c712198f999.mp4",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.010d6d49172a9a78e8ba.mp4",
+    "static/media/logo.jpg": "/static/media/logo.070ed9d3e56338bbea5c.jpg",
+    "static/media/Film.svg": "/static/media/Film.1b8614b269dba8dcd2fe4ec0c292f1ff.svg",
+    "static/media/Drone.svg": "/static/media/Drone.a55ae143b31a21160cc781410ded1fbd.svg",
+    "static/media/Wings.svg": "/static/media/Wings.22c04dd170c023447e6ae7651a607639.svg",
     "index.html": "/index.html",
+    "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
+    "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
     "main.cbfed96d.css.map": "/static/css/main.cbfed96d.css.map",
-    "main.3b180a1b.js.map": "/static/js/main.3b180a1b.js.map"
+    "main.aacfc3d8.js.map": "/static/js/main.aacfc3d8.js.map"
   },
   "entrypoints": [
     "static/css/main.cbfed96d.css",
-    "static/js/main.3b180a1b.js"
+    "static/js/main.aacfc3d8.js"
   ]
 }
