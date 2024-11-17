@@ -1,9 +1,15 @@
 {
   "files": {
-    "main.css": "/static/css/main.4ac0173e.css",
-    "main.js": "/static/js/main.8c5b1ca6.js",
+    "main.css": "/static/css/main.e260db2c.css",
+    "main.js": "/static/js/main.671b46b1.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.bde3c0913c712198f999.mp4",
+    "static/media/One.JPG": "/static/media/One.77629612e50ae84c16ac.JPG",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.010d6d49172a9a78e8ba.mp4",
+    "static/media/TWO.JPG": "/static/media/TWO.bce1feeed4ef9eed76b1.JPG",
+    "static/media/FIVE.JPG": "/static/media/FIVE.c737c34429eddd8703c0.JPG",
+    "static/media/SIX.jpg": "/static/media/SIX.c055679ce0b6821a65e3.jpg",
+    "static/media/FOUR.JPG": "/static/media/FOUR.d16e8cefc5b000eb4948.JPG",
+    "static/media/THREE.JPG": "/static/media/THREE.aaa5bffcbd4de8a4870f.JPG",
     "static/media/Suzuki.svg": "/static/media/Suzuki.31af29124cdca6b01e8c6c07c8c21dcd.svg",
     "static/media/TCO.svg": "/static/media/TCO.5d5a5329313e781d7670795f49a28b8d.svg",
     "static/media/IR.svg": "/static/media/IR.f3aca9fed078cb9a1bcfea64022c8bb9.svg",
@@ -15,11 +21,11 @@
     "index.html": "/index.html",
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
-    "main.4ac0173e.css.map": "/static/css/main.4ac0173e.css.map",
-    "main.8c5b1ca6.js.map": "/static/js/main.8c5b1ca6.js.map"
+    "main.e260db2c.css.map": "/static/css/main.e260db2c.css.map",
+    "main.671b46b1.js.map": "/static/js/main.671b46b1.js.map"
   },
   "entrypoints": [
-    "static/css/main.4ac0173e.css",
-    "static/js/main.8c5b1ca6.js"
+    "static/css/main.e260db2c.css",
+    "static/js/main.671b46b1.js"
   ]
 }
