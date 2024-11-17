@@ -1,7 +1,12 @@
 * {
   margin: 0;
   padding: 0;
-  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-family: 'Bebas Neue', Impact, 'Arial Narrow Bold', sans-serif;
+}
+
+body {
+  background-color: black; /* Set the background color of the body to black */
+  color: white; /* Optional: set the text color to white to contrast with the black background */
 }
 
 .main {
@@ -15,7 +20,7 @@ video {
   object-fit: cover;
 }
 
-.content {
+.cinestoke {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -27,6 +32,15 @@ video {
   color: white;
 
   font-size: 4rem;
+  color: white;  /* White text color */
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2), 0 0 20px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.2), 0 0 40px rgba(255, 255, 255, 0.2);
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .cinestoke {
+    font-size: 1.8rem;  /* Adjust the font size for smaller screens */
+  }
 }
 
 .overlay {
@@ -36,4 +50,359 @@ video {
   width: 100%;
   height: 100%;
   background-color: rgba(0,0,0,0);
+}
+
+
+
+
+
+/* B A R S /////////////////////////////////*/
+
+.cinestoke-section {
+  width: 80%;
+  margin: 1.25rem auto; /* Centers the section */
+  display: block; /* Ensures it behaves like a block element */
+
+}
+
+/* First layer  */
+.cinestoke-section .mui-box1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px solid white;
+  border-bottom: 2px solid white;
+   
+}
+/* Second layer  */
+.cinestoke-section .mui-box2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  
+  border-bottom: 2px solid white;
+
+  border-bottom: 2px solid white;
+}
+
+/* Styling for each SVG */
+.cinestoke-section .mui-box-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  height: 80px;
+}
+/* Styling for TEXT on layer 2 ///////////////////////////////////////////////////////*/
+.twotext {
+  display: flex;
+  justify-content: center;  /* Center horizontally */
+  align-items: center;      /* Center vertically */
+  height: 100px;
+  width: 250px;
+}
+
+
+/* Styling for 'CINESTOKE' text */
+.cinestoke-section .cinestoke-text {
+  font-size: 60px;
+  text-align: center;
+  color: white;
+  margin: 0;
+}
+/* Styling for 'Concept to Creation' text */
+.cinestoke-section .concept-text {
+  font-size: 30px;
+  text-align: center;
+  color: white;
+  margin: 0;
+  
+  padding-right: 6px; 
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+
+
+}
+/* Styling for 'Create Moments, Capture Feelings' text */
+.cinestoke-section .moments-text {
+  font-size: 25px;
+  text-align: center;
+  color: white;
+  margin: 0;
+  
+  font-family: Impact, Haettenschweiler, 'Arial Narrow', sans-serif;
+
+ 
+}
+/*///////////////////////////////////////////////////////*/
+
+
+
+/* V E R T L I N E S ////////////////////////////////
+/* Styling for the vertical lines */
+.cinestoke-section .vertical-line {
+  width: 2px;
+  background-color: white;
+  height: 100px; /* Adjust height as needed */
+}
+.cinestoke-section .vertical-line2 {
+  width: 2px;
+  background-color: white;
+  height: 120px; /* Adjust height as needed */
+}
+.cinestoke-section .vertical-lineblack {
+  width: 2px;
+  background-color: black;
+  height: 100px; /* Adjust height as needed */
+}
+.cinestoke-section .vertical-line2black {
+  width: 2px;
+  background-color: black;
+  height: 120px; /* Adjust height as needed */
+}
+
+
+
+
+
+
+
+/* C L I E N T S /////////////////////////////////*/
+.cinestoke-section svg {
+  height: 100px; /* Set the desired height for the images */
+  width: auto; /* Maintain the aspect ratio */
+  display: block; /* Remove extra spacing caused by inline images */
+}
+.cinestoke-section .line {
+  width: 2px;
+  background-color: white;
+  height: 100px; /* Adjust height as needed */
+}
+.cinestoke-section .lineb {
+  width: 2px;
+  background-color: black;
+  height: 100px; /* Adjust height as needed */
+}
+
+
+
+
+
+
+/*IMG CAROSEL////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
+/* Style for the carousel container */
+.carousel-container {
+  position: relative;
+  max-width: 100%;
+  margin: auto;
+  overflow: hidden; /* Hide overflow for a clean layout */
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Style for each SwiperSlide */
+.swiper-slide {
+  display: flex;
+  justify-content: center; /* Center align the items */
+  align-items: center;
+  padding: 10px;
+}
+
+/* Style for the images in the swiper slides */
+.swiper-slide img {
+  max-width: 100%;
+  max-height: 500px; /* Restrict image height to maintain consistency */
+  object-fit: contain; /* Ensure image maintains aspect ratio */
+  transition: transform 0.3s ease; /* Add a smooth transition effect */
+}
+
+/* Add hover effect for images */
+.swiper-slide img:hover {
+  transform: scale(1.05); /* Slight zoom-in effect */
+}
+
+/* Style for navigation arrows */
+.swiper-button-next, .swiper-button-prev {
+  color: #fff; /* White color for the arrows */
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  border-radius: 50%;
+  padding: 10px;
+}
+
+.swiper-button-next {
+  right: 10px;
+  color: #fff !important;
+}
+
+.swiper-button-prev {
+  left: 10px;
+  color: #fff !important;
+}
+
+
+
+.carousel-container {
+  .swiper-slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Ensures that everything is centered vertically */
+  }
+
+  .swiper-slide img {
+    max-width: 100%;  /* Ensure image is responsive */
+    height: auto;
+  }
+
+  .swiper-slide p {
+    margin-bottom: 10px;  /* Space between image and text */
+    font-size: 30px;   /* Increase the text size */
+    color: white;       /* Text color */
+    text-align: center; /* Center the text horizontally */
+    font-weight: bold;  /* Optional: Make the text bold */
+  }
+}
+
+
+
+
+
+
+
+@media (max-width: 1000px) {
+  .cinestoke-section {
+    width: 90%; /* Shrink the width of the entire section */
+  }
+
+  .cinestoke-section .mui-box1,
+  .cinestoke-section .mui-box2 {
+    height: auto; /* Allow the layers to adjust based on their content */
+    margin: 0; /* Remove outer space */
+    padding: 0; 
+    display: flex;
+    justify-content: space-around; 
+   
+  }
+
+  .cinestoke-section .mui-box-item {
+    height: auto; /* Ensure items shrink automatically */
+    padding: 2%; /* Adjust padding for better spacing */
+  }
+
+  .cinestoke-section .cinestoke-text {
+    font-size: 6vw; /* Shrink font size */
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .cinestoke-section .concept-text {
+    font-size: .9rem; /* Adjust text size for smaller screens */
+  }
+  .cinestoke-section .moments-text {
+    font-size: .8rem; /* Adjust text size for smaller screens */
+  }
+
+  .cinestoke-section .vertical-line,
+  .cinestoke-section .vertical-lineblack{
+    height: 75px; /* Shrink vertical line height */
+  }
+  .cinestoke-section .vertical-line2,
+  .cinestoke-section .vertical-line2black {
+    height: 75px; /* Shrink vertical line height */
+  }
+
+  .cinestoke-section .film-icon,
+  .cinestoke-section .drone-icon,
+  .cinestoke-section .edit-icon,
+  .cinestoke-section .shutter-icon {
+    width: 75px; /* Shrink icons proportionally */
+    height: 75px;
+  }
+
+  .cinestoke-section .mui-box-item2 {
+    height: 0px; /* Adjust height automatically */
+    width: 70%; /* Adjust width for smaller screens */
+  }
+
+  .twotext {
+    display: flex;
+    justify-content: center;  /* Center horizontally */
+    align-items: center;      /* Center vertically */
+    height: 30px;
+    width: 20vw;
+  }
+  .cinestoke-section .wings-icon {
+    width: 150px;
+    height: 75px;
+  }
+
+
+  .cinestoke-section svg {
+    height: 60px; /* Set the desired height for the images */
+    width: auto; /* Maintain the aspect ratio */
+    display: block; /* Remove extra spacing caused by inline images */
+  }
+  .cinestoke-section .line {
+    width: 2px;
+    background-color: white;
+    height: 60px; /* Adjust height as needed */
+  }
+  .cinestoke-section .lineb {
+    width: 2px;
+    background-color: black;
+    height: 60px; /* Adjust height as needed */
+  }
+
+}
+
+
+@media (max-width: 768px) {
+  /*////////////////Carosel/////////////////////////////////////////*/
+  .carousel-container {
+
+    .swiper-slide p {
+      margin-bottom: 10px;  /* Space between image and text */
+      font-size: 20px;   /* Increase the text size */
+      color: white;       /* Text color */
+      text-align: center; /* Center the text horizontally */
+      font-weight: bold;  /* Optional: Make the text bold */
+    }
+  }
+  .swiper-slide {
+    padding: 5px;
+  }
+
+
+  .swiper-button-next {
+    right: 10px;
+    color: #fff !important;
+    opacity: 0;
+  }
+  
+  .swiper-button-prev {
+    left: 10px;
+    color: #fff !important;
+    opacity: 0;
+  }
+}
+
+
+@media (max-width: 480px) {
+  /*////////////////Carosel/////////////////////////////////////////*/
+  .carousel-container {
+
+    .swiper-slide p {
+      margin-bottom: 10px;  /* Space between image and text */
+      font-size: 14px;   /* Increase the text size */
+      color: white;       /* Text color */
+      text-align: center; /* Center the text horizontally */
+      font-weight: bold;  /* Optional: Make the text bold */
+    }
+  }
+  .swiper-slide {
+    padding: 2px;
+  }
 }
