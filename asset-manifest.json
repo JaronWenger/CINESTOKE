@@ -1,17 +1,31 @@
 {
   "files": {
-    "main.css": "/static/css/main.e260db2c.css",
-    "main.js": "/static/js/main.671b46b1.js",
+    "main.css": "/static/css/main.1d3952ee.css",
+    "main.js": "/static/js/main.61adce4b.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.bde3c0913c712198f999.mp4",
-    "static/media/One.JPG": "/static/media/One.77629612e50ae84c16ac.JPG",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.010d6d49172a9a78e8ba.mp4",
-    "static/media/TWO.JPG": "/static/media/TWO.bce1feeed4ef9eed76b1.JPG",
-    "static/media/FIVE.JPG": "/static/media/FIVE.c737c34429eddd8703c0.JPG",
-    "static/media/SIX.jpg": "/static/media/SIX.c055679ce0b6821a65e3.jpg",
-    "static/media/FOUR.JPG": "/static/media/FOUR.d16e8cefc5b000eb4948.JPG",
-    "static/media/THREE.JPG": "/static/media/THREE.aaa5bffcbd4de8a4870f.JPG",
     "static/media/Suzuki.svg": "/static/media/Suzuki.31af29124cdca6b01e8c6c07c8c21dcd.svg",
     "static/media/TCO.svg": "/static/media/TCO.5d5a5329313e781d7670795f49a28b8d.svg",
+    "static/media/cinestoke-real-estate.webp": "/static/media/cinestoke-real-estate.9e3eaa09fca57b9ed2c3.webp",
+    "static/media/cinestoke-kayak.webp": "/static/media/cinestoke-kayak.3986b094dca79a23e55b.webp",
+    "static/media/cinestoke-drone-shot.webp": "/static/media/cinestoke-drone-shot.25be9dfdaba92fb126ca.webp",
+    "static/media/cinestoke-portraits.webp": "/static/media/cinestoke-portraits.af3c37d351ca27c0d66c.webp",
+    "static/media/cinestoke-boxing.webp": "/static/media/cinestoke-boxing.8bf0474a233b213401c7.webp",
+    "static/media/cinestoke-auto.webp": "/static/media/cinestoke-auto.7613ccce8885d923227e.webp",
+    "static/media/cinestoke-small-business.webp": "/static/media/cinestoke-small-business.3ec64ba99ed8ed3221d8.webp",
+    "static/media/cinestoke-weddings.webp": "/static/media/cinestoke-weddings.08c85009a25f635a39c1.webp",
+    "static/media/cinestoke-mtn-bike.webp": "/static/media/cinestoke-mtn-bike.ac5d3c7b216fbe9e63f3.webp",
+    "static/media/cinestoke-redwoods.webp": "/static/media/cinestoke-redwoods.4c96eae95795afd9af73.webp",
+    "static/media/cinestoke-nature.webp": "/static/media/cinestoke-nature.1db382d96ec43e7d3b25.webp",
+    "static/media/cinestoke-dirt-bike.webp": "/static/media/cinestoke-dirt-bike.d584cd667e9ba4fccc06.webp",
+    "static/media/cinestoke-snowboard.webp": "/static/media/cinestoke-snowboard.e7369ebcd845e349a379.webp",
+    "static/media/cinestoke-jet-ski.webp": "/static/media/cinestoke-jet-ski.8cd55384616930df2903.webp",
+    "static/media/cinestoke-moto.webp": "/static/media/cinestoke-moto.adf1377d26b67f5b989e.webp",
+    "static/media/cinestoke-fishing.webp": "/static/media/cinestoke-fishing.af25b4b2801fd24d0f5a.webp",
+    "static/media/cinestoke-rollers.webp": "/static/media/cinestoke-rollers.340fec8aba8c55f4f566.webp",
+    "static/media/cinestoke-FPV.webp": "/static/media/cinestoke-FPV.5a413ce313e451bc0f9e.webp",
+    "static/media/cinestoke-sports.webp": "/static/media/cinestoke-sports.3a1e84614c5a30a3b9a2.webp",
+    "static/media/cinestoke-landscape.webp": "/static/media/cinestoke-landscape.4da4c4a3ff1bc3bb8103.webp",
     "static/media/IR.svg": "/static/media/IR.f3aca9fed078cb9a1bcfea64022c8bb9.svg",
     "static/media/GFF.svg": "/static/media/GFF.3263872cb4a590d38faf9e7b4e657a30.svg",
     "static/media/SSBC.svg": "/static/media/SSBC.503bc30f34da116710649fdd8c016fb1.svg",
@@ -21,11 +35,11 @@
     "index.html": "/index.html",
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
-    "main.e260db2c.css.map": "/static/css/main.e260db2c.css.map",
-    "main.671b46b1.js.map": "/static/js/main.671b46b1.js.map"
+    "main.1d3952ee.css.map": "/static/css/main.1d3952ee.css.map",
+    "main.61adce4b.js.map": "/static/js/main.61adce4b.js.map"
   },
   "entrypoints": [
-    "static/css/main.e260db2c.css",
-    "static/js/main.671b46b1.js"
+    "static/css/main.1d3952ee.css",
+    "static/js/main.61adce4b.js"
   ]
 }
