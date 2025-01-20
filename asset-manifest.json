@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.7b5bc96c.css",
-    "main.js": "/static/js/main.90f49ced.js",
+    "main.js": "/static/js/main.0603333a.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.bde3c0913c712198f999.mp4",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.010d6d49172a9a78e8ba.mp4",
     "static/media/Suzuki.svg": "/static/media/Suzuki.31af29124cdca6b01e8c6c07c8c21dcd.svg",
@@ -29,6 +29,7 @@
     "static/media/Footerthin.webp": "/static/media/Footerthin.c9fa9b7f003b779ae32d.webp",
     "static/media/IR.svg": "/static/media/IR.f3aca9fed078cb9a1bcfea64022c8bb9.svg",
     "static/media/GFF.svg": "/static/media/GFF.3263872cb4a590d38faf9e7b4e657a30.svg",
+    "static/media/Seadoo.svg": "/static/media/Seadoo.c65c2e6461112c4ec08603755056738f.svg",
     "static/media/SSBC.svg": "/static/media/SSBC.503bc30f34da116710649fdd8c016fb1.svg",
     "static/media/Film.svg": "/static/media/Film.1b8614b269dba8dcd2fe4ec0c292f1ff.svg",
     "static/media/Wings.svg": "/static/media/Wings.5891600874684b7ac2edda0a80addfe7.svg",
@@ -37,10 +38,10 @@
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
     "main.7b5bc96c.css.map": "/static/css/main.7b5bc96c.css.map",
-    "main.90f49ced.js.map": "/static/js/main.90f49ced.js.map"
+    "main.0603333a.js.map": "/static/js/main.0603333a.js.map"
   },
   "entrypoints": [
     "static/css/main.7b5bc96c.css",
-    "static/js/main.90f49ced.js"
+    "static/js/main.0603333a.js"
   ]
 }
