@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/static/css/main.e9aec782.css",
-    "main.js": "/static/js/main.0603333a.js",
-    "static/media/Welcome.mp4": "/static/media/Welcome.bde3c0913c712198f999.mp4",
+    "main.css": "/static/css/main.7b5bc96c.css",
+    "main.js": "/static/js/main.8559b4b7.js",
+    "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.010d6d49172a9a78e8ba.mp4",
     "static/media/Suzuki.svg": "/static/media/Suzuki.31af29124cdca6b01e8c6c07c8c21dcd.svg",
     "static/media/TCO.svg": "/static/media/TCO.5d5a5329313e781d7670795f49a28b8d.svg",
@@ -37,11 +37,11 @@
     "index.html": "/index.html",
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
-    "main.e9aec782.css.map": "/static/css/main.e9aec782.css.map",
-    "main.0603333a.js.map": "/static/js/main.0603333a.js.map"
+    "main.7b5bc96c.css.map": "/static/css/main.7b5bc96c.css.map",
+    "main.8559b4b7.js.map": "/static/js/main.8559b4b7.js.map"
   },
   "entrypoints": [
-    "static/css/main.e9aec782.css",
-    "static/js/main.0603333a.js"
+    "static/css/main.7b5bc96c.css",
+    "static/js/main.8559b4b7.js"
   ]
 }
