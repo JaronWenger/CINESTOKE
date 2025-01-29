@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import videoBg from '../assets/Welcome.mp4'
 import videoBgMobile from '../assets/Welcomephone.mp4'
 import Bars from './Bars'
+import footer from '../assets/Footerthin.webp'
 
 import Clients from './Clients';
 import Pics from './Pics';
@@ -53,6 +54,9 @@ const Main = () => {
       <Pics />
       <Clients />
       <Contact />
+      <div className="bottom-logo">
+        <img src={footer} alt="Cinestoke Footer" />
+      </div>
     </div>
   )
 }
