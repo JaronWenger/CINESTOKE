@@ -5,6 +5,7 @@ import { ReactComponent as TCO } from '../assets/TCO.svg';
 import { ReactComponent as GFF } from '../assets/GFF.svg';
 import { ReactComponent as IR } from '../assets/IR.svg';
 import { ReactComponent as Suzuki } from '../assets/Suzuki.svg';
+import { ReactComponent as Seadoo } from '../assets/Seadoo.svg';
 
 const Clients = () => {
   return (
@@ -15,7 +16,7 @@ const Clients = () => {
         <div className="lineb" />
 
         {/* Inline SVG for SSBC */}
-        <SSBC alt="SSBC Logo" />
+        <Seadoo alt="Seadoo Logo" />
 
         {/* Vertical Line */}
         <div className="line" />

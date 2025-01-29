@@ -63,6 +63,7 @@ video {
   margin: 1.25rem auto; /* Centers the section */
   display: block; /* Ensures it behaves like a block element */
 
+
 }
 
 /* First layer  */
@@ -405,4 +406,19 @@ video {
   .swiper-slide {
     padding: 2px;
   }
+}
+
+.bottom-logo {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  margin-top: 2rem;  /* Add space above the footer */
+}
+
+.bottom-logo img {
+  width: 100%;
+  height: auto;
+  max-width: none;
+  display: block;
 }
