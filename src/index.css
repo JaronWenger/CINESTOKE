@@ -14,6 +14,13 @@ body {
   height: 100vh;
 }
 
+/* Add a specific class for the offers page */
+.offers-main {
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;  /* Only prevent scroll on offers page */
+}
+
 video {
   width: 100%;
   height: 100%;
@@ -44,17 +51,24 @@ video {
 }
 
 .overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0,0,0,0);
+  background: rgba(0, 0, 0, 0.5);
+  z-index: -1;
 }
 
-
-
-
+.background-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+}
 
 /* B A R S /////////////////////////////////*/
 
@@ -421,4 +435,151 @@ video {
   height: auto;
   max-width: none;
   display: block;
+}
+
+/* Add these styles */
+.offers-section {
+  padding: 100px 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.offers-section h1 {
+  text-align: center;
+  font-size: 5.5rem;
+  margin-bottom: 0px;
+  color: white;
+}
+
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 350px);
+  justify-content: center;
+  gap: 40px;
+  padding: 20px;
+}
+
+.offer-card {
+  background: linear-gradient(145deg, 
+    rgba(0, 0, 0, 0.7),
+    rgba(0, 0, 0, 0.5)
+  );
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 15px;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  color: white;
+}
+
+.offer-card:hover {
+  transform: scale(1.02);
+}
+
+.offer-card.selected {
+  border: 2px solid #FF6B00;
+}
+
+.offers-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 50px;
+}
+
+.wing {
+  width: 160px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.left-wing {
+  transform: translateY(-24px);
+}
+
+.right-wing {
+  transform: translateY(-24px);
+}
+
+@media (max-width: 768px) {
+  .wing {
+    display: none;
+  }
+  
+  .offers-section h1 {
+    font-size: 3.5rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .offers-grid {
+    grid-template-columns: repeat(1, 320px);
+  }
+}
+
+/* Add back the card styles */
+.offer-card h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.offer-card .price {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: white;
+}
+
+.offer-card ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 30px 0;
+}
+
+.offer-card li {
+  margin: 10px 0;
+  font-size: 1.2rem;
+  color: white;
+}
+
+/* Update mobile styles for offers */
+@media (max-width: 768px) {
+  .wing {
+    display: none;
+  }
+  
+  .offers-section h1 {
+    font-size: 3.5rem;
+  }
+  
+  .offer-card {
+    padding: 20px;
+  }
+  
+  .offer-card h2 {
+    font-size: 1.5rem;
+  }
+  
+  .offer-card .price {
+    font-size: 2rem;
+  }
+  
+  .offer-card li {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .offers-grid {
+    grid-template-columns: repeat(1, 320px);
+  }
+  
+  .offers-main {
+    height: auto;
+    overflow: visible;  /* Allow scroll when cards stack */
+  }
 }
