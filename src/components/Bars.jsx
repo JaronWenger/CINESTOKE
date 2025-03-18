@@ -4,8 +4,15 @@ import { ReactComponent as DroneIcon } from '../assets/Drone.svg';
 import { ReactComponent as FilmIcon } from '../assets/Film.svg';
 import { ReactComponent as ShutterIcon } from '../assets/Shutter.svg';
 import { ReactComponent as WingsIcon } from '../assets/Wings.svg';
+import { useNavigate } from 'react-router-dom';
 
 const Bars = () => {
+  const navigate = useNavigate();
+
+  const handleDroneDoubleClick = () => {
+    navigate('/offers');
+  };
+
   return (
     <div className="cinestoke-section">
       {/* First Layer */}
@@ -32,7 +39,12 @@ const Bars = () => {
         <div className="vertical-line short" />
 
         
-          <DroneIcon width="100" height="100" className="drone-icon" />
+          <DroneIcon 
+            width="100" 
+            height="100" 
+            className="drone-icon" 
+            onDoubleClick={handleDroneDoubleClick}
+          />
         
 
         {/* Vertical Line */}
