@@ -1,9 +1,4 @@
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Mousewheel } from 'swiper/modules';
-import { Navigation } from 'swiper/modules'; // Import Navigation and Pagination from 'swiper'
-import 'swiper/css'; // Import basic Swiper styles
-import 'swiper/css/navigation'; // Import styles for Navigation
-import 'swiper/css/pagination'; // Import styles for Pagination
+import React, { useRef, useEffect, useState } from 'react';
 
 //////PHOTOS ARE 6.6 X 16 aspect ration, 2367 X 5738 resolution, and around 100KBs.////////
 import moto from '../assets/cinestoke-moto.webp'; 
@@ -31,116 +26,141 @@ import kayak from '../assets/cinestoke-kayak.webp';
 import mtnbike from '../assets/cinestoke-mtn-bike.webp'; 
 
 const Pics = () => {
+  const scrollContainerRef = useRef(null);
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  const images = [
+    { src: kayak, alt: "Kayak Cinematic Production", label: "Kayaking" },
+    { src: redwoods, alt: "Redwoods Cinematic Production", label: "Nature" },
+    { src: rollers, alt: "Rollers Cinematic Production", label: "Rollers" },
+    { src: drone, alt: "Drone Cinematic Production", label: "Drone" },
+    { src: FPV, alt: "FPV Cinematic Production", label: "FPV" },
+    { src: automotive, alt: "Automotive Cinematic Production", label: "Automotive" },
+    { src: dirtbike, alt: "Dirtbike Cinematic Production", label: "Dirt Bikes" },
+    { src: nature, alt: "Nature Cinematic Production", label: "Outdoors" },
+    { src: snowboard, alt: "Snowboarding Cinematic Production", label: "Snowboarding" },
+    { src: jetski, alt: "Jet Ski Cinematic Production", label: "Jet Ski" },
+    { src: moto, alt: "Motorcycle Cinematic Production", label: "Motorcycles" },
+    { src: mtnbike, alt: "Mountain Bike Cinematic Production", label: "Mtn Biking" },
+  ];
+
+  // Single set of images, no looping
+  const loopedImages = images;
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    let scrollTimeout;
+    let isScrolling = false;
+
+    const handleScroll = () => {
+      if (!isScrolling) {
+        setIsScrolling(true);
+      }
+      
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        setIsScrolling(false);
+      }, 150);
+    };
+
+    container.addEventListener('scroll', handleScroll, { passive: true });
+    
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+      clearTimeout(scrollTimeout);
+    };
+  }, []);
+
   return (
     <div className="carousel-container">
-      <Swiper
-        modules={[Mousewheel, Navigation]} // Specify the modules you are using
-        spaceBetween={1} // Reduced space between slides
-        slidesPerView={10}
-        slidesPerGroup={2} // Move 3 slides at a time
-        loop={true}
-        navigation={{ clickable: true }} // Enable clickable navigation arrows
-        mousewheel={{ forceToAxis: true }} 
-
-        breakpoints={{
-          0: {
-            slidesPerView: 5,
-          },
-          640: {
-            slidesPerView: 5,
-          },
-          768: {
-            slidesPerView: 5,
-          },
-          1024: {
-            slidesPerView: 8,
-          },
+      <div 
+        ref={scrollContainerRef}
+        className="carousel-scroll-container"
+        style={{
+          display: 'flex',
+          gap: '1px',
+          overflowX: 'auto',
+          overflowY: 'hidden',
+          scrollBehavior: 'smooth',
+          WebkitOverflowScrolling: 'touch',
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          willChange: 'scroll-position'
         }}
       >
-        <SwiperSlide>
-        <p>Kayaking</p>
-        <img src={kayak} alt="Kayak Cinematic Production" />
-        </SwiperSlide>
-        <SwiperSlide>
-        <p>Nature</p>
-        <img src={redwoods} alt="Redwoods Cinematic Production" />
-        </SwiperSlide>
-        <SwiperSlide>
-        <p>Rollers</p>
-        <img src={rollers} alt="Rollers Cinematic Production" />
-        </SwiperSlide>
-        <SwiperSlide>
-        <p>Drone</p>
-          <img src={drone} alt="Drone Cinematic Production" />
-        </SwiperSlide>
-        <SwiperSlide>
-        <p>FPV</p>
-          <img src={FPV} alt="FPV Cinematic Production" />
-        </SwiperSlide>
-
-        <SwiperSlide>
-        <p>Automotive</p>
-          <img src={automotive} alt="Automotive Cinematic Production" />
-        </SwiperSlide>
-        <SwiperSlide>
-        <p>Dirt Bikes</p>
-        <img src={dirtbike} alt="Dirtbike Cinematic Production" />
-        </SwiperSlide>
-        {/* <SwiperSlide>
-        <p>Weddings</p>
-          <img src={weddings} alt="Weddings Cinematic Production" />
-        </SwiperSlide>
-        <SwiperSlide>
-        <p>Portraits</p>
-          <img src={portraits} alt="Portraits Cinematic Production" />
-        </SwiperSlide>
-        <SwiperSlide>
-        <p>Real Estate</p>
-        <img src={realestate} alt="Real Estate Cinematic Production" />
-        </SwiperSlide> */}
-
-        {/* <SwiperSlide>
-        <p>Landscape</p>
-        <img src={landscape} alt="Landscape Cinematic Production" />
-        </SwiperSlide> */}
-        {/* <SwiperSlide>
-        <p>Artisan</p>
-          <img src={smallbusiness} alt="Small Business Cinematic Production" />
-        </SwiperSlide> */}
-        {/* <SwiperSlide>
-        <p>Sports</p>
-          <img src={sports} alt="Sports Cinematic Production" />
-        </SwiperSlide> */}
-        <SwiperSlide>
-        <p>Outdoors</p>
-          <img src={nature} alt="Nature Cinematic Production" />
-        </SwiperSlide>
-        <SwiperSlide>
-        <p>Snowboarding</p>
-          <img src={snowboard} alt="Snowboarding Cinematic Production" />
-        </SwiperSlide>
-
-        {/* <SwiperSlide>
-        <p>Boxing</p>
-          <img src={boxing} alt="Boxing Cinematic Production" />
-        </SwiperSlide> */}
-        <SwiperSlide>
-        <p>Jet Ski</p>
-          <img src={jetski} alt="Jet Ski Cinematic Production" />
-        </SwiperSlide>
-        {/* <SwiperSlide>
-        <p>Fishing</p>
-          <img src={fishing} alt="Fishing Cinematic Production" />
-        </SwiperSlide> */}
-        <SwiperSlide>
-        <p>Motorcycles</p>
-          <img src={moto} alt="Motorcycle Cinematic Production" />
-        </SwiperSlide>
-        <SwiperSlide>
-        <p>Mtn Biking</p>
-          <img src={mtnbike} alt="Mountain Bike Cinematic Production" />
-        </SwiperSlide>
-      </Swiper>
+        {loopedImages.map((image, index) => (
+          <div 
+            key={index} 
+            className="swiper-slide"
+            style={{
+              flex: '0 0 auto',
+              width: 'calc(100vw / 8)',
+              minWidth: '120px',
+              maxWidth: '200px'
+            }}
+          >
+            <p>{image.label}</p>
+            <img 
+              src={image.src} 
+              alt={image.alt}
+              loading="lazy"
+              style={{
+                width: '100%',
+                height: 'auto',
+                aspectRatio: '6.6 / 16',
+                objectFit: 'cover'
+              }}
+            />
+          </div>
+        ))}
+      </div>
+      
+      <style jsx>{`
+        .carousel-scroll-container::-webkit-scrollbar {
+          display: none;
+        }
+        
+        .swiper-slide {
+          text-align: center;
+        }
+        
+        .swiper-slide p {
+          margin: 0 0 0.5rem 0;
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: #333;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+        
+        .swiper-slide img {
+          transition: transform 0.3s ease;
+        }
+        
+        .swiper-slide:hover img {
+          transform: scale(1.05);
+        }
+        
+        @media (max-width: 1024px) {
+          .swiper-slide {
+            width: calc(100vw / 5) !important;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .swiper-slide {
+            width: calc(100vw / 5) !important;
+          }
+        }
+        
+        @media (max-width: 640px) {
+          .swiper-slide {
+            width: calc(100vw / 5) !important;
+          }
+        }
+      `}</style>
     </div>
   );
 };
