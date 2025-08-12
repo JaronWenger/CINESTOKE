@@ -24,8 +24,9 @@ const Offers = () => {
             <h2>Deluxe</h2>
             <div className="price">$800</div>
             <ul>
-              <li>10 Professional Photos</li>
-              <li>2 Professional Reels</li>
+              <li>Remote Editing Package</li>
+              <li>10 Photos Edits</li>
+              <li>3 Reel Edits</li>
               <li>Monthly Analytics</li>
               <li>Content Strategy Call</li>
             </ul>
@@ -38,6 +39,7 @@ const Offers = () => {
             <h2>Premium</h2>
             <div className="price">$1,200</div>
             <ul>
+              <li>Full-Service Package</li>
               <li>15 Professional Photos</li>
               <li>4 Professional Reels</li>
               <li>Content Calendar</li>
@@ -53,12 +55,12 @@ const Offers = () => {
             <h2>Elite</h2>
             <div className="price">$500 + Rev Share</div>
             <ul>
+              <li>Full-Service + Socials Management</li>
               <li>15+ Professional Photos</li>
               <li>4+ Professional Reels</li>
               <li>Content Calendar</li>
               <li>Monthly Analytics + Optimization</li>
               <li>Content Strategy Call</li>
-              <li>Account Management + Posting</li>
               <li>15% Revenue Share</li>
             </ul>
           </div>
