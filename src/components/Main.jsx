@@ -7,7 +7,7 @@ import footer from '../assets/Footerthin.webp'
 import Clients from './Clients';
 import Pics from './Pics';
 import Contact from './Contact';
-
+import Social from './Social';
 
 
 const Main = () => {
@@ -54,6 +54,7 @@ const Main = () => {
       <Pics />
       <Clients />
       <Contact />
+      <Social />
       <div className="bottom-logo">
         <img src={footer} alt="Cinestoke Footer" />
       </div>
