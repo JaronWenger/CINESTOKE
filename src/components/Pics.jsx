@@ -28,6 +28,7 @@ import mtnbike from '../assets/cinestoke-mtn-bike.webp';
 const Pics = () => {
   const scrollContainerRef = useRef(null);
   const [isScrolling, setIsScrolling] = useState(false);
+  const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   const images = [
     { src: kayak, alt: "Kayak Cinematic Production", label: "Kayaking" },
@@ -73,6 +74,22 @@ const Pics = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const getAspectRatio = () => {
+    if (screenWidth <= 480) return '1.5 / 16';
+    if (screenWidth <= 640) return '2 / 16';
+    if (screenWidth <= 768) return '3 / 16';
+    return '6.6 / 16';
+  };
+
   return (
     <div className="carousel-container">
       <div 
@@ -80,7 +97,7 @@ const Pics = () => {
         className="carousel-scroll-container"
         style={{
           display: 'flex',
-          gap: '1px',
+          gap: '0.5px',
           overflowX: 'auto',
           overflowY: 'hidden',
           scrollBehavior: 'smooth',
@@ -97,7 +114,7 @@ const Pics = () => {
             style={{
               flex: '0 0 auto',
               width: 'calc(100vw / 8)',
-              minWidth: '120px',
+              minWidth: '80px',
               maxWidth: '200px'
             }}
           >
@@ -109,8 +126,9 @@ const Pics = () => {
               style={{
                 width: '100%',
                 height: 'auto',
-                aspectRatio: '6.6 / 16',
-                objectFit: 'cover'
+                aspectRatio: getAspectRatio(),
+                objectFit: 'cover',
+                objectPosition: 'center'
               }}
             />
           </div>
@@ -143,21 +161,83 @@ const Pics = () => {
           transform: scale(1.05);
         }
         
+        @media (max-width: 768px) {
+          .swiper-slide img {
+            object-position: center;
+            object-fit: cover;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 3 / 16;
+          }
+        }
+        
+        @media (max-width: 640px) {
+          .swiper-slide img {
+            object-position: center;
+            object-fit: cover;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 2 / 16;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .swiper-slide img {
+            object-position: center;
+            object-fit: cover;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1.5 / 16;
+            max-height: 300px;
+          }
+          
+          .carousel-container {
+            max-height: 400px;
+          }
+          
+          .carousel-scroll-container {
+            max-height: 350px;
+          }
+          
+          .swiper-slide p {
+            margin: 0 0 0.25rem 0;
+            font-size: 0.7rem;
+          }
+        }
+        
         @media (max-width: 1024px) {
           .swiper-slide {
-            width: calc(100vw / 5) !important;
+            width: calc(100vw / 20) !important;
           }
         }
         
         @media (max-width: 768px) {
           .swiper-slide {
-            width: calc(100vw / 5) !important;
+            width: calc(100vw / 25) !important;
           }
         }
         
         @media (max-width: 640px) {
           .swiper-slide {
-            width: calc(100vw / 5) !important;
+            width: calc(100vw / 30) !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .swiper-slide {
+            width: calc(100vw / 35) !important;
+          }
+        }
+        
+        @media (max-width: 375px) {
+          .swiper-slide {
+            width: calc(100vw / 40) !important;
+          }
+        }
+        
+        @media (max-width: 320px) {
+          .swiper-slide {
+            width: calc(100vw / 45) !important;
           }
         }
       `}</style>
