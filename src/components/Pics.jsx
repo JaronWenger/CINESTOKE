@@ -27,7 +27,6 @@ import mtnbike from '../assets/cinestoke-mtn-bike.webp';
 
 const Pics = () => {
   const scrollContainerRef = useRef(null);
-  const [isScrolling, setIsScrolling] = useState(false);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
 
   const images = [
@@ -48,31 +47,7 @@ const Pics = () => {
   // Single set of images, no looping
   const loopedImages = images;
 
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
 
-    let scrollTimeout;
-    let isScrolling = false;
-
-    const handleScroll = () => {
-      if (!isScrolling) {
-        setIsScrolling(true);
-      }
-      
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {
-        setIsScrolling(false);
-      }, 150);
-    };
-
-    container.addEventListener('scroll', handleScroll, { passive: true });
-    
-    return () => {
-      container.removeEventListener('scroll', handleScroll);
-      clearTimeout(scrollTimeout);
-    };
-  }, []);
 
   useEffect(() => {
     const handleResize = () => {
