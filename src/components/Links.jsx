@@ -1,5 +1,4 @@
 import React from 'react';
-import bannerImage from '../assets/banner4.png';
 import profileImage from '../assets/profile.webp';
 import instaImage from '../assets/insta.webp';
 import tiktokImage from '../assets/tiktok.webp';
@@ -48,13 +47,13 @@ const Links = () => {
     
     // Staggered animations with small delay to ensure fade-in is visible
     setTimeout(() => setShowBanner(true), 100);
-    setTimeout(() => setShowProfile(true), 400);
+    setTimeout(() => setShowProfile(true), 600);
     
     // Staggered link animations
-    setTimeout(() => setVisibleLinks([0]), 700);
-    setTimeout(() => setVisibleLinks([0, 1]), 900);
-    setTimeout(() => setVisibleLinks([0, 1, 2]), 1100);
-    setTimeout(() => setVisibleLinks([0, 1, 2, 3]), 1300);
+    setTimeout(() => setVisibleLinks([0]), 900);
+    setTimeout(() => setVisibleLinks([0, 1]), 1100);
+    setTimeout(() => setVisibleLinks([0, 1, 2]), 1300);
+    setTimeout(() => setVisibleLinks([0, 1, 2, 3]), 1500);
   }, []);
   const socialLinks = [
     {
@@ -109,32 +108,24 @@ const Links = () => {
       alignItems: 'center',
       fontFamily: 'Bebas Neue, Impact, Arial Narrow Bold, sans-serif'
     }}>
-      {/* Banner Image */}
+      {/* CINESTOKE Text */}
       <div style={{
-        marginBottom: '2rem',
+        marginBottom: '4rem',
         marginTop: '2rem',
         textAlign: 'center',
-        width: '100vw',
-        marginLeft: 'calc(-50vw + 50%)',
-        marginRight: 'calc(-50vw + 50%)',
         opacity: showBanner ? 1 : 0,
         transform: showBanner ? 'translateY(0)' : 'translateY(20px)',
         transition: 'opacity 0.5s ease, transform 0.5s ease'
       }}>
-        <img 
-          src={bannerImage} 
-          alt="Cinestoke Banner"
-          style={{
-            width: '95vw',
-            maxWidth: '1000px',
-            height: 'auto',
-            borderRadius: '12px',
-            boxShadow: '0 8px 25px rgba(0, 0, 0, 0.3)',
-            opacity: showBanner ? 1 : 0,
-            transform: showBanner ? 'scale(1)' : 'scale(0.95)',
-            transition: 'opacity 0.5s ease, transform 0.5s ease'
-          }}
-        />
+        <h1 style={{
+          fontSize: isMobile ? '3.5rem' : '6rem',
+          color: 'white',
+          textShadow: '0 0 10px rgba(255, 255, 255, 0.2), 0 0 20px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.2), 0 0 40px rgba(255, 255, 255, 0.2)',
+          margin: 0,
+          letterSpacing: '0.05em'
+        }}>
+          C I N E S T O K E
+        </h1>
       </div>
 
       {/* Header */}
@@ -142,7 +133,7 @@ const Links = () => {
       {/* Profile Image */}
       <div style={{
         marginBottom: '2rem',
-        marginTop: isMobile ? '0rem' : '-2rem',
+        marginTop: isMobile ? '-2rem' : '-2rem',
         textAlign: 'center',
         opacity: showProfile ? 1 : 0,
         transform: showProfile ? 'translateY(0)' : 'translateY(20px)',
