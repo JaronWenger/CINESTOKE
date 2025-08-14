@@ -1,12 +1,18 @@
 {
   "files": {
     "main.css": "/static/css/main.b8ba28ca.css",
-    "main.js": "/static/js/main.4f356bcb.js",
+    "main.js": "/static/js/main.3d6b921c.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
+    "static/media/banner4.png": "/static/media/banner4.2443bb7bb6f00a1dee7d.png",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.010d6d49172a9a78e8ba.mp4",
     "static/media/offers.webp": "/static/media/offers.a43ffbd6e1fe7db415e7.webp",
+    "static/media/insta.webp": "/static/media/insta.be834b67581026174459.webp",
+    "static/media/tiktok.webp": "/static/media/tiktok.0b17e3b5d4cc790b5316.webp",
+    "static/media/youtube.webp": "/static/media/youtube.ddb244c83c9089617e44.webp",
     "static/media/Suzuki.svg": "/static/media/Suzuki.31af29124cdca6b01e8c6c07c8c21dcd.svg",
+    "static/media/profile.webp": "/static/media/profile.328f681c8cbed8cf359e.webp",
     "static/media/TCO.svg": "/static/media/TCO.5d5a5329313e781d7670795f49a28b8d.svg",
+    "static/media/website.webp": "/static/media/website.a3bb583ed868c858994b.webp",
     "static/media/cinestoke-real-estate.webp": "/static/media/cinestoke-real-estate.9e3eaa09fca57b9ed2c3.webp",
     "static/media/cinestoke-kayak.webp": "/static/media/cinestoke-kayak.3986b094dca79a23e55b.webp",
     "static/media/cinestoke-drone-shot.webp": "/static/media/cinestoke-drone-shot.25be9dfdaba92fb126ca.webp",
@@ -41,10 +47,10 @@
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
     "main.b8ba28ca.css.map": "/static/css/main.b8ba28ca.css.map",
-    "main.4f356bcb.js.map": "/static/js/main.4f356bcb.js.map"
+    "main.3d6b921c.js.map": "/static/js/main.3d6b921c.js.map"
   },
   "entrypoints": [
     "static/css/main.b8ba28ca.css",
-    "static/js/main.4f356bcb.js"
+    "static/js/main.3d6b921c.js"
   ]
 }
