@@ -29,6 +29,27 @@ const Links = () => {
   const [showBanner, setShowBanner] = React.useState(false);
   const [showProfile, setShowProfile] = React.useState(false);
   const [visibleLinks, setVisibleLinks] = React.useState([]);
+  const [isSocialBrowser, setIsSocialBrowser] = React.useState(false);
+
+  // Detect social media browsers and handle URL encoding issues
+  React.useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isInstagram = userAgent.includes('instagram');
+    const isFacebook = userAgent.includes('fban') || userAgent.includes('fbav');
+    const isTwitter = userAgent.includes('twitter');
+    
+    if (isInstagram || isFacebook || isTwitter) {
+      setIsSocialBrowser(true);
+    }
+
+    // Fix Instagram's URL encoding issue with hash symbols
+    if (isInstagram && window.location.hash.includes('%23')) {
+      const decodedHash = decodeURIComponent(window.location.hash);
+      if (decodedHash !== window.location.hash) {
+        window.location.hash = decodedHash;
+      }
+    }
+  }, []);
 
   React.useEffect(() => {
     const handleResize = () => {
@@ -96,6 +117,158 @@ const Links = () => {
       window.location.href = url;
     }
   };
+
+  // Simple fallback for social media browsers
+  if (isSocialBrowser) {
+    return (
+      <div style={{
+        backgroundColor: 'black',
+        color: 'white',
+        minHeight: '100vh',
+        width: '100vw',
+        maxWidth: '100vw',
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '20px',
+        boxSizing: 'border-box',
+        fontFamily: 'Bebas Neue, Impact, Arial Narrow Bold, sans-serif'
+      }}>
+        <h1 style={{
+          fontSize: isMobile ? '3.5rem' : '6rem',
+          color: 'white',
+          textShadow: '0 0 10px rgba(255, 255, 255, 0.2), 0 0 20px rgba(255, 255, 255, 0.2), 0 0 30px rgba(255, 255, 255, 0.2), 0 0 40px rgba(255, 255, 255, 0.2)',
+          margin: 0,
+          letterSpacing: '0.05em',
+          marginBottom: '2rem',
+          textAlign: 'center',
+          wordWrap: 'break-word',
+          maxWidth: '100%'
+        }}>
+          C I N E S T O K E
+        </h1>
+        
+        <img 
+          src={profileImage} 
+          alt="Profile"
+          loading="eager"
+          decoding="sync"
+          style={{
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
+            objectFit: 'cover',
+            boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
+            marginBottom: '1rem'
+          }}
+        />
+        
+        <div style={{
+          fontSize: '1.2rem',
+          fontWeight: 'bold',
+          color: 'white',
+          marginBottom: '0.5rem'
+        }}>
+          @jaronwenger
+        </div>
+        
+        <div style={{
+          fontSize: '0.9rem',
+          color: '#cccccc',
+          marginBottom: '2rem',
+          fontFamily: 'Georgia, serif',
+          fontStyle: 'italic'
+        }}>
+          making dreams come true
+        </div>
+
+        <div style={{
+          maxWidth: '400px',
+          width: '90%',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '1rem',
+          alignItems: 'center'
+        }}>
+          {socialLinks.map((link, index) => (
+            <a
+              key={index}
+              href={link.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                borderRadius: '12px',
+                padding: '16px 20px',
+                color: 'white',
+                fontSize: '1.1rem',
+                fontWeight: '500',
+                textDecoration: 'none',
+                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                backdropFilter: 'blur(10px)',
+                letterSpacing: '1px',
+                width: '100%',
+                outline: 'none',
+                borderStyle: 'solid',
+                userSelect: 'none',
+                WebkitUserSelect: 'none',
+                MozUserSelect: 'none',
+                msUserSelect: 'none',
+                position: 'relative'
+              }}
+            >
+              {link.image && (
+                <img 
+                  src={link.image} 
+                  alt={link.name}
+                  loading="eager"
+                  decoding="sync"
+                  style={{
+                    width: '50px',
+                    height: '50px',
+                    borderRadius: '4px',
+                    objectFit: 'cover',
+                    marginLeft: '-10px',
+                    marginTop: '-8px',
+                    marginBottom: '-8px'
+                  }}
+                />
+              )}
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'absolute',
+                left: '0',
+                right: '0',
+                textAlign: 'center'
+              }}>
+                <span>{link.name}</span>
+                {link.logo && (
+                  <span style={{ marginLeft: '8px', marginTop: '4px' }}>
+                    {link.logo}
+                  </span>
+                )}
+              </div>
+              <span style={{
+                fontSize: '1.2rem',
+                opacity: 0.7,
+                marginLeft: 'auto'
+              }}>
+                →
+              </span>
+            </a>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{

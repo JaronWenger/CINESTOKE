@@ -12,8 +12,11 @@
 
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
     <meta property="og:title" content="CINESTOKE" />
     <meta property="og:description" content="Experience videos like never before on Cinestoke" />
@@ -24,6 +27,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Meddon&display=swap" rel="stylesheet">
+    
+    <!-- Preload critical images for Instagram browser -->
+    <link rel="preload" href="%PUBLIC_URL%/profile.webp" as="image" type="image/webp">
+    <link rel="preload" href="%PUBLIC_URL%/insta.webp" as="image" type="image/webp">
+    <link rel="preload" href="%PUBLIC_URL%/youtube.webp" as="image" type="image/webp">
+    <link rel="preload" href="%PUBLIC_URL%/tiktok.webp" as="image" type="image/webp">
+    <link rel="preload" href="%PUBLIC_URL%/website.webp" as="image" type="image/webp">
 
     <meta name="description" content="Cinestoke specializes in creating high-quality cinematic videos and films. Explore our work and elevate your storytelling with our video production services." />
     <link rel="canonical" href="https://www.cinestoke.com" />
