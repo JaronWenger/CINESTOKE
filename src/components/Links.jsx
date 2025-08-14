@@ -68,13 +68,13 @@ const Links = () => {
     
     // Staggered animations with small delay to ensure fade-in is visible
     setTimeout(() => setShowBanner(true), 100);
-    setTimeout(() => setShowProfile(true), 600);
+    setTimeout(() => setShowProfile(true), 300);
     
     // Staggered link animations
-    setTimeout(() => setVisibleLinks([0]), 900);
-    setTimeout(() => setVisibleLinks([0, 1]), 1100);
-    setTimeout(() => setVisibleLinks([0, 1, 2]), 1300);
-    setTimeout(() => setVisibleLinks([0, 1, 2, 3]), 1500);
+    setTimeout(() => setVisibleLinks([0]), 450);
+    setTimeout(() => setVisibleLinks([0, 1]), 600);
+    setTimeout(() => setVisibleLinks([0, 1, 2]), 750);
+    setTimeout(() => setVisibleLinks([0, 1, 2, 3]), 900);
   }, []);
   const socialLinks = [
     {
@@ -145,7 +145,10 @@ const Links = () => {
           marginBottom: '2rem',
           textAlign: 'center',
           wordWrap: 'break-word',
-          maxWidth: '100%'
+          maxWidth: '100%',
+          opacity: showBanner ? 1 : 0,
+          transform: showBanner ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.5s ease, transform 0.5s ease'
         }}>
           C I N E S T O K E
         </h1>
@@ -161,7 +164,10 @@ const Links = () => {
             borderRadius: '50%',
             objectFit: 'cover',
             boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
-            marginBottom: '1rem'
+            marginBottom: '1rem',
+            opacity: showProfile ? 1 : 0,
+            transform: showProfile ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.5s ease, transform 0.5s ease'
           }}
         />
         
@@ -169,7 +175,11 @@ const Links = () => {
           fontSize: '1.2rem',
           fontWeight: 'bold',
           color: 'white',
-          marginBottom: '0.5rem'
+          marginBottom: '0.5rem',
+          opacity: showProfile ? 1 : 0,
+          transform: showProfile ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.5s ease, transform 0.5s ease',
+          visibility: showProfile ? 'visible' : 'hidden'
         }}>
           @jaronwenger
         </div>
@@ -179,7 +189,11 @@ const Links = () => {
           color: '#cccccc',
           marginBottom: '2rem',
           fontFamily: 'Georgia, serif',
-          fontStyle: 'italic'
+          fontStyle: 'italic',
+          opacity: showProfile ? 1 : 0,
+          transform: showProfile ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.5s ease, transform 0.5s ease',
+          visibility: showProfile ? 'visible' : 'hidden'
         }}>
           making dreams come true
         </div>
@@ -190,7 +204,10 @@ const Links = () => {
           display: 'flex',
           flexDirection: 'column',
           gap: '1rem',
-          alignItems: 'center'
+          alignItems: 'center',
+          opacity: visibleLinks.length > 0 ? 1 : 0,
+          transform: visibleLinks.length > 0 ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.5s ease, transform 0.5s ease'
         }}>
           {socialLinks.map((link, index) => (
             <a
@@ -220,7 +237,10 @@ const Links = () => {
                 WebkitUserSelect: 'none',
                 MozUserSelect: 'none',
                 msUserSelect: 'none',
-                position: 'relative'
+                position: 'relative',
+                opacity: visibleLinks.includes(index) ? 1 : 0,
+                transform: visibleLinks.includes(index) ? 'translateY(0)' : 'translateY(20px)',
+                transition: 'opacity 0.5s ease, transform 0.5s ease'
               }}
             >
               {link.image && (
