@@ -219,6 +219,7 @@ video {
   height: 40px;
   width: auto;
   display: block;
+  pointer-events: none;
 }
 
 .instagram-button svg {
