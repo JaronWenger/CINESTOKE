@@ -437,7 +437,7 @@ const Pics = () => {
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           willChange: 'scroll-position',
-          cursor: isDragging ? 'grabbing' : 'grab'
+          cursor: 'default'
         }}
       >
         {displayedImages.map((image, index) => {

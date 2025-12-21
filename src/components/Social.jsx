@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 // Import the SVG as a React component
 import { ReactComponent as SSBC } from '../assets/SSBC.svg';
+import ContactV2 from './ContactV2';
 
 const Clients = () => {
+  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+
   const handleInstagramClick = () => {
     window.open('https://www.instagram.com/jaronwenger', '_blank');
   };
@@ -13,6 +16,10 @@ const Clients = () => {
 
   const handleTikTokClick = () => {
     window.open('https://www.tiktok.com/@jaronwenger', '_blank');
+  };
+
+  const handleMailClick = () => {
+    setIsContactModalOpen(true);
   };
 
   return (
@@ -60,8 +67,22 @@ const Clients = () => {
         </button>
 
         {/* Vertical Line */}
+        <div className="line" />
+
+        {/* Mail Button */}
+        <button 
+          className="social-button mail-button"
+          onClick={handleMailClick}
+        >
+          <svg width="5" height="5" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+          </svg>
+        </button>
+
+        {/* Vertical Line */}
         <div className="lineb" />
       </div>
+      <ContactV2 isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
     </div>
   );
 };

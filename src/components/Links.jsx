@@ -384,7 +384,7 @@ const Links = () => {
               color: 'white',
               fontSize: '1.1rem',
               fontWeight: '500',
-              cursor: 'pointer',
+              cursor: 'default',
               transition: 'all 0.3s ease',
               display: 'flex',
               alignItems: 'center',
