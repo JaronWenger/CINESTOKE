@@ -64,37 +64,37 @@ const Pics = () => {
   // Handle carousel scroll events with dynamic image loading
   const [hasScrolled, setHasScrolled] = useState(false);
   
-  const handleScroll = () => {
+  // Extract infinite scroll logic to be called from both scroll events and drag handlers
+  const checkAndLoadImages = (currentScrollLeft, previousScrollLeft) => {
     const container = scrollContainerRef.current;
-    if (!container) return;
+    if (!container || isAdjustingRef.current) return;
 
-    // Skip if we're in the middle of adjusting scroll position
-    if (isAdjustingRef.current) {
-      return;
-    }
-
-    const { scrollLeft, scrollWidth, clientWidth } = container;
-    const scrollRight = scrollLeft + clientWidth;
-    const isScrollingRight = scrollLeft > scrollPositionRef.current;
-    
-    scrollPositionRef.current = scrollLeft;
-    lastScrollLeftRef.current = scrollLeft;
+    const { clientWidth } = container;
+    const isScrollingRight = currentScrollLeft > previousScrollLeft;
 
     // Get actual slide width from DOM if available
     const firstSlide = container.querySelector('.swiper-slide');
-    const slideWidth = firstSlide ? firstSlide.offsetWidth : scrollWidth / displayedImages.length;
+    if (!firstSlide) return; // Can't calculate without slides
+    
+    const slideWidth = firstSlide.offsetWidth;
     const gap = 0.5; // Gap between slides
     const slideWithGap = slideWidth + gap;
-    const bufferDistance = slideWithGap * 3; // Add images when 3 slides away from edge
+    
+    // Calculate expected scrollWidth based on actual number of displayed images
+    // This is more reliable than DOM's scrollWidth which might be stale
+    const expectedScrollWidth = displayedImages.length * slideWithGap;
+    const scrollRight = currentScrollLeft + clientWidth;
+    
+    // Increase buffer distance to 5 slides for more aggressive loading
+    const bufferDistance = slideWithGap * 5;
 
     // If scrolling right and near the end, add more images to the end
-    if (isScrollingRight && scrollRight >= scrollWidth - bufferDistance) {
+    if (isScrollingRight && scrollRight >= expectedScrollWidth - bufferDistance) {
       setDisplayedImages(prev => [...prev, ...images]);
     }
     // If scrolling left and near the beginning, add more images to the start
-    else if (!isScrollingRight && scrollLeft <= bufferDistance && prependCount < 20) {
+    else if (!isScrollingRight && currentScrollLeft <= bufferDistance && prependCount < 20) {
       // Capture current scroll position BEFORE prepending
-      const currentScrollLeft = scrollLeft;
       const imagesToPrepend = images;
       const addedWidth = slideWithGap * imagesToPrepend.length;
       
@@ -109,6 +109,25 @@ const Pics = () => {
       setDisplayedImages(prev => [...imagesToPrepend, ...prev]);
       setPrependCount(prev => prev + 1);
     }
+  };
+  
+  const handleScroll = () => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    // Skip if we're in the middle of adjusting scroll position
+    if (isAdjustingRef.current) {
+      return;
+    }
+
+    const { scrollLeft } = container;
+    const previousScrollLeft = scrollPositionRef.current;
+    
+    scrollPositionRef.current = scrollLeft;
+    lastScrollLeftRef.current = scrollLeft;
+
+    // Check and load images if needed
+    checkAndLoadImages(scrollLeft, previousScrollLeft);
 
     // Analytics tracking
     if (!hasScrolled && window.dataLayer) {
@@ -157,6 +176,7 @@ const Pics = () => {
     if (!container) return;
     
     let v = velocity * 0.95; // Simple friction
+    let previousScrollLeft = container.scrollLeft;
     
     const animate = () => {
       if (Math.abs(v) < 0.5) {
@@ -167,8 +187,14 @@ const Pics = () => {
       
       container.style.scrollBehavior = 'auto';
       container.scrollLeft -= v;
-      scrollPositionRef.current = container.scrollLeft;
-      lastScrollLeftRef.current = container.scrollLeft;
+      const currentScrollLeft = container.scrollLeft;
+      
+      scrollPositionRef.current = currentScrollLeft;
+      lastScrollLeftRef.current = currentScrollLeft;
+      
+      // Check and load images during momentum (since scroll events don't fire)
+      checkAndLoadImages(currentScrollLeft, previousScrollLeft);
+      previousScrollLeft = currentScrollLeft;
       
       v *= 0.95; // Friction
       momentumAnimationRef.current = requestAnimationFrame(animate);
@@ -228,12 +254,22 @@ const Pics = () => {
       
       const deltaX = e.clientX - dragStartRef.current.x;
       const newScrollLeft = dragStartRef.current.scrollLeft - deltaX;
+      const previousScrollLeft = scrollPositionRef.current;
       
       container.style.scrollBehavior = 'auto';
       container.scrollLeft = newScrollLeft;
       
       scrollPositionRef.current = container.scrollLeft;
       lastScrollLeftRef.current = container.scrollLeft;
+      
+      // Check and load images during drag (check immediately and after DOM update)
+      checkAndLoadImages(container.scrollLeft, previousScrollLeft);
+      // Also check in next frame in case DOM hasn't updated yet from previous image additions
+      requestAnimationFrame(() => {
+        if (container) {
+          checkAndLoadImages(container.scrollLeft, previousScrollLeft);
+        }
+      });
       
       // Track movement for velocity
       const now = Date.now();
