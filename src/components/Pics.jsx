@@ -48,6 +48,23 @@ const Pics = () => {
   const loopedImages = images;
 
 
+  // Handle carousel scroll events with debounce
+  const [hasScrolled, setHasScrolled] = useState(false);
+  
+  const handleScroll = () => {
+    if (!hasScrolled && window.dataLayer) {
+      setHasScrolled(true);
+      window.dataLayer.push({
+        event: 'carousel_scroll',
+        carousel_element: 'image_carousel'
+      });
+      
+      // Reset after 2 seconds to allow for future scroll tracking
+      setTimeout(() => {
+        setHasScrolled(false);
+      }, 2000);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -70,6 +87,7 @@ const Pics = () => {
       <div 
         ref={scrollContainerRef}
         className="carousel-scroll-container"
+        onScroll={handleScroll}
         style={{
           display: 'flex',
           gap: '0.5px',
