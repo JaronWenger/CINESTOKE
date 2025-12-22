@@ -56,6 +56,8 @@ const ClientsV2 = () => {
   const prevMoveRef = useRef({ x: 0, time: 0 });
   const momentumAnimationRef = useRef(null);
   const scrollTimeoutRef = useRef(null); // For detecting scroll end
+  const isScrollingRef = useRef(false); // Track if user is actively scrolling
+  const isHoldingRef = useRef(false); // Track if user is actively holding/touching (mouse down or touch)
 
   // Handle carousel scroll events with dynamic client loading
   const [hasScrolled, setHasScrolled] = useState(false);
@@ -83,7 +85,8 @@ const ClientsV2 = () => {
   // Function to snap the closest logo to center
   const snapToCenter = () => {
     const container = scrollContainerRef.current;
-    if (!container || isAdjustingRef.current || isDragging) return;
+    // Don't snap if actively scrolling, adjusting, dragging, or holding
+    if (!container || isAdjustingRef.current || isDragging || isScrollingRef.current || isHoldingRef.current) return;
     
     const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
     if (logoWrappers.length === 0) return;
@@ -166,6 +169,9 @@ const ClientsV2 = () => {
       return;
     }
 
+    // Mark that user is actively scrolling
+    isScrollingRef.current = true;
+
     const { scrollLeft } = container;
     const previousScrollLeft = scrollPositionRef.current;
     
@@ -180,9 +186,14 @@ const ClientsV2 = () => {
       clearTimeout(scrollTimeoutRef.current);
     }
     
-    // Set timeout to snap to center when scrolling stops
+    // Set timeout to snap to center when scrolling stops (only if not holding)
     scrollTimeoutRef.current = setTimeout(() => {
-      snapToCenter();
+      // Mark scrolling as stopped
+      isScrollingRef.current = false;
+      // Only snap if user is not actively holding/touching
+      if (!isHoldingRef.current) {
+        snapToCenter();
+      }
     }, 150); // Wait 150ms after scrolling stops
 
     // Analytics tracking
@@ -211,8 +222,16 @@ const ClientsV2 = () => {
       momentumAnimationRef.current = null;
     }
     
+    // Clear any pending scroll timeout since user is now holding
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = null;
+    }
+    
     const now = Date.now();
     setIsDragging(true);
+    isScrollingRef.current = true; // Mark as actively scrolling during drag
+    isHoldingRef.current = true; // Mark as actively holding
     dragStartRef.current = {
       x: e.clientX,
       scrollLeft: container.scrollLeft
@@ -231,6 +250,7 @@ const ClientsV2 = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
     
+    isScrollingRef.current = true; // Mark as actively scrolling during momentum
     let v = velocity * 0.95; // Simple friction
     let previousScrollLeft = container.scrollLeft;
     
@@ -238,9 +258,13 @@ const ClientsV2 = () => {
       if (Math.abs(v) < 0.5) {
         container.style.scrollBehavior = 'smooth';
         momentumAnimationRef.current = null;
-        // Snap to center when momentum ends
+        // Mark scrolling as stopped when momentum ends
+        isScrollingRef.current = false;
+        // Only snap to center when momentum ends if user is not holding
         requestAnimationFrame(() => {
-          snapToCenter();
+          if (!isHoldingRef.current) {
+            snapToCenter();
+          }
         });
         return;
       }
@@ -269,6 +293,9 @@ const ClientsV2 = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
     
+    // Mark as no longer holding
+    isHoldingRef.current = false;
+    
     // Simple velocity from last movement (like touch)
     const timeDelta = lastMoveRef.current.time - prevMoveRef.current.time;
     const positionDelta = lastMoveRef.current.x - prevMoveRef.current.x;
@@ -281,7 +308,9 @@ const ClientsV2 = () => {
       applyMomentum(velocity);
     } else {
       container.style.scrollBehavior = 'smooth';
-      // Snap to center immediately if no momentum
+      // Mark scrolling as stopped
+      isScrollingRef.current = false;
+      // Snap to center immediately if no momentum (now that we've released)
       requestAnimationFrame(() => {
         snapToCenter();
       });
@@ -297,6 +326,34 @@ const ClientsV2 = () => {
     if (isDragging) {
       handleMouseUp();
     }
+  };
+
+  // Touch event handlers for mobile
+  const handleTouchStart = () => {
+    // Mark as actively scrolling and holding when touch starts
+    isScrollingRef.current = true;
+    isHoldingRef.current = true;
+    // Clear any pending scroll timeout since user is now holding
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = null;
+    }
+  };
+
+  const handleTouchEnd = () => {
+    // Mark as no longer holding
+    isHoldingRef.current = false;
+    // Clear any pending scroll timeout
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+    // Set a timeout to mark scrolling as stopped after touch ends
+    // This gives time for any momentum scrolling to complete
+    scrollTimeoutRef.current = setTimeout(() => {
+      isScrollingRef.current = false;
+      // Only snap now that user has released
+      snapToCenter();
+    }, 150);
   };
 
   useEffect(() => {
@@ -586,6 +643,8 @@ const ClientsV2 = () => {
         onScroll={handleScroll}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         style={{
             display: 'flex',
             gap: '0.5px',
@@ -614,7 +673,15 @@ const ClientsV2 = () => {
             <React.Fragment key={key}>
               <div 
                 className="client-logo-wrapper" 
-                style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', padding: getLogoPadding(), cursor: 'default' }}
+                style={{ 
+                  flex: '0 0 auto', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  padding: getLogoPadding(), 
+                  cursor: 'default',
+                  WebkitTapHighlightColor: 'transparent',
+                  tapHighlightColor: 'transparent'
+                }}
                 onClick={(e) => {
                   centerLogo(e.currentTarget);
                 }}
@@ -626,10 +693,16 @@ const ClientsV2 = () => {
                     filter: 'none'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.filter = 'drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.6)) drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.4))';
+                    // Only apply hover effect on desktop (screen width > 768px)
+                    if (screenWidth > 768) {
+                      e.currentTarget.style.filter = 'drop-shadow(0px 0px 4px rgba(255, 255, 255, 0.6)) drop-shadow(0px 0px 8px rgba(255, 255, 255, 0.4))';
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.filter = 'none';
+                    // Only apply hover effect on desktop (screen width > 768px)
+                    if (screenWidth > 768) {
+                      e.currentTarget.style.filter = 'none';
+                    }
                   }}
                 />
               </div>
@@ -641,6 +714,22 @@ const ClientsV2 = () => {
         {/* End with lineb to match original structure */}
         <div className="lineb" style={{ flex: '0 0 auto' }} />
       </div>
+      
+      {/* Solid black overlay on mobile to cover logos to the left of fade */}
+      {screenWidth <= 768 && (
+        <div 
+          style={{
+            position: 'absolute',
+            left: '-40px',
+            top: '2px',
+            bottom: '2px',
+            width: '40px',
+            backgroundColor: '#000000',
+            pointerEvents: 'none',
+            zIndex: 1
+          }}
+        />
+      )}
       
       {/* Left fade overlay - fixed to viewport, excludes top/bottom borders */}
       <div 
@@ -681,12 +770,20 @@ const ClientsV2 = () => {
           transition: filter 0.3s ease;
         }
         
-        .client-logo-wrapper:hover :global(svg) {
-          filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 1)) 
-                  drop-shadow(0px 0px 10px rgba(255, 255, 255, 1))
-                  drop-shadow(0px 0px 15px rgba(255, 255, 255, 0.9))
-                  drop-shadow(0px 0px 20px rgba(255, 255, 255, 0.8))
-                  drop-shadow(0px 0px 25px rgba(255, 255, 255, 0.7));
+        .client-logo-wrapper {
+          -webkit-tap-highlight-color: transparent;
+          tap-highlight-color: transparent;
+        }
+        
+        /* Only apply hover effect on desktop (screen width > 768px) */
+        @media (min-width: 769px) {
+          .client-logo-wrapper:hover :global(svg) {
+            filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 1)) 
+                    drop-shadow(0px 0px 10px rgba(255, 255, 255, 1))
+                    drop-shadow(0px 0px 15px rgba(255, 255, 255, 0.9))
+                    drop-shadow(0px 0px 20px rgba(255, 255, 255, 0.8))
+                    drop-shadow(0px 0px 25px rgba(255, 255, 255, 0.7));
+          }
         }
         
         .carousel-scroll-container :global(.line),
