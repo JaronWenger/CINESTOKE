@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.fd62b162.css",
-    "main.js": "/static/js/main.b8460f38.js",
+    "main.js": "/static/js/main.3ad1c0ac.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.1cfc188f75499b14cddc.mp4",
     "static/media/offers.webp": "/static/media/offers.a43ffbd6e1fe7db415e7.webp",
@@ -45,10 +45,10 @@
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
     "main.fd62b162.css.map": "/static/css/main.fd62b162.css.map",
-    "main.b8460f38.js.map": "/static/js/main.b8460f38.js.map"
+    "main.3ad1c0ac.js.map": "/static/js/main.3ad1c0ac.js.map"
   },
   "entrypoints": [
     "static/css/main.fd62b162.css",
-    "static/js/main.b8460f38.js"
+    "static/js/main.3ad1c0ac.js"
   ]
 }
