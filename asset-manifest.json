@@ -1,10 +1,10 @@
 {
   "files": {
     "main.css": "/static/css/main.22f2ffd2.css",
-    "main.js": "/static/js/main.cf47794a.js",
+    "main.js": "/static/js/main.5e25e1d5.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
     "static/media/SmallWorldMain.mp4": "/static/media/SmallWorldMain.f6e2112b9160ba964e35.mp4",
-    "static/media/Geographic.mp4": "/static/media/Geographic.189d4f4b831ad599d7dd.mp4",
+    "static/media/SmallWorldGeo.mp4": "/static/media/SmallWorldGeo.298eb4a65d1fd276615c.mp4",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.1cfc188f75499b14cddc.mp4",
     "static/media/offers.webp": "/static/media/offers.a43ffbd6e1fe7db415e7.webp",
     "static/media/insta.webp": "/static/media/insta.be834b67581026174459.webp",
@@ -49,10 +49,10 @@
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
     "main.22f2ffd2.css.map": "/static/css/main.22f2ffd2.css.map",
-    "main.cf47794a.js.map": "/static/js/main.cf47794a.js.map"
+    "main.5e25e1d5.js.map": "/static/js/main.5e25e1d5.js.map"
   },
   "entrypoints": [
     "static/css/main.22f2ffd2.css",
-    "static/js/main.cf47794a.js"
+    "static/js/main.5e25e1d5.js"
   ]
 }
