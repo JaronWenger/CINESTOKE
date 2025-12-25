@@ -1,8 +1,10 @@
 {
   "files": {
-    "main.css": "/static/css/main.fd62b162.css",
-    "main.js": "/static/js/main.e1dce68b.js",
+    "main.css": "/static/css/main.22f2ffd2.css",
+    "main.js": "/static/js/main.cf47794a.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
+    "static/media/SmallWorldMain.mp4": "/static/media/SmallWorldMain.f6e2112b9160ba964e35.mp4",
+    "static/media/Geographic.mp4": "/static/media/Geographic.189d4f4b831ad599d7dd.mp4",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.1cfc188f75499b14cddc.mp4",
     "static/media/offers.webp": "/static/media/offers.a43ffbd6e1fe7db415e7.webp",
     "static/media/insta.webp": "/static/media/insta.be834b67581026174459.webp",
@@ -32,9 +34,11 @@
     "static/media/cinestoke-FPV.webp": "/static/media/cinestoke-FPV.5a413ce313e451bc0f9e.webp",
     "static/media/cinestoke-sports.webp": "/static/media/cinestoke-sports.3a1e84614c5a30a3b9a2.webp",
     "static/media/cinestoke-landscape.webp": "/static/media/cinestoke-landscape.4da4c4a3ff1bc3bb8103.webp",
+    "static/media/SWA.svg": "/static/media/SWA.1a1b0cf2765f3db44c7ce148483b0487.svg",
     "static/media/IR.svg": "/static/media/IR.f3aca9fed078cb9a1bcfea64022c8bb9.svg",
     "static/media/GFF.svg": "/static/media/GFF.3263872cb4a590d38faf9e7b4e657a30.svg",
     "static/media/Seadoo.svg": "/static/media/Seadoo.c65c2e6461112c4ec08603755056738f.svg",
+    "static/media/SWApp.webp": "/static/media/SWApp.f61f907659488c7fd199.webp",
     "static/media/SSBC.svg": "/static/media/SSBC.503bc30f34da116710649fdd8c016fb1.svg",
     "static/media/Film.svg": "/static/media/Film.1b8614b269dba8dcd2fe4ec0c292f1ff.svg",
     "static/media/Wings.svg": "/static/media/Wings.5891600874684b7ac2edda0a80addfe7.svg",
@@ -44,11 +48,11 @@
     "static/media/rightwing.svg": "/static/media/rightwing.908005ec7d6786ebd3ed3957a88a799c.svg",
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
-    "main.fd62b162.css.map": "/static/css/main.fd62b162.css.map",
-    "main.e1dce68b.js.map": "/static/js/main.e1dce68b.js.map"
+    "main.22f2ffd2.css.map": "/static/css/main.22f2ffd2.css.map",
+    "main.cf47794a.js.map": "/static/js/main.cf47794a.js.map"
   },
   "entrypoints": [
-    "static/css/main.fd62b162.css",
-    "static/js/main.e1dce68b.js"
+    "static/css/main.22f2ffd2.css",
+    "static/js/main.cf47794a.js"
   ]
 }
