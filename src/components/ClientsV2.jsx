@@ -6,6 +6,7 @@ import { ReactComponent as GFF } from '../assets/GFF.svg';
 import { ReactComponent as IR } from '../assets/IR.svg';
 import { ReactComponent as Suzuki } from '../assets/Suzuki.svg';
 import { ReactComponent as Seadoo } from '../assets/Seadoo.svg';
+import { ReactComponent as SWA} from '../assets/SWA.svg';
 
 const ClientsV2 = () => {
   const scrollContainerRef = useRef(null);
@@ -30,14 +31,26 @@ const ClientsV2 = () => {
   };
   const [isReady, setIsReady] = useState(false); // Hide container until positioned
 
-  const clients = [
-    { Component: Seadoo, alt: "Seadoo Logo", name: "Seadoo" },
-    { Component: TCO, alt: "TCO Logo", name: "TCO" },
-    { Component: GFF, alt: "GFF Logo", name: "GFF" },
-    { Component: IR, alt: "IR Logo", name: "IR" },
-    { Component: Suzuki, alt: "Suzuki Logo", name: "Suzuki" },
-    { Component: SSBC, alt: "SSBC Logo", name: "SSBC" },
+  // Just add your imported components here - name is auto-generated from component name
+  const clientComponents = [
+    Seadoo,
+    TCO,
+    GFF,
+    IR,
+    Suzuki,
+    SSBC,
+    SWA,
   ];
+
+  // Automatically generate clients array - extracts name from component displayName or function name
+  const clients = clientComponents.map((Component) => {
+    const name = Component.displayName || Component.name || 'Client';
+    return {
+      Component,
+      alt: `${name} Logo`,
+      name,
+    };
+  });
 
   // Dynamic client list that grows as user scrolls
   // Start with clients prepended so we can scroll left immediately

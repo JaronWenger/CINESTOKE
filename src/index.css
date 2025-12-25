@@ -723,3 +723,295 @@ video {
     overflow: visible;  /* Allow scroll when cards stack */
   }
 }
+
+/* C A S E   S T U D Y /////////////////////////////////*/
+.case-study-section {
+  width: 80%;
+  margin: 1.25rem auto;
+  display: block;
+}
+
+.case-study-carousel {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  will-change: scroll-position;
+}
+
+.case-study-carousel:active {
+  cursor: grabbing;
+}
+
+.case-study-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.case-study-slide-wrapper {
+  flex: 0 0 100%;
+  min-width: 100%;
+  width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  box-sizing: border-box;
+}
+
+.slide-one {
+  text-align: center;
+  padding: 1rem 0 0.5rem 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.slide-geo {
+  text-align: center;
+  padding: 1rem 0 0.5rem 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.slide-one-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.slide-one-profile-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.visit-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  padding: 0.4rem 0.5rem;
+  background-color: #151515;
+  border: 1px solid #888;
+  border-radius: 8px;
+  color: white;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: default;
+  box-sizing: border-box;
+}
+
+.visit-button:hover {
+  background-color: #252525;
+  border-color: #999;
+}
+
+.slide-one-header-text {
+  flex: 1;
+  text-align: left;
+}
+
+.case-study-title {
+  font-size: 4rem;
+  color: white;
+  margin-bottom: 1rem;
+  font-family: 'Bebas Neue', Impact, 'Arial Narrow Bold', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.slide-one .case-study-title {
+  font-size: 2rem;
+  justify-content: flex-start;
+  margin-bottom: 0.5rem;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+.swa-logo {
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.slide-geo .case-study-title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.case-study-description-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.case-study-description {
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
+}
+
+.slide-one .case-study-description {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.case-study-link {
+  display: inline-block;
+  color: white;
+  text-decoration: underline;
+  font-size: 1rem;
+  margin-bottom: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  transition: color 0.3s ease;
+}
+
+.case-study-link:hover {
+  color: #66b3ff;
+}
+
+.case-study-video-container {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+.case-study-video {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Navigation dots */
+.case-study-nav-dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.case-study-dot-wrapper {
+  padding: 8px;
+  margin: -8px;
+  cursor: default;
+}
+
+.case-study-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: white;
+  transition: all 0.3s ease;
+  cursor: default;
+}
+
+.case-study-dot.active {
+  width: 40px;
+  height: 6px;
+  border-radius: 3px;
+  background-color: white;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .case-study-title {
+    font-size: 2.5rem;
+  }
+
+  .slide-one .case-study-title {
+    font-size: 1.2rem;
+  }
+
+  .slide-one .case-study-description {
+    font-size: 0.8rem;
+  }
+
+  .swa-logo {
+    height: 60px;
+    width: 60px;
+  }
+
+  .visit-button {
+    width: 60px;
+    padding: 0.3rem 0.4rem;
+    font-size: 0.8rem;
+  }
+
+  .slide-geo .case-study-title {
+    font-size: 1.5rem;
+  }
+  
+  .case-study-description {
+    font-size: 1.2rem;
+    padding: 0 1rem;
+  }
+
+  .slide-one .case-study-description {
+    padding: 0;
+  }
+  
+  .case-study-section {
+    width: 90%;
+  }
+
+  .case-study-video-container {
+    max-width: 90%;
+  }
+
+  .case-study-dot.active {
+    width: 30px;
+    height: 6px;
+    border-radius: 3px;
+  }
+}
+
+@media (max-width: 480px) {
+  .case-study-title {
+    font-size: 2rem;
+  }
+
+  .slide-geo .case-study-title {
+    font-size: 1.2rem;
+  }
+  
+  .case-study-description {
+    font-size: 1rem;
+  }
+
+  .case-study-video-container {
+    max-width: 95%;
+  }
+
+  .case-study-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  .case-study-dot.active {
+    width: 25px;
+    height: 4px;
+    border-radius: 2px;
+  }
+}

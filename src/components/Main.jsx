@@ -5,7 +5,7 @@ import Bars from './Bars'
 
 import ClientsV2 from './ClientsV2';
 import Pics from './Pics';
-import Contact from './Contact';
+import CaseStudy from './CaseStudy';
 import Social from './Social';
 
 
@@ -109,7 +109,7 @@ const Main = () => {
       <Bars />
       <Pics />
       <ClientsV2 />
-      <Contact />
+      <CaseStudy />
       <Social />
     </div>
   )
