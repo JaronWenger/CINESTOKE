@@ -1,5 +1,5 @@
 import React from 'react';
-import geographicVideo from '../assets/CASESTUDIES/Geographic.mp4';
+import geographicVideo from '../assets/CASESTUDIES/SmallWorldGeo.mp4';
 
 const SlideGeo = () => {
   return (
