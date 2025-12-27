@@ -7,8 +7,10 @@ const CaseStudy = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef({ x: 0, scrollLeft: 0 });
+  const dragDistanceRef = useRef(0);
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
+  const DRAG_THRESHOLD = 50; // Minimum pixels to trigger slide change
 
   const totalSlides = 2;
 
@@ -44,6 +46,7 @@ const CaseStudy = () => {
       x: e.clientX,
       scrollLeft: container.scrollLeft
     };
+    dragDistanceRef.current = 0;
 
     e.preventDefault();
     if (container) {
@@ -62,10 +65,27 @@ const CaseStudy = () => {
       container.style.cursor = 'grab';
       container.style.userSelect = '';
     }
+    
+    const dragDistance = Math.abs(dragDistanceRef.current);
+    
+    // If drag distance exceeds threshold, navigate to next/previous slide
+    if (dragDistance > DRAG_THRESHOLD) {
+      if (dragDistanceRef.current > 0) {
+        // Dragged right - go to previous slide
+        const prevSlide = Math.max(0, currentSlide - 1);
+        goToSlide(prevSlide);
+      } else {
+        // Dragged left - go to next slide
+        const nextSlide = Math.min(totalSlides - 1, currentSlide + 1);
+        goToSlide(nextSlide);
+      }
+    } else {
+      // Small drag, snap to current slide
+      snapToSlide();
+    }
+    
     setIsDragging(false);
-
-    // Snap to nearest slide
-    snapToSlide();
+    dragDistanceRef.current = 0;
   };
 
   const handleMouseLeave = () => {
@@ -129,8 +149,10 @@ const CaseStudy = () => {
       if (!container) return;
 
       const deltaX = e.clientX - dragStartRef.current.x;
+      dragDistanceRef.current = deltaX;
+      
+      // Allow visual feedback during drag
       const newScrollLeft = dragStartRef.current.scrollLeft - deltaX;
-
       container.style.scrollBehavior = 'auto';
       container.scrollLeft = newScrollLeft;
     };
@@ -146,7 +168,7 @@ const CaseStudy = () => {
       window.removeEventListener('mousemove', handleGlobalMouseMove);
       window.removeEventListener('mouseup', handleGlobalMouseUp);
     };
-  }, [isDragging]);
+  }, [isDragging, currentSlide]);
 
   return (
     <div className="cinestoke-section case-study-section">
