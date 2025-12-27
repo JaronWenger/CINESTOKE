@@ -15,6 +15,9 @@ import seadooLogo from '../assets/CASESTUDIES/Brands/Seadoopp.webp';
 import seadooVideo from '../assets/CASESTUDIES/SeadooMain.mp4';
 import slateLogo from '../assets/CASESTUDIES/Brands/Slatepp.webp';
 import slateVideo from '../assets/CASESTUDIES/SlateMain.mp4';
+import irLogo from '../assets/CASESTUDIES/Brands/IRpp.webp';
+import gffLogo from '../assets/CASESTUDIES/Brands/GFFpp.webp';
+import tcoLogo from '../assets/CASESTUDIES/Brands/TCOpp.webp';
 
 /**
  * Case Study Configuration
@@ -88,15 +91,51 @@ export const caseStudyConfig = {
   },
   TCO: {
     name: 'TCO',
-    slides: [] // No case study yet
+    slides: [
+        {
+          type: 'main',
+          component: SlideMain,
+          props: {
+            title: 'TCO Fly Shop',
+            description: 'Among the oldest and largest fly fishing outfitters, known for delivering the highest quality gear, fly tying materials, and expert customer service.',
+            profilePic: tcoLogo,
+            video: slateVideo
+            // logoUrl is optional - not provided for TCO
+          }
+        }
+      ]
   },
   GFF: {
     name: 'GFF',
-    slides: [] // No case study yet
+    slides: [
+        {
+          type: 'main',
+          component: SlideMain,
+          props: {
+            title: 'Great Falls Foundation',
+            description: 'A non-profit charitable organization dedicated to promoting whitewater competition and an active and outdoor lifestyle.',
+            profilePic: gffLogo,
+            video: slateVideo
+            // logoUrl is optional - not provided for TCO
+          }
+        }
+      ]
   },
   IR: {
     name: 'IR',
-    slides: [] // No case study yet
+    slides: [
+        {
+          type: 'main',
+          component: SlideMain,
+          props: {
+            title: 'Immersion Research',
+            description: 'Immersion Research is a designer and manufacturer of paddling gear for whitewater kayaking, rafting, canoeing, and other paddlesports.',
+            profilePic: irLogo,
+            video: slateVideo
+            // logoUrl is optional - not provided for IR
+          }
+        }
+      ]
   }
 };
 

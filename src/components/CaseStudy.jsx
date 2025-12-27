@@ -210,6 +210,14 @@ const CaseStudy = ({ activeClient }) => {
           carousel.style.height = heightValue;
           carousel.style.minHeight = '0';
           carousel.style.maxHeight = heightValue;
+          
+          // Always hide nav dots inside slides when switching brands (they're replaced by outside nav dots)
+          allSlides.forEach((slide) => {
+            const dots = slide.querySelector('.case-study-nav-dots');
+            if (dots) {
+              dots.style.display = 'none';
+            }
+          });
         });
       });
     }
@@ -269,68 +277,100 @@ const CaseStudy = ({ activeClient }) => {
         
         console.log('CaseStudy - Initial load: Found .slide-one, calculating height dynamically');
         
-        // We have SlideOne - calculate height dynamically
-        // Ensure slide content is using its natural height (auto) and no constraints
-        slideContent.style.height = 'auto';
-        slideContent.style.minHeight = '0';
-        slideContent.style.maxHeight = 'none';
+        // Check if video has loaded - wait for it if not
+        const videoElement = slideContent.querySelector('video');
+        const checkVideoAndCalculate = () => {
+          // We have SlideOne - calculate height dynamically
+          // Ensure slide content is using its natural height (auto) and no constraints
+          slideContent.style.height = 'auto';
+          slideContent.style.minHeight = '0';
+          slideContent.style.maxHeight = 'none';
+          
+          // Force a reflow to ensure accurate measurement
+          void slideContent.offsetHeight;
+          
+          // Get the actual content height using scrollHeight (most accurate for content)
+          // scrollHeight gives the total height of content including padding
+          const slideOneHeight = slideContent.scrollHeight;
+          
+          console.log('CaseStudy - Initial load: Calculated height from SlideOne:', slideOneHeight);
+          
+          // Store the height from SlideOne (SWA) - this will be used for all other slides (SlideMain)
+          slideOneHeightRef.current = slideOneHeight;
+          
+          // Disconnect ResizeObserver - we have the height, no need to observe anymore
+          resizeObserver.disconnect();
+          console.log('CaseStudy - Initial load: Height stored and ResizeObserver disconnected');
+          
+          // Apply the calculated height
+          firstSlide.style.height = `${slideOneHeight}px`;
+          firstSlide.style.minHeight = '0';
+          firstSlide.style.maxHeight = `${slideOneHeight}px`;
+          
+          // Keep slide content at auto height so it uses its natural size (no overflow)
+          slideContent.style.height = 'auto';
+          
+          // Ensure wrapper has absolutely no extra spacing
+          firstSlide.style.padding = '0';
+          firstSlide.style.margin = '0';
+          firstSlide.style.border = 'none';
+          
+          // Set the carousel height to match the slide wrapper height
+          const carousel = firstSlide.parentElement;
+          if (carousel) {
+            carousel.style.height = `${slideOneHeight}px`;
+            carousel.style.minHeight = '0';
+            carousel.style.maxHeight = `${slideOneHeight}px`;
+            carousel.style.padding = '0';
+            carousel.style.margin = '0';
+          }
+          
+          // Apply the same height to all other slide wrappers
+          const allSlides = firstSlide.parentElement?.querySelectorAll('.case-study-slide-wrapper');
+          if (allSlides) {
+            allSlides.forEach((slide) => {
+              if (slide !== firstSlide) {
+                slide.style.height = `${slideOneHeight}px`;
+              }
+              // Ensure all wrappers have no extra spacing
+              slide.style.padding = '0';
+              slide.style.margin = '0';
+            });
+          }
+          
+          // After height is locked, move nav dots outside slide wrapper
+          moveNavDotsOutside(allSlides);
+          
+          isSyncing = false;
+        };
         
-        // Force a reflow to ensure accurate measurement
-        void slideContent.offsetHeight;
-        
-        // Get the actual content height using scrollHeight (most accurate for content)
-        // scrollHeight gives the total height of content including padding
-        const slideOneHeight = slideContent.scrollHeight;
-        
-        console.log('CaseStudy - Initial load: Calculated height from SlideOne:', slideOneHeight);
-        
-        // Store the height from SlideOne (SWA) - this will be used for all other slides (SlideMain)
-        slideOneHeightRef.current = slideOneHeight;
-        
-        // Disconnect ResizeObserver - we have the height, no need to observe anymore
-        resizeObserver.disconnect();
-        console.log('CaseStudy - Initial load: Height stored and ResizeObserver disconnected');
-        
-        // Set the slide wrapper height to match slide-one's content height exactly
-        firstSlide.style.height = `${slideOneHeight}px`;
-        firstSlide.style.minHeight = '0';
-        firstSlide.style.maxHeight = `${slideOneHeight}px`;
-        
-        // Keep slide content at auto height so it uses its natural size (no overflow)
-        slideContent.style.height = 'auto';
-        
-        // Ensure wrapper has absolutely no extra spacing
-        firstSlide.style.padding = '0';
-        firstSlide.style.margin = '0';
-        firstSlide.style.border = 'none';
-        
-        // Set the carousel height to match the slide wrapper height
-        const carousel = firstSlide.parentElement;
-        if (carousel) {
-          carousel.style.height = `${slideOneHeight}px`;
-          carousel.style.minHeight = '0';
-          carousel.style.maxHeight = `${slideOneHeight}px`;
-          carousel.style.padding = '0';
-          carousel.style.margin = '0';
+        // If video exists, wait for it to load before calculating
+        if (videoElement) {
+          if (videoElement.readyState >= 2) {
+            // Video already has enough data loaded
+            checkVideoAndCalculate();
+          } else {
+            // Wait for video to load
+            const onVideoLoaded = () => {
+              videoElement.removeEventListener('loadeddata', onVideoLoaded);
+              requestAnimationFrame(() => {
+                requestAnimationFrame(checkVideoAndCalculate);
+              });
+            };
+            videoElement.addEventListener('loadeddata', onVideoLoaded);
+            // Fallback timeout in case video never loads
+            setTimeout(() => {
+              videoElement.removeEventListener('loadeddata', onVideoLoaded);
+              checkVideoAndCalculate();
+            }, 3000);
+          }
+        } else {
+          // No video, calculate immediately
+          checkVideoAndCalculate();
         }
         
-        // Apply the same height to all other slide wrappers
-        const allSlides = firstSlide.parentElement?.querySelectorAll('.case-study-slide-wrapper');
-        if (allSlides) {
-          allSlides.forEach((slide) => {
-            if (slide !== firstSlide) {
-              slide.style.height = `${slideOneHeight}px`;
-            }
-            // Ensure all wrappers have no extra spacing
-            slide.style.padding = '0';
-            slide.style.margin = '0';
-          });
-        }
-        
-        // After height is locked, move nav dots outside slide wrapper
-        moveNavDotsOutside(allSlides);
-        
-        isSyncing = false;
+        // Note: All height calculation and application happens inside checkVideoAndCalculate
+        // No code should execute after this point in this function
       });
     };
 
