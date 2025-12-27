@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SlideOne = ({ title, description, profilePic, video, logoUrl }) => {
+const SlideMain = ({ title, description, profilePic, video, logoUrl }) => {
   return (
     <div className="slide-one">
       <div className="slide-one-header">
@@ -56,5 +56,5 @@ const SlideOne = ({ title, description, profilePic, video, logoUrl }) => {
   );
 };
 
-export default SlideOne;
+export default SlideMain;
 

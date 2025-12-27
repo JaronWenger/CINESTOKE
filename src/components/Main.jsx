@@ -13,6 +13,7 @@ const Main = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [videoWatched, setVideoWatched] = useState(false);
   const videoRef = useRef(null);
+  const [activeClient, setActiveClient] = useState('SWA'); // Track which client is centered, default to SWA
 
   useEffect(() => {
     // Check screen width on initial load
@@ -108,8 +109,8 @@ const Main = () => {
 
       <Bars />
       <Pics />
-      <ClientsV2 />
-      <CaseStudy />
+      <ClientsV2 onClientChange={setActiveClient} />
+      <CaseStudy activeClient={activeClient} />
       <Social />
     </div>
   )

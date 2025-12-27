@@ -1,8 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import SlideOne from './SlideOne';
-import SlideGeo from './SlideGeo';
+import { getCaseStudyForClient } from '../config/caseStudyConfig';
 
-const CaseStudy = () => {
+const CaseStudy = ({ activeClient }) => {
   const scrollContainerRef = useRef(null);
   const firstSlideRef = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -12,8 +11,27 @@ const CaseStudy = () => {
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
   const DRAG_THRESHOLD = 50; // Minimum pixels to trigger slide change
+  const slideOneHeightRef = useRef(null); // Store the height from SlideOne (SWA) to apply to all slides
 
-  const totalSlides = 2;
+  // Get case study data for active client
+  const caseStudyData = activeClient ? getCaseStudyForClient(activeClient) : null;
+  const slides = caseStudyData?.slides || [];
+  const totalSlides = slides.length;
+
+  // Debug logging
+  useEffect(() => {
+    console.log('=== CaseStudy Update ===');
+    console.log('activeClient:', activeClient);
+    console.log('caseStudyData:', caseStudyData);
+    console.log('slides array:', slides);
+    console.log('totalSlides:', totalSlides);
+    if (caseStudyData) {
+      console.log('caseStudyData.slides:', caseStudyData.slides);
+      caseStudyData.slides.forEach((slide, idx) => {
+        console.log(`Slide ${idx}:`, slide.type, slide.component?.name || 'unknown component');
+      });
+    }
+  }, [activeClient, caseStudyData, totalSlides, slides]);
 
   // Handle scroll to detect current slide
   const handleScroll = () => {
@@ -161,8 +179,45 @@ const CaseStudy = () => {
     setCurrentSlide(slideIndex);
   };
 
-  // Sync all slide heights to match SlideOne's rendered height
-  // SlideOne gets its height from viewport-based CSS, then we apply that to all slides
+  // Reset to first slide when client changes and sync heights to match SlideOne
+  useEffect(() => {
+    setCurrentSlide(0);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollLeft = 0;
+    }
+    
+    // When brand switches, apply the stored SlideOne height to all slides
+    // Use multiple requestAnimationFrames to ensure DOM is ready after React renders
+    if (slideOneHeightRef.current) {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const carousel = scrollContainerRef.current;
+          if (!carousel) return;
+          
+          const heightValue = `${slideOneHeightRef.current}px`;
+          const allSlides = carousel.querySelectorAll('.case-study-slide-wrapper');
+          
+          // Apply SlideOne's height to ALL slide wrappers (including SlideMain and when switching back to SWA)
+          allSlides.forEach((slide) => {
+            slide.style.height = heightValue;
+            slide.style.minHeight = '0';
+            slide.style.maxHeight = heightValue;
+            slide.style.padding = '0';
+            slide.style.margin = '0';
+          });
+          
+          // Also set carousel height
+          carousel.style.height = heightValue;
+          carousel.style.minHeight = '0';
+          carousel.style.maxHeight = heightValue;
+        });
+      });
+    }
+  }, [activeClient]);
+
+  // Sync all slide heights to match SlideOne's (SWA) rendered height
+  // SlideOne (SWA) gets its height from viewport-based CSS dynamically
+  // SlideMain (other brands) will match this height
   // After height is locked, move nav dots outside slide wrapper to stay consistent
   useEffect(() => {
     let timeoutId = null;
@@ -171,6 +226,25 @@ const CaseStudy = () => {
     const syncSlideHeights = () => {
       if (!firstSlideRef.current || isSyncing) return;
       
+      // If we already have a stored height, just apply it - don't recalculate
+      if (slideOneHeightRef.current) {
+        const storedHeight = `${slideOneHeightRef.current}px`;
+        const carousel = scrollContainerRef.current;
+        if (carousel) {
+          const allSlides = carousel.querySelectorAll('.case-study-slide-wrapper');
+          allSlides.forEach((slide) => {
+            slide.style.height = storedHeight;
+            slide.style.minHeight = '0';
+            slide.style.maxHeight = storedHeight;
+          });
+          carousel.style.height = storedHeight;
+          carousel.style.minHeight = '0';
+          carousel.style.maxHeight = storedHeight;
+        }
+        return;
+      }
+      
+      // No stored height yet - need to calculate from SlideOne
       isSyncing = true;
       
       // Use requestAnimationFrame to avoid ResizeObserver loop issues
@@ -181,32 +255,49 @@ const CaseStudy = () => {
           return;
         }
         
-        // Find the slide-one div inside the wrapper
-        const slideOne = firstSlide.querySelector('.slide-one');
-        if (!slideOne) {
+        // Find the first slide content div - ONLY calculate height from .slide-one (SWA's SlideOne)
+        // SlideMain should NOT calculate height - it should use the stored height from SlideOne
+        const slideContent = firstSlide.querySelector('.slide-one');
+        
+        // Only calculate if we have SlideOne (SWA) - this is the initial load
+        if (!slideContent) {
+          // No SlideOne found - can't calculate yet, exit
+          console.log('CaseStudy - Initial load: No .slide-one found yet, will retry');
           isSyncing = false;
           return;
         }
         
-        // Ensure slide-one is using its natural height (auto) and no constraints
-        slideOne.style.height = 'auto';
-        slideOne.style.minHeight = '0';
-        slideOne.style.maxHeight = 'none';
+        console.log('CaseStudy - Initial load: Found .slide-one, calculating height dynamically');
+        
+        // We have SlideOne - calculate height dynamically
+        // Ensure slide content is using its natural height (auto) and no constraints
+        slideContent.style.height = 'auto';
+        slideContent.style.minHeight = '0';
+        slideContent.style.maxHeight = 'none';
         
         // Force a reflow to ensure accurate measurement
-        void slideOne.offsetHeight;
+        void slideContent.offsetHeight;
         
         // Get the actual content height using scrollHeight (most accurate for content)
         // scrollHeight gives the total height of content including padding
-        const slideOneHeight = slideOne.scrollHeight;
+        const slideOneHeight = slideContent.scrollHeight;
+        
+        console.log('CaseStudy - Initial load: Calculated height from SlideOne:', slideOneHeight);
+        
+        // Store the height from SlideOne (SWA) - this will be used for all other slides (SlideMain)
+        slideOneHeightRef.current = slideOneHeight;
+        
+        // Disconnect ResizeObserver - we have the height, no need to observe anymore
+        resizeObserver.disconnect();
+        console.log('CaseStudy - Initial load: Height stored and ResizeObserver disconnected');
         
         // Set the slide wrapper height to match slide-one's content height exactly
         firstSlide.style.height = `${slideOneHeight}px`;
         firstSlide.style.minHeight = '0';
         firstSlide.style.maxHeight = `${slideOneHeight}px`;
         
-        // Keep slide-one at auto height so it uses its natural size (no overflow)
-        slideOne.style.height = 'auto';
+        // Keep slide content at auto height so it uses its natural size (no overflow)
+        slideContent.style.height = 'auto';
         
         // Ensure wrapper has absolutely no extra spacing
         firstSlide.style.padding = '0';
@@ -247,17 +338,17 @@ const CaseStudy = () => {
       const carousel = scrollContainerRef.current;
       if (!carousel) return;
 
-      // Find the nav dots in the first slide
-      const firstSlide = firstSlideRef.current;
-      const navDotsInSlide = firstSlide?.querySelector('.case-study-nav-dots');
-      
-      if (!navDotsInSlide) return;
-
       // Check if nav dots are already outside (to avoid moving multiple times)
       const navDotsOutside = carousel.parentElement?.querySelector('.case-study-nav-dots-outside');
       if (navDotsOutside) {
         return; // Already moved
       }
+
+      // Find the nav dots in the first slide
+      const firstSlide = firstSlideRef.current;
+      const navDotsInSlide = firstSlide?.querySelector('.case-study-nav-dots');
+      
+      if (!navDotsInSlide) return;
 
       // Clone the nav dots structure
       const navDotsClone = navDotsInSlide.cloneNode(true);
@@ -271,12 +362,12 @@ const CaseStudy = () => {
         });
       });
       
-      // Remove nav dots from all slides
+      // Hide nav dots inside slides with CSS instead of removing them (don't break React)
       if (allSlides) {
         allSlides.forEach((slide) => {
           const dots = slide.querySelector('.case-study-nav-dots');
           if (dots) {
-            dots.remove();
+            dots.style.display = 'none'; // Hide instead of remove
           }
         });
       }
@@ -290,14 +381,38 @@ const CaseStudy = () => {
 
     // Debounced resize handler
     const handleResize = () => {
+      // If we have stored height, just apply it - don't recalculate
+      if (slideOneHeightRef.current) {
+        syncSlideHeights(); // This will just apply stored height now
+        return;
+      }
       if (timeoutId) clearTimeout(timeoutId);
       timeoutId = setTimeout(syncSlideHeights, 100);
     };
 
     // Wait for initial render, then sync
+    // Use a retry mechanism to ensure SlideOne is fully rendered before calculating
+    const tryInitialSync = (attempt = 0) => {
+      if (slideOneHeightRef.current) return; // Already calculated
+      
+      if (firstSlideRef.current) {
+        const slideContent = firstSlideRef.current.querySelector('.slide-one');
+        if (slideContent) {
+          // SlideOne is ready, calculate height
+          syncSlideHeights();
+          return;
+        }
+      }
+      
+      // If not ready yet and we haven't tried too many times, retry
+      if (attempt < 10) {
+        setTimeout(() => tryInitialSync(attempt + 1), 50);
+      }
+    };
+    
     const initialTimeoutId = setTimeout(() => {
-      syncSlideHeights();
-    }, 0);
+      tryInitialSync();
+    }, 100);
     
     // Sync on window resize (viewport changes)
     window.addEventListener('resize', handleResize);
@@ -305,17 +420,19 @@ const CaseStudy = () => {
     // Watch for changes in slide-one div that might affect height
     const resizeObserver = new ResizeObserver((entries) => {
       // Suppress ResizeObserver loop errors
-      if (entries.length > 0) {
+      // If we already have stored height, don't recalculate
+      if (entries.length > 0 && !slideOneHeightRef.current) {
         syncSlideHeights();
       }
     });
     
-    // Wait a bit for slide-one to render, then observe it
+    // Wait a bit for slide content to render, then observe it
+    // Only observe if we don't have stored height yet (initial load with SlideOne)
     const observeTimeout = setTimeout(() => {
-      if (firstSlideRef.current) {
-        const slideOne = firstSlideRef.current.querySelector('.slide-one');
-        if (slideOne) {
-          resizeObserver.observe(slideOne);
+      if (firstSlideRef.current && !slideOneHeightRef.current) {
+        const slideContent = firstSlideRef.current.querySelector('.slide-one');
+        if (slideContent) {
+          resizeObserver.observe(slideContent);
         }
       }
     }, 100);
@@ -372,6 +489,11 @@ const CaseStudy = () => {
     };
   }, [isDragging, currentSlide]);
 
+  // Don't render if no active client or no slides
+  if (!activeClient || totalSlides === 0) {
+    return null;
+  }
+
   return (
     <div className="cinestoke-section case-study-section">
       <div
@@ -383,40 +505,34 @@ const CaseStudy = () => {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <div ref={firstSlideRef} className="case-study-slide-wrapper">
-          <SlideOne />
-          {/* Navigation dots */}
-          <div className="case-study-nav-dots">
-            {Array.from({ length: totalSlides }).map((_, index) => (
-              <div
-                key={index}
-                className={`case-study-dot-wrapper`}
-                onClick={() => goToSlide(index)}
-              >
-                <div
-                  className={`case-study-dot ${index === currentSlide ? 'active' : ''}`}
-                />
+        {slides.map((slideConfig, index) => {
+          const SlideComponent = slideConfig.component;
+          const isFirstSlide = index === 0;
+          
+          return (
+            <div 
+              key={index}
+              ref={isFirstSlide ? firstSlideRef : null}
+              className="case-study-slide-wrapper"
+            >
+              <SlideComponent {...slideConfig.props} />
+              {/* Navigation dots */}
+              <div className="case-study-nav-dots">
+                {Array.from({ length: totalSlides }).map((_, dotIndex) => (
+                  <div
+                    key={dotIndex}
+                    className={`case-study-dot-wrapper`}
+                    onClick={() => goToSlide(dotIndex)}
+                  >
+                    <div
+                      className={`case-study-dot ${dotIndex === currentSlide ? 'active' : ''}`}
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-        <div className="case-study-slide-wrapper">
-          <SlideGeo />
-          {/* Navigation dots */}
-          <div className="case-study-nav-dots">
-            {Array.from({ length: totalSlides }).map((_, index) => (
-              <div
-                key={index}
-                className={`case-study-dot-wrapper`}
-                onClick={() => goToSlide(index)}
-              >
-                <div
-                  className={`case-study-dot ${index === currentSlide ? 'active' : ''}`}
-                />
-              </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

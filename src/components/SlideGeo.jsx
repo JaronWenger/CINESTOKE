@@ -1,15 +1,14 @@
 import React from 'react';
-import geographicVideo from '../assets/CASESTUDIES/SmallWorldGeo.mp4';
 
-const SlideGeo = () => {
+const SlideGeo = ({ location, video }) => {
   return (
     <div className="slide-geo">
       <h2 className="case-study-title">
-        📍 Borja, Napo, Ecuador
+        {location}
       </h2>
       <div className="case-study-video-container">
         <video
-          src={geographicVideo}
+          src={video}
           autoPlay
           loop
           muted

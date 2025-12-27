@@ -1,14 +1,13 @@
 import React, { useRef, useEffect, useState } from 'react';
 // Import the SVG as a React component
-import { ReactComponent as SSBC } from '../assets/SSBC.svg';
 import { ReactComponent as TCO } from '../assets/TCO.svg';
 import { ReactComponent as GFF } from '../assets/GFF.svg';
 import { ReactComponent as IR } from '../assets/IR.svg';
-import { ReactComponent as Suzuki } from '../assets/Suzuki.svg';
 import { ReactComponent as Seadoo } from '../assets/Seadoo.svg';
 import { ReactComponent as SWA} from '../assets/SWA.svg';
+import { ReactComponent as Slate } from '../assets/Slate.svg';
 
-const ClientsV2 = () => {
+const ClientsV2 = ({ onClientChange }) => {
   const scrollContainerRef = useRef(null);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   
@@ -37,14 +36,18 @@ const ClientsV2 = () => {
     TCO,
     GFF,
     IR,
-    Suzuki,
-    SSBC,
+    Slate,
     SWA,
   ];
 
-  // Automatically generate clients array - extracts name from component displayName or function name
-  const clients = clientComponents.map((Component) => {
-    const name = Component.displayName || Component.name || 'Client';
+  // Explicit name mapping by array index (more reliable than object lookup with SVG components)
+  const clientNames = ['Seadoo', 'TCO', 'GFF', 'IR', 'Slate', 'SWA'];
+
+  // Automatically generate clients array - use explicit name mapping
+  const clients = clientComponents.map((Component, index) => {
+    // Use explicit name from array by index
+    const name = clientNames[index] || Component.displayName || Component.name || 'Client';
+    
     return {
       Component,
       alt: `${name} Logo`,
@@ -71,10 +74,21 @@ const ClientsV2 = () => {
   const scrollTimeoutRef = useRef(null); // For detecting scroll end
   const isScrollingRef = useRef(false); // Track if user is actively scrolling
   const isHoldingRef = useRef(false); // Track if user is actively holding/touching (mouse down or touch)
+  const lastNotifiedClientRef = useRef(null); // Track last notified client to avoid duplicate notifications
 
   // Handle carousel scroll events with dynamic client loading
   const [hasScrolled, setHasScrolled] = useState(false);
   
+  // Function to get client name from logo wrapper
+  const getClientNameFromLogo = (logoWrapper) => {
+    const clientName = logoWrapper.getAttribute('data-client-name');
+    // Debug: log if we get unexpected values
+    if (!clientName) {
+      console.warn('getClientNameFromLogo: no data-client-name attribute found on logo wrapper');
+    }
+    return clientName || null;
+  };
+
   // Function to center a specific logo
   const centerLogo = (logoWrapper) => {
     const container = scrollContainerRef.current;
@@ -93,28 +107,106 @@ const ClientsV2 = () => {
       scrollPositionRef.current = container.scrollLeft;
       lastScrollLeftRef.current = container.scrollLeft;
     }
+    
+    // Note: Notification happens in snapToCenter, not here, to avoid duplicate calls
+    // centerLogo is called by snapToCenter, so we don't need to notify here
   };
   
+  // Function to detect and notify about the currently centered client
+  const detectAndNotifyCenteredClient = () => {
+    const container = scrollContainerRef.current;
+    if (!container || !onClientChange) return;
+
+    const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
+    if (logoWrappers.length === 0) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const containerCenterX = containerRect.left + (containerRect.width / 2);
+    const containerLeft = containerRect.left;
+    const containerRight = containerRect.right;
+
+    let closestLogo = null;
+    let closestDistance = Infinity;
+
+    // Find the logo closest to center, but only consider visible logos
+    logoWrappers.forEach((logoWrapper) => {
+      const logoRect = logoWrapper.getBoundingClientRect();
+      
+      // Only consider logos that are at least partially visible in the viewport
+      const isVisible = logoRect.right > containerLeft && logoRect.left < containerRight;
+      if (!isVisible) return;
+      
+      const logoCenterX = logoRect.left + (logoRect.width / 2);
+      const distance = Math.abs(logoCenterX - containerCenterX);
+
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestLogo = logoWrapper;
+      }
+    });
+
+    // Only notify if a logo is very close to center (within 50px) to avoid false positives
+    if (closestLogo && closestDistance < 50) {
+      const clientName = getClientNameFromLogo(closestLogo);
+      // Only notify if the client has changed to avoid duplicate notifications
+      if (clientName && clientName !== lastNotifiedClientRef.current) {
+        console.log('ClientsV2 - Detected centered client during scroll:', clientName, 'distance:', closestDistance.toFixed(1));
+        lastNotifiedClientRef.current = clientName;
+        onClientChange(clientName);
+      }
+    }
+  };
+
   // Function to snap the closest logo to center
+  // This is the PRIMARY trigger for updating the case study
   const snapToCenter = () => {
+    console.log('snapToCenter called');
     const container = scrollContainerRef.current;
     // Don't snap if actively scrolling, adjusting, dragging, or holding
-    if (!container || isAdjustingRef.current || isDragging || isScrollingRef.current || isHoldingRef.current) return;
+    if (!container) {
+      console.log('snapToCenter: no container');
+      return;
+    }
+    if (isAdjustingRef.current || isDragging || isScrollingRef.current || isHoldingRef.current) {
+      console.log('snapToCenter: blocked by state', { isAdjusting: isAdjustingRef.current, isDragging, isScrolling: isScrollingRef.current, isHolding: isHoldingRef.current });
+      return;
+    }
     
     const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
+    console.log('snapToCenter: found', logoWrappers.length, 'logo wrappers');
     if (logoWrappers.length === 0) return;
     
     const containerRect = container.getBoundingClientRect();
     const containerCenterX = containerRect.left + (containerRect.width / 2);
+    const containerLeft = containerRect.left;
+    const containerRight = containerRect.right;
     
     let closestLogo = null;
     let closestDistance = Infinity;
+    const allDistances = [];
     
-    // Find the logo closest to center
-    logoWrappers.forEach((logoWrapper) => {
+    // Find the logo closest to center - ONLY consider visible logos in viewport
+    logoWrappers.forEach((logoWrapper, index) => {
       const logoRect = logoWrapper.getBoundingClientRect();
+      
+      // Only consider logos that are at least partially visible in the viewport
+      const isVisible = logoRect.right > containerLeft && logoRect.left < containerRight;
+      if (!isVisible) return;
+      
       const logoCenterX = logoRect.left + (logoRect.width / 2);
       const distance = Math.abs(logoCenterX - containerCenterX);
+      const clientName = getClientNameFromLogo(logoWrapper);
+      
+      allDistances.push({ 
+        index, 
+        clientName, 
+        distance: parseFloat(distance.toFixed(1)), 
+        isVisible: true,
+        logoLeft: logoRect.left.toFixed(0),
+        logoRight: logoRect.right.toFixed(0),
+        logoCenter: logoCenterX.toFixed(0),
+        containerCenter: containerCenterX.toFixed(0)
+      });
       
       if (distance < closestDistance) {
         closestDistance = distance;
@@ -122,8 +214,33 @@ const ClientsV2 = () => {
       }
     });
     
+    // Sort by distance and show top 10
+    const sortedDistances = allDistances.sort((a, b) => a.distance - b.distance).slice(0, 10);
+    console.log('snapToCenter: visible logos distances (top 10):', sortedDistances);
+    console.log('snapToCenter: checking data-client-name on closest logo:', closestLogo ? closestLogo.getAttribute('data-client-name') : 'no closest logo');
+    
     if (closestLogo) {
+      // Get the client name BEFORE centering (in case centering changes DOM)
+      const clientName = getClientNameFromLogo(closestLogo);
+      console.log('snapToCenter: closest logo is', clientName, 'at distance', closestDistance.toFixed(1));
+      
+      // Center the logo
       centerLogo(closestLogo);
+      
+      // Notify about the centered client - this is the main trigger for case study updates
+      if (clientName && onClientChange) {
+        if (clientName !== lastNotifiedClientRef.current) {
+          console.log('✅ ClientsV2 - snapToCenter detected centered client:', clientName, 'distance:', closestDistance.toFixed(1));
+          lastNotifiedClientRef.current = clientName;
+          onClientChange(clientName);
+        } else {
+          console.log('snapToCenter: same client as before, skipping notification');
+        }
+      } else {
+        console.log('snapToCenter: no clientName or onClientChange', { clientName, hasOnClientChange: !!onClientChange });
+      }
+    } else {
+      console.log('snapToCenter: no closest logo found');
     }
   };
   
@@ -438,9 +555,9 @@ const ClientsV2 = () => {
     if (!container || hasInitializedRef.current) return;
     
     // Set approximate scroll position immediately to prevent flash
-    // Calculate based on known structure: middle set starts at clients.length, Seadoo is at index 0 of middle set
+    // Calculate based on known structure: middle set starts at clients.length, SWA is at index 5 of middle set
     const middleStartIndex = clients.length;
-    const targetIndex = middleStartIndex; // Seadoo in the middle set
+    const targetIndex = middleStartIndex + 5; // SWA in the middle set
     
     // Estimate item width based on viewport (similar to Pics.jsx approach)
     // Each client has: logo wrapper (with 60px padding each side = 120px) + line (2px)
@@ -519,11 +636,27 @@ const ClientsV2 = () => {
               // Mark as initialized and re-enable smooth scrolling
               hasInitializedRef.current = true;
               container.style.scrollBehavior = 'smooth';
+              
+              // Notify about initial centered client
+              if (targetLogo && onClientChange) {
+                const clientName = getClientNameFromLogo(targetLogo);
+                if (clientName) {
+                  onClientChange(clientName);
+                }
+              }
             });
           } else {
             // Mark as initialized and re-enable smooth scrolling
             hasInitializedRef.current = true;
             container.style.scrollBehavior = 'smooth';
+            
+            // Notify about initial centered client
+            if (targetLogo && onClientChange) {
+              const clientName = getClientNameFromLogo(targetLogo);
+              if (clientName) {
+                onClientChange(clientName);
+              }
+            }
           }
         }
       });
@@ -576,8 +709,9 @@ const ClientsV2 = () => {
           const gap = 0.5;
           const itemWidth = logoWidth + lineWidth + gap;
           const middleStartIndex = clients.length;
+          const targetIndex = middleStartIndex + 5; // SWA in the middle set
           const linebWidth = 2;
-          const estimatedMiddlePosition = linebWidth + (middleStartIndex * itemWidth);
+          const estimatedMiddlePosition = linebWidth + (targetIndex * itemWidth);
           const estimatedScrollPosition = estimatedMiddlePosition - (container.clientWidth / 2);
           
           if (estimatedScrollPosition > 0) {
@@ -601,8 +735,9 @@ const ClientsV2 = () => {
           const gap = 0.5;
           const itemWidth = logoWidth + lineWidth + gap;
           const middleStartIndex = clients.length;
+          const targetIndex = middleStartIndex + 5; // SWA in the middle set
           const linebWidth = 2;
-          const estimatedMiddlePosition = linebWidth + (middleStartIndex * itemWidth);
+          const estimatedMiddlePosition = linebWidth + (targetIndex * itemWidth);
           const estimatedScrollPosition = estimatedMiddlePosition - (container.clientWidth / 2);
           
           if (estimatedScrollPosition > 0) {
@@ -615,8 +750,8 @@ const ClientsV2 = () => {
             requestAnimationFrame(() => {
               if (!container) return;
               const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
-              if (logoWrappers.length > middleStartIndex) {
-                const targetLogo = logoWrappers[middleStartIndex];
+              if (logoWrappers.length > targetIndex) {
+                const targetLogo = logoWrappers[targetIndex];
                 if (targetLogo) {
                   const containerRect = container.getBoundingClientRect();
                   const logoRect = targetLogo.getBoundingClientRect();
@@ -630,6 +765,14 @@ const ClientsV2 = () => {
                     scrollPositionRef.current = container.scrollLeft;
                     lastScrollLeftRef.current = container.scrollLeft;
                   }
+                  
+                  // Notify about centered client
+                  if (onClientChange) {
+                    const clientName = getClientNameFromLogo(targetLogo);
+                    if (clientName) {
+                      onClientChange(clientName);
+                    }
+                  }
                 }
               }
               container.style.scrollBehavior = 'smooth';
@@ -638,6 +781,37 @@ const ClientsV2 = () => {
           }
         }
       }
+      
+      // Always detect centered client after timeout
+      if (container && onClientChange) {
+        const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
+        if (logoWrappers.length > 0) {
+          const containerRect = container.getBoundingClientRect();
+          const containerCenterX = containerRect.left + (containerRect.width / 2);
+          
+          let closestLogo = null;
+          let closestDistance = Infinity;
+          
+          logoWrappers.forEach((logoWrapper) => {
+            const logoRect = logoWrapper.getBoundingClientRect();
+            const logoCenterX = logoRect.left + (logoRect.width / 2);
+            const distance = Math.abs(logoCenterX - containerCenterX);
+            
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestLogo = logoWrapper;
+            }
+          });
+          
+          if (closestLogo && closestDistance < 100) { // Within 100px of center
+            const clientName = getClientNameFromLogo(closestLogo);
+            if (clientName) {
+              onClientChange(clientName);
+            }
+          }
+        }
+      }
+      
       // Always show container after timeout, even if positioning didn't work
       if (!isReady) {
         setIsReady(true);
@@ -679,13 +853,19 @@ const ClientsV2 = () => {
         {/* Start with lineb to match original structure */}
         <div className="lineb" style={{ flex: '0 0 auto' }} />
         {displayedClients.map((client, index) => {
-          const { Component } = client;
-          const key = `client-${index}-${client.name}`;
+          const { Component, name } = client;
+          const key = `client-${index}-${name}`;
+          
+          // Debug: log first few to verify names
+          if (index < 6) {
+            console.log(`Rendering client ${index}: name="${name}", Component=${Component.name || Component.displayName || 'unknown'}`);
+          }
           
           return (
             <React.Fragment key={key}>
               <div 
-                className="client-logo-wrapper" 
+                className="client-logo-wrapper"
+                data-client-name={name}
                 style={{ 
                   flex: '0 0 auto', 
                   display: 'flex', 
