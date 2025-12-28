@@ -1,21 +1,38 @@
 {
   "files": {
     "main.css": "/static/css/main.124958ca.css",
-    "main.js": "/static/js/main.c03eece5.js",
+    "main.js": "/static/js/main.28f80e60.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
     "static/media/SmallWorldMain.mp4": "/static/media/SmallWorldMain.f6e2112b9160ba964e35.mp4",
+    "static/media/IRMain.mp4": "/static/media/IRMain.4fdba3a3c5e4b76aa235.mp4",
     "static/media/SlateMain.mp4": "/static/media/SlateMain.4926ababa2ab53d3d675.mp4",
     "static/media/SmallWorldGeo.mp4": "/static/media/SmallWorldGeo.298eb4a65d1fd276615c.mp4",
+    "static/media/GFFMain.mp4": "/static/media/GFFMain.1910c6110338eeff50c2.mp4",
+    "static/media/TCOMain.mp4": "/static/media/TCOMain.9f9eece14d32bec9d1a4.mp4",
     "static/media/SeadooMain.mp4": "/static/media/SeadooMain.63ea0e47648f0c1adc0a.mp4",
+    "static/media/BGMain.mp4": "/static/media/BGMain.6840e31245e8b840a3e9.mp4",
+    "static/media/SmallWorldMainPhone.mp4": "/static/media/SmallWorldMainPhone.d09c53db5d03560edaac.mp4",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.1cfc188f75499b14cddc.mp4",
+    "static/media/IRMainPhone.mp4": "/static/media/IRMainPhone.5d97e82e8770c0b6844a.mp4",
+    "static/media/TCOMainPhone.mp4": "/static/media/TCOMainPhone.dd9e6197f5b95f1f5283.mp4",
+    "static/media/GFFMainPhone.mp4": "/static/media/GFFMainPhone.187da7eb1ba96cbc116c.mp4",
+    "static/media/SlateMainPhone.mp4": "/static/media/SlateMainPhone.2ecd24aff315e4431b99.mp4",
+    "static/media/SeadooMainPhone.mp4": "/static/media/SeadooMainPhone.02febd5356e036e56638.mp4",
+    "static/media/SmallWorldGeoPhone.mp4": "/static/media/SmallWorldGeoPhone.5fd9749bd914e020f3ba.mp4",
+    "static/media/BGMainPhone.mp4": "/static/media/BGMainPhone.338fe6cffa0202c432cd.mp4",
     "static/media/offers.webp": "/static/media/offers.a43ffbd6e1fe7db415e7.webp",
     "static/media/insta.webp": "/static/media/insta.be834b67581026174459.webp",
     "static/media/tiktok.webp": "/static/media/tiktok.0b17e3b5d4cc790b5316.webp",
     "static/media/youtube.webp": "/static/media/youtube.ddb244c83c9089617e44.webp",
+    "static/media/IRLogo.mp4": "/static/media/IRLogo.4fb85d6c1ce2d4e59f2f.mp4",
     "static/media/profile.webp": "/static/media/profile.328f681c8cbed8cf359e.webp",
+    "static/media/IRLogoPhone.mp4": "/static/media/IRLogoPhone.0c5fc802d899a78494ef.mp4",
     "static/media/TCO.svg": "/static/media/TCO.5d5a5329313e781d7670795f49a28b8d.svg",
     "static/media/website.webp": "/static/media/website.a3bb583ed868c858994b.webp",
+    "static/media/SlateLogo.mp4": "/static/media/SlateLogo.50e8eb2d922d1ab5f6bf.mp4",
     "static/media/cinestoke-real-estate.webp": "/static/media/cinestoke-real-estate.9e3eaa09fca57b9ed2c3.webp",
+    "static/media/SlateLogoPhone.mp4": "/static/media/SlateLogoPhone.fb6e8746ebd59730bb51.mp4",
+    "static/media/BG.svg": "/static/media/BG.e5d282ea1130d534d01b250dcd5a1811.svg",
     "static/media/cinestoke-kayak.webp": "/static/media/cinestoke-kayak.3986b094dca79a23e55b.webp",
     "static/media/cinestoke-drone-shot.webp": "/static/media/cinestoke-drone-shot.25be9dfdaba92fb126ca.webp",
     "static/media/cinestoke-portraits.webp": "/static/media/cinestoke-portraits.af3c37d351ca27c0d66c.webp",
@@ -36,6 +53,7 @@
     "static/media/cinestoke-sports.webp": "/static/media/cinestoke-sports.3a1e84614c5a30a3b9a2.webp",
     "static/media/Slate.svg": "/static/media/Slate.4e4ebdc093e3682623da1cdd91317cdb.svg",
     "static/media/cinestoke-landscape.webp": "/static/media/cinestoke-landscape.4da4c4a3ff1bc3bb8103.webp",
+    "static/media/BGpp.webp": "/static/media/BGpp.249d2deb3b67d117c357.webp",
     "static/media/GFFpp.webp": "/static/media/GFFpp.a726f2d55824006ef9b5.webp",
     "static/media/SWA.svg": "/static/media/SWA.1a1b0cf2765f3db44c7ce148483b0487.svg",
     "static/media/TCOpp.webp": "/static/media/TCOpp.b9f962a4065be5f1e0d4.webp",
@@ -56,10 +74,10 @@
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
     "main.124958ca.css.map": "/static/css/main.124958ca.css.map",
-    "main.c03eece5.js.map": "/static/js/main.c03eece5.js.map"
+    "main.28f80e60.js.map": "/static/js/main.28f80e60.js.map"
   },
   "entrypoints": [
     "static/css/main.124958ca.css",
-    "static/js/main.c03eece5.js"
+    "static/js/main.28f80e60.js"
   ]
 }
