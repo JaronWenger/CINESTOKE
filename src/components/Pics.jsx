@@ -296,19 +296,24 @@ const Pics = () => {
     
     if (!container || hasInitializedRef.current) return;
     
+    // Use container.clientWidth or document.documentElement.clientWidth for reliable mobile measurements
+    // window.innerWidth can be inaccurate on mobile due to browser UI
+    const viewportWidth = container.clientWidth || document.documentElement.clientWidth || window.innerWidth;
+    
     // Set approximate scroll position immediately to prevent flash
     // Calculate based on known structure: middle set starts at images.length, drone is at index 4
     const middleStartIndex = images.length;
     const droneIndex = middleStartIndex + 4;
     
     // Estimate slide width based on viewport (matches CSS: calc(100vw / 8) with responsive overrides)
-    let estimatedSlideWidth = window.innerWidth / 8;
-    if (window.innerWidth <= 1024) estimatedSlideWidth = window.innerWidth / 20;
-    if (window.innerWidth <= 768) estimatedSlideWidth = window.innerWidth / 25;
-    if (window.innerWidth <= 640) estimatedSlideWidth = window.innerWidth / 30;
-    if (window.innerWidth <= 480) estimatedSlideWidth = window.innerWidth / 35;
-    if (window.innerWidth <= 375) estimatedSlideWidth = window.innerWidth / 40;
-    if (window.innerWidth <= 320) estimatedSlideWidth = window.innerWidth / 45;
+    // Use viewportWidth instead of window.innerWidth for mobile accuracy
+    let estimatedSlideWidth = viewportWidth / 8;
+    if (viewportWidth <= 1024) estimatedSlideWidth = viewportWidth / 20;
+    if (viewportWidth <= 768) estimatedSlideWidth = viewportWidth / 25;
+    if (viewportWidth <= 640) estimatedSlideWidth = viewportWidth / 30;
+    if (viewportWidth <= 480) estimatedSlideWidth = viewportWidth / 35;
+    if (viewportWidth <= 375) estimatedSlideWidth = viewportWidth / 40;
+    if (viewportWidth <= 320) estimatedSlideWidth = viewportWidth / 45;
     
     const gap = 0.5;
     const slideWithGap = estimatedSlideWidth + gap;
@@ -321,65 +326,114 @@ const Pics = () => {
     scrollPositionRef.current = container.scrollLeft;
     lastScrollLeftRef.current = container.scrollLeft;
     
-      // Then refine with actual measurements using getBoundingClientRect for accuracy
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (!container || hasInitializedRef.current) return;
-          
-          const slides = container.querySelectorAll('.swiper-slide');
-          if (slides.length === 0) return;
+    // Function to center with retry logic for mobile
+    const centerDroneWithRetry = (retryCount = 0) => {
+      if (!container || hasInitializedRef.current) return;
+      
+      const slides = container.querySelectorAll('.swiper-slide');
+      if (slides.length === 0) {
+        // Retry if slides aren't ready yet (mobile can be slower)
+        if (retryCount < 5) {
+          setTimeout(() => centerDroneWithRetry(retryCount + 1), 100);
+        }
+        return;
+      }
 
-          const droneSlide = slides[droneIndex];
-          
-          if (droneSlide) {
-            // Use getBoundingClientRect for accurate positioning relative to viewport
-            const containerRect = container.getBoundingClientRect();
-            const droneRect = droneSlide.getBoundingClientRect();
-            
-            // Calculate the center of the drone slide relative to the container
-            const droneCenterX = droneRect.left + (droneRect.width / 2) - containerRect.left;
-            
-            // Calculate the center of the container
-            const containerCenterX = containerRect.width / 2;
-            
-            // Calculate how much we need to scroll to center the drone
-            // Current scroll position + (drone center offset - container center)
-            const exactScrollPosition = container.scrollLeft + (droneCenterX - containerCenterX);
-            
-            // Only update if significantly different to avoid micro-adjustments
-            if (Math.abs(container.scrollLeft - exactScrollPosition) > 1) {
-              container.style.scrollBehavior = 'auto';
-              container.scrollLeft = Math.max(0, exactScrollPosition);
-              scrollPositionRef.current = container.scrollLeft;
-              lastScrollLeftRef.current = container.scrollLeft;
-              
-              // Final refinement pass for pixel-perfect centering
-              requestAnimationFrame(() => {
-                if (!container) return;
-                const finalContainerRect = container.getBoundingClientRect();
-                const finalDroneRect = droneSlide.getBoundingClientRect();
-                const finalDroneCenterX = finalDroneRect.left + (finalDroneRect.width / 2) - finalContainerRect.left;
-                const finalContainerCenterX = finalContainerRect.width / 2;
-                const finalOffset = finalDroneCenterX - finalContainerCenterX;
-                
-                if (Math.abs(finalOffset) > 0.5) {
-                  container.scrollLeft = container.scrollLeft + finalOffset;
-                  scrollPositionRef.current = container.scrollLeft;
-                  lastScrollLeftRef.current = container.scrollLeft;
-                }
-                
-                // Mark as initialized and re-enable smooth scrolling
-                hasInitializedRef.current = true;
-                container.style.scrollBehavior = 'smooth';
-              });
-            } else {
-              // Mark as initialized and re-enable smooth scrolling
-              hasInitializedRef.current = true;
-              container.style.scrollBehavior = 'smooth';
-            }
+      const droneSlide = slides[droneIndex];
+      
+      if (!droneSlide) {
+        // Retry if target slide isn't found
+        if (retryCount < 5) {
+          setTimeout(() => centerDroneWithRetry(retryCount + 1), 100);
+        }
+        return;
+      }
+      
+      // Check if image is loaded (for mobile reliability)
+      const img = droneSlide.querySelector('img');
+      if (img && !img.complete && retryCount < 3) {
+        img.addEventListener('load', () => {
+          setTimeout(() => centerDroneWithRetry(retryCount + 1), 50);
+        }, { once: true });
+        // Fallback timeout
+        setTimeout(() => {
+          if (!hasInitializedRef.current) {
+            centerDroneWithRetry(retryCount + 1);
           }
+        }, 500);
+        return;
+      }
+      
+      // Use getBoundingClientRect for accurate positioning relative to viewport
+      const containerRect = container.getBoundingClientRect();
+      const droneRect = droneSlide.getBoundingClientRect();
+      
+      // Validate dimensions are reasonable (not 0 or invalid)
+      if (containerRect.width === 0 || droneRect.width === 0) {
+        if (retryCount < 5) {
+          setTimeout(() => centerDroneWithRetry(retryCount + 1), 100);
+        }
+        return;
+      }
+      
+      // Calculate the center of the drone slide relative to the container
+      const droneCenterX = droneRect.left + (droneRect.width / 2) - containerRect.left;
+      
+      // Calculate the center of the container
+      const containerCenterX = containerRect.width / 2;
+      
+      // Calculate how much we need to scroll to center the drone
+      // Current scroll position + (drone center offset - container center)
+      const exactScrollPosition = container.scrollLeft + (droneCenterX - containerCenterX);
+      
+      // Only update if significantly different to avoid micro-adjustments
+      if (Math.abs(container.scrollLeft - exactScrollPosition) > 1) {
+        container.style.scrollBehavior = 'auto';
+        container.scrollLeft = Math.max(0, exactScrollPosition);
+        scrollPositionRef.current = container.scrollLeft;
+        lastScrollLeftRef.current = container.scrollLeft;
+        
+        // Final refinement pass for pixel-perfect centering
+        requestAnimationFrame(() => {
+          if (!container) return;
+          const finalContainerRect = container.getBoundingClientRect();
+          const finalDroneRect = droneSlide.getBoundingClientRect();
+          
+          // Validate again before final adjustment
+          if (finalContainerRect.width === 0 || finalDroneRect.width === 0) {
+            hasInitializedRef.current = true;
+            container.style.scrollBehavior = 'smooth';
+            return;
+          }
+          
+          const finalDroneCenterX = finalDroneRect.left + (finalDroneRect.width / 2) - finalContainerRect.left;
+          const finalContainerCenterX = finalContainerRect.width / 2;
+          const finalOffset = finalDroneCenterX - finalContainerCenterX;
+          
+          if (Math.abs(finalOffset) > 0.5) {
+            container.scrollLeft = container.scrollLeft + finalOffset;
+            scrollPositionRef.current = container.scrollLeft;
+            lastScrollLeftRef.current = container.scrollLeft;
+          }
+          
+          // Mark as initialized and re-enable smooth scrolling
+          hasInitializedRef.current = true;
+          container.style.scrollBehavior = 'smooth';
         });
+      } else {
+        // Mark as initialized and re-enable smooth scrolling
+        hasInitializedRef.current = true;
+        container.style.scrollBehavior = 'smooth';
+      }
+    };
+    
+    // Then refine with actual measurements using getBoundingClientRect for accuracy
+    // Double requestAnimationFrame ensures DOM is fully laid out before measuring (needed for mobile)
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        centerDroneWithRetry();
       });
+    });
   };
 
   // Apply scroll adjustment after images are prepended

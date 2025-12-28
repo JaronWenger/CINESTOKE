@@ -556,8 +556,8 @@ const CaseStudy = ({ activeClient }) => {
         } else {
           // No video, calculate immediately
           checkVideoAndCalculate();
-        }
-        
+      }
+      
         // Note: All height calculation and application happens inside checkVideoAndCalculate
         // No code should execute after this point in this function
       });
@@ -693,16 +693,15 @@ const CaseStudy = ({ activeClient }) => {
           const SlideComponent = slideConfig.component;
           const isFirstSlide = index === 0;
           
-          // Determine preload strategy:
-          // - Current slide: preload="auto" (full preload for instant playback)
-          // - Adjacent slides: preload="metadata" (light preload for quick start)
+          // Determine preload strategy (optimized to not compete with main video):
+          // - Current slide: preload="metadata" (light preload, will load more when needed)
+          // - Adjacent slides: preload="none" (don't preload until user navigates)
           // - Other slides: preload="none" (don't preload)
           let preloadValue = 'none';
           if (index === currentSlide) {
-            preloadValue = 'auto'; // Current slide - full preload
-          } else if (index === currentSlide + 1 || index === currentSlide - 1) {
-            preloadValue = 'metadata'; // Adjacent slides - metadata only
+            preloadValue = 'metadata'; // Current slide - metadata only (lighter than auto)
           }
+          // Adjacent slides also use 'none' to reduce bandwidth competition
           
           return (
               <div

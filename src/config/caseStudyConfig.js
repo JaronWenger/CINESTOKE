@@ -191,7 +191,7 @@ export const caseStudyConfig = {
           component: SlideMain,
           props: {
             title: 'Immersion Research',
-            description: 'Immersion Research is a designer and manufacturer of paddling gear for whitewater kayaking, rafting, canoeing, and other paddlesports.',
+            description: 'A designer and manufacturer of paddling gear for whitewater kayaking, rafting, canoeing, and other paddlesports.',
             profilePic: irLogo,
             video: IRVideo,
             videoMobile: IRVideoMobile,

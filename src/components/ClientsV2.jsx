@@ -61,6 +61,7 @@ const ClientsV2 = ({ onClientChange }) => {
   const isScrollingRef = useRef(false); // Track if user is actively scrolling
   const isHoldingRef = useRef(false); // Track if user is actively holding/touching (mouse down or touch)
   const lastNotifiedClientRef = useRef(null); // Track last notified client to avoid duplicate notifications
+  const initialCenteringCompleteRef = useRef(false); // Track if initial SWA centering is complete
 
   // Handle carousel scroll events with dynamic client loading
   const [hasScrolled, setHasScrolled] = useState(false);
@@ -151,6 +152,11 @@ const ClientsV2 = ({ onClientChange }) => {
     // Don't snap if actively scrolling, adjusting, dragging, or holding
     if (!container) {
       console.log('snapToCenter: no container');
+      return;
+    }
+    // Don't snap until initial SWA centering is complete
+    if (!initialCenteringCompleteRef.current) {
+      console.log('snapToCenter: blocked - initial centering not complete');
       return;
     }
     if (isAdjustingRef.current || isDragging || isScrollingRef.current || isHoldingRef.current) {
@@ -540,111 +546,99 @@ const ClientsV2 = ({ onClientChange }) => {
     
     if (!container || hasInitializedRef.current) return;
     
-    // Set approximate scroll position immediately to prevent flash
-    // Calculate based on known structure: middle set starts at clients.length, SWA is at index 5 of middle set
-    const middleStartIndex = clients.length;
-    const targetIndex = middleStartIndex + 5; // SWA in the middle set
+    setIsReady(true); // Show container immediately
     
-    // Estimate item width based on viewport (similar to Pics.jsx approach)
-    // Each client has: logo wrapper (with 60px padding each side = 120px) + line (2px)
-    // Estimate logo width based on typical SVG size (around 150-200px)
-    let estimatedLogoWidth = 150; // Base estimate
-    if (window.innerWidth <= 768) estimatedLogoWidth = 120;
-    if (window.innerWidth <= 480) estimatedLogoWidth = 100;
-    
-    const estimatedLineWidth = 2;
-    const gap = 0.5;
-    const estimatedItemWidth = estimatedLogoWidth + 120 + estimatedLineWidth + gap; // logo + padding + line + gap
-    const linebWidth = 2;
-    
-    // Calculate estimated position
-    const estimatedTargetPosition = linebWidth + (targetIndex * estimatedItemWidth);
-    const estimatedScrollPosition = estimatedTargetPosition + (estimatedLogoWidth / 2) - (container.clientWidth / 2);
-    
-    // Set immediately to prevent flash
-    container.style.scrollBehavior = 'auto';
-    container.scrollLeft = Math.max(0, estimatedScrollPosition);
-    scrollPositionRef.current = container.scrollLeft;
-    lastScrollLeftRef.current = container.scrollLeft;
-    setIsReady(true); // Show immediately with estimated position
-    
-    // Then refine with actual measurements using getBoundingClientRect for accuracy
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        if (!container || hasInitializedRef.current) return;
-        
-        const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
-        if (logoWrappers.length === 0) {
+    // Simple function to find and center SWA by data attribute
+    const centerSWA = (retryCount = 0) => {
+      if (!container || hasInitializedRef.current) return;
+      
+      // Find all SWA logos (there are multiple due to infinite scroll)
+      const swaLabels = container.querySelectorAll('.client-logo-wrapper[data-client-name="SWA"]');
+      
+      if (swaLabels.length === 0) {
+        // SWA not found yet, retry
+        if (retryCount < 5) {
+          setTimeout(() => centerSWA(retryCount + 1), 100);
+        } else {
           hasInitializedRef.current = true;
-          container.style.scrollBehavior = 'smooth';
-          return;
+          initialCenteringCompleteRef.current = true;
         }
-
-        const targetLogo = logoWrappers[targetIndex];
-        
-        if (targetLogo) {
-          // Use getBoundingClientRect for accurate positioning relative to viewport
-          const containerRect = container.getBoundingClientRect();
-          const logoRect = targetLogo.getBoundingClientRect();
-          
-          // Calculate the center of the logo relative to the container
-          const logoCenterX = logoRect.left + (logoRect.width / 2) - containerRect.left;
-          
-          // Calculate the center of the container
-          const containerCenterX = containerRect.width / 2;
-          
-          // Calculate how much we need to scroll to center the logo
-          // Current scroll position + (logo center offset - container center)
-          const exactScrollPosition = container.scrollLeft + (logoCenterX - containerCenterX);
-          
-          // Only update if significantly different to avoid micro-adjustments
-          if (Math.abs(container.scrollLeft - exactScrollPosition) > 1) {
-            container.style.scrollBehavior = 'auto';
-            container.scrollLeft = Math.max(0, exactScrollPosition);
-            scrollPositionRef.current = container.scrollLeft;
-            lastScrollLeftRef.current = container.scrollLeft;
-            
-            // Final refinement pass for pixel-perfect centering
-            requestAnimationFrame(() => {
-              if (!container) return;
-              const finalContainerRect = container.getBoundingClientRect();
-              const finalLogoRect = targetLogo.getBoundingClientRect();
-              const finalLogoCenterX = finalLogoRect.left + (finalLogoRect.width / 2) - finalContainerRect.left;
-              const finalContainerCenterX = finalContainerRect.width / 2;
-              const finalOffset = finalLogoCenterX - finalContainerCenterX;
-              
-              if (Math.abs(finalOffset) > 0.5) {
-                container.scrollLeft = container.scrollLeft + finalOffset;
-                scrollPositionRef.current = container.scrollLeft;
-                lastScrollLeftRef.current = container.scrollLeft;
-              }
-              
-              // Mark as initialized and re-enable smooth scrolling
-              hasInitializedRef.current = true;
-              container.style.scrollBehavior = 'smooth';
-              
-              // Notify about initial centered client
-              if (targetLogo && onClientChange) {
-                const clientName = getClientNameFromLogo(targetLogo);
-                if (clientName) {
-                  onClientChange(clientName);
-                }
-              }
-            });
-          } else {
-            // Mark as initialized and re-enable smooth scrolling
-            hasInitializedRef.current = true;
-            container.style.scrollBehavior = 'smooth';
-            
-            // Notify about initial centered client
-            if (targetLogo && onClientChange) {
-              const clientName = getClientNameFromLogo(targetLogo);
-              if (clientName) {
-                onClientChange(clientName);
-              }
-            }
+        return;
+      }
+      
+      // Prefer the middle set (index should be around clients.length + 5)
+      // But if we can't determine, just use the first one found
+      let swaLogo = swaLabels[0];
+      if (swaLabels.length > 1) {
+        // Try to find one in the middle set (around index clients.length + 5)
+        const targetIndex = clients.length + 5;
+        const allLogos = container.querySelectorAll('.client-logo-wrapper');
+        if (allLogos.length > targetIndex) {
+          const middleSetLogo = allLogos[targetIndex];
+          if (middleSetLogo && getClientNameFromLogo(middleSetLogo) === 'SWA') {
+            swaLogo = middleSetLogo;
           }
         }
+      }
+      
+      // Check if SVG is rendered (for mobile reliability)
+      const svg = swaLogo.querySelector('svg');
+      if (svg) {
+        const svgRect = svg.getBoundingClientRect();
+        if ((svgRect.width === 0 || svgRect.height === 0) && retryCount < 3) {
+          setTimeout(() => centerSWA(retryCount + 1), 150);
+          return;
+        }
+      }
+      
+      // Center the SWA logo immediately with auto scroll, then refine
+      const containerRect = container.getBoundingClientRect();
+      const logoRect = swaLogo.getBoundingClientRect();
+      const logoCenterX = logoRect.left + (logoRect.width / 2) - containerRect.left;
+      const containerCenterX = containerRect.width / 2;
+      const scrollOffset = logoCenterX - containerCenterX;
+      
+      // Center immediately with auto scroll behavior
+      container.style.scrollBehavior = 'auto';
+      container.scrollLeft = container.scrollLeft + scrollOffset;
+      scrollPositionRef.current = container.scrollLeft;
+      lastScrollLeftRef.current = container.scrollLeft;
+      
+      // Refine with one more pass for accuracy
+      requestAnimationFrame(() => {
+        if (!container) return;
+        const finalContainerRect = container.getBoundingClientRect();
+        const finalLogoRect = swaLogo.getBoundingClientRect();
+        const finalLogoCenterX = finalLogoRect.left + (finalLogoRect.width / 2) - finalContainerRect.left;
+        const finalContainerCenterX = finalContainerRect.width / 2;
+        const finalOffset = finalLogoCenterX - finalContainerCenterX;
+        
+        if (Math.abs(finalOffset) > 1) {
+          container.style.scrollBehavior = 'auto';
+          container.scrollLeft = container.scrollLeft + finalOffset;
+          scrollPositionRef.current = container.scrollLeft;
+          lastScrollLeftRef.current = container.scrollLeft;
+        }
+        
+        // Mark as initialized and switch to smooth scrolling
+        hasInitializedRef.current = true;
+        initialCenteringCompleteRef.current = true;
+        container.style.scrollBehavior = 'smooth';
+        
+        // Notify about initial centered client
+        if (onClientChange) {
+          const clientName = getClientNameFromLogo(swaLogo);
+          if (clientName) {
+            onClientChange(clientName);
+          }
+        }
+      });
+    };
+    
+    // Wait for DOM to be ready, then center SWA
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        centerSWA();
       });
     });
   };
@@ -706,6 +700,7 @@ const ClientsV2 = ({ onClientChange }) => {
             scrollPositionRef.current = container.scrollLeft;
             lastScrollLeftRef.current = container.scrollLeft;
             hasInitializedRef.current = true;
+            initialCenteringCompleteRef.current = true; // Mark as complete so snapToCenter can run
             container.style.scrollBehavior = 'smooth';
           }
         }
@@ -762,6 +757,7 @@ const ClientsV2 = ({ onClientChange }) => {
                 }
               }
               container.style.scrollBehavior = 'smooth';
+              initialCenteringCompleteRef.current = true; // Mark as complete so snapToCenter can run
               setIsReady(true); // Show container
             });
           }
