@@ -782,8 +782,9 @@ const ClientsV2 = ({ onClientChange }) => {
         }
       }
       
-      // Always detect centered client after timeout
-      if (container && onClientChange) {
+      // Only detect centered client after initialization is complete
+      // This prevents overriding the initial SWA selection during slow page loads
+      if (container && onClientChange && hasInitializedRef.current) {
         const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
         if (logoWrappers.length > 0) {
           const containerRect = container.getBoundingClientRect();
@@ -873,7 +874,9 @@ const ClientsV2 = ({ onClientChange }) => {
                   padding: getLogoPadding(), 
                   cursor: 'default',
                   WebkitTapHighlightColor: 'transparent',
-                  tapHighlightColor: 'transparent'
+                  tapHighlightColor: 'transparent',
+                  overflow: 'hidden',
+                  boxSizing: 'border-box'
                 }}
                 onClick={(e) => {
                   centerLogo(e.currentTarget);
@@ -966,6 +969,8 @@ const ClientsV2 = ({ onClientChange }) => {
         .client-logo-wrapper {
           -webkit-tap-highlight-color: transparent;
           tap-highlight-color: transparent;
+          overflow: hidden;
+          box-sizing: border-box;
         }
         
         /* Only apply hover effect on desktop (screen width > 768px) */
