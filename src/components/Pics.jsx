@@ -339,7 +339,30 @@ const Pics = () => {
         return;
       }
 
-      const droneSlide = slides[droneIndex];
+      // Find drone slide by label text instead of index (more reliable with multiple instances)
+      let droneSlide = null;
+      slides.forEach((slide) => {
+        const labelElement = slide.querySelector('p');
+        if (labelElement && labelElement.textContent.trim() === 'Drone') {
+          // Prefer the one in the middle set (around index middleStartIndex + 4)
+          if (!droneSlide) {
+            droneSlide = slide;
+          } else {
+            // Check if this one is closer to the middle set
+            const currentIndex = Array.from(slides).indexOf(slide);
+            const preferredIndex = middleStartIndex + 4;
+            const currentDroneIndex = Array.from(slides).indexOf(droneSlide);
+            if (Math.abs(currentIndex - preferredIndex) < Math.abs(currentDroneIndex - preferredIndex)) {
+              droneSlide = slide;
+            }
+          }
+        }
+      });
+      
+      if (!droneSlide) {
+        // Fallback to index-based if label search fails
+        droneSlide = slides[droneIndex];
+      }
       
       if (!droneSlide) {
         // Retry if target slide isn't found

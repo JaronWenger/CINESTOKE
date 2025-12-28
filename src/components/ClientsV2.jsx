@@ -566,18 +566,85 @@ const ClientsV2 = ({ onClientChange }) => {
         return;
       }
       
-      // Prefer the middle set (index should be around clients.length + 5)
-      // But if we can't determine, just use the first one found
-      let swaLogo = swaLabels[0];
-      if (swaLabels.length > 1) {
-        // Try to find one in the middle set (around index clients.length + 5)
-        const targetIndex = clients.length + 5;
-        const allLogos = container.querySelectorAll('.client-logo-wrapper');
-        if (allLogos.length > targetIndex) {
-          const middleSetLogo = allLogos[targetIndex];
-          if (middleSetLogo && getClientNameFromLogo(middleSetLogo) === 'SWA') {
-            swaLogo = middleSetLogo;
+      // Find SWA in the middle set - SWA is at index 4 in the original array (order 5, swapped with IR)
+      // With 3 sets prepended, middle set starts at clients.length, so SWA is at clients.length + 4
+      const allLogos = container.querySelectorAll('.client-logo-wrapper');
+      const targetIndex = clients.length + 4; // SWA position in middle set (now at order 5, index 4)
+      
+      let swaLogo = null;
+      
+      // First, try to get SWA from the exact target index (middle set)
+      if (allLogos.length > targetIndex) {
+        const middleSetLogo = allLogos[targetIndex];
+        if (middleSetLogo && getClientNameFromLogo(middleSetLogo) === 'SWA') {
+          swaLogo = middleSetLogo;
+        }
+      }
+      
+      // If we didn't find it at target index, search all SWA logos and find the one closest to target
+      if (!swaLogo) {
+        let closestSWA = null;
+        let closestDistance = Infinity;
+        
+        swaLabels.forEach((logo) => {
+          const logoIndex = Array.from(allLogos).indexOf(logo);
+          if (logoIndex >= 0) {
+            const distance = Math.abs(logoIndex - targetIndex);
+            if (distance < closestDistance) {
+              closestDistance = distance;
+              closestSWA = logo;
+            }
           }
+        });
+        
+        if (closestSWA) {
+          swaLogo = closestSWA;
+        } else {
+          // Fallback to first SWA found
+          swaLogo = swaLabels[0];
+        }
+      }
+      
+      // Verify we actually have SWA (not IR or another client) - critical check!
+      const verifiedClientName = getClientNameFromLogo(swaLogo);
+      if (verifiedClientName !== 'SWA') {
+        console.warn(`ClientsV2 - Found ${verifiedClientName} instead of SWA at target index, searching all SWA logos...`);
+        // Search all SWA logos and find the one closest to target index
+        let bestSWA = null;
+        let bestDistance = Infinity;
+        swaLabels.forEach((logo) => {
+          const clientName = getClientNameFromLogo(logo);
+          if (clientName === 'SWA') {
+            const logoIndex = Array.from(allLogos).indexOf(logo);
+            if (logoIndex >= 0) {
+              const distance = Math.abs(logoIndex - targetIndex);
+              if (distance < bestDistance) {
+                bestDistance = distance;
+                bestSWA = logo;
+              }
+            }
+          }
+        });
+        if (bestSWA) {
+          swaLogo = bestSWA;
+          console.log(`ClientsV2 - Found SWA at index ${Array.from(allLogos).indexOf(bestSWA)}, distance ${bestDistance} from target ${targetIndex}`);
+        } else {
+          // Last resort: use first SWA found
+          swaLabels.forEach((logo) => {
+            if (getClientNameFromLogo(logo) === 'SWA' && !swaLogo) {
+              swaLogo = logo;
+            }
+          });
+        }
+      }
+      
+      // Final verification before centering
+      const finalCheck = getClientNameFromLogo(swaLogo);
+      if (finalCheck !== 'SWA') {
+        console.error(`ClientsV2 - Still not SWA (found ${finalCheck}), retrying...`);
+        if (retryCount < 5) {
+          setTimeout(() => centerSWA(retryCount + 1), 100);
+          return;
         }
       }
       

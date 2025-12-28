@@ -61,7 +61,7 @@ export const caseStudyConfig = {
   SWA: {
     name: 'Small World Adventures',
     logoComponent: SWA,
-    order: 6, // Order in carousel (1-6)
+    order: 5, // Order in carousel (1-6) - at index 4, centered position (IR is to the left at order 4)
     slides: [
       {
         type: 'main',
@@ -98,7 +98,7 @@ export const caseStudyConfig = {
   Seadoo: {
     name: 'Seadoo',
     logoComponent: Seadoo,
-    order: 7, // Order in carousel (1-6)
+    order: 6, // Order in carousel (1-6)
     slides: [
       {
         type: 'main',
@@ -118,7 +118,7 @@ export const caseStudyConfig = {
   Slate: {
     name: 'Slate',
     logoComponent: Slate,
-    order: 4, // Order in carousel (1-6)
+    order: 3, // Order in carousel (1-6) - moved to make room for IR at 4
     slides: [
       {
         type: 'main',
@@ -146,7 +146,7 @@ export const caseStudyConfig = {
   TCO: {
     name: 'TCO',
     logoComponent: TCO,
-    order: 2, // Order in carousel (1-6)
+    order: 1, // Order in carousel (1-6)
     slides: [
         {
           type: 'main',
@@ -165,7 +165,7 @@ export const caseStudyConfig = {
   GFF: {
     name: 'GFF',
     logoComponent: GFF,
-    order: 3, // Order in carousel (1-6)
+    order: 2, // Order in carousel (1-6) - original order
     slides: [
         {
           type: 'main',
@@ -184,7 +184,7 @@ export const caseStudyConfig = {
   IR: {
     name: 'IR',
     logoComponent: IR,
-    order: 5, // Order in carousel (1-6)
+    order: 4, // Order in carousel (1-6) - to the left of SWA (order 5)
     slides: [
         {
           type: 'main',
@@ -212,7 +212,7 @@ export const caseStudyConfig = {
   BG: {
     name: 'BG',
     logoComponent: BG,
-    order: 1, // Order in carousel (1-6)
+    order: 7, // Order in carousel (1-6)
     slides: [
       {
         type: 'main',
