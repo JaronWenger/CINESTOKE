@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { getCaseStudyForClient } from '../config/caseStudyConfig';
 
 const CaseStudy = ({ activeClient }) => {
@@ -10,6 +10,7 @@ const CaseStudy = ({ activeClient }) => {
   const dragDistanceRef = useRef(0);
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef(null);
+  const isResettingRef = useRef(false); // Flag to prevent handleScroll from updating during brand switch
   const DRAG_THRESHOLD = 50; // Minimum pixels to trigger slide change
   const slideOneHeightRef = useRef(null); // Store the height from SlideOne (SWA) to apply to all slides
 
@@ -37,6 +38,11 @@ const CaseStudy = ({ activeClient }) => {
   const handleScroll = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
+
+    // Don't update state if we're in the middle of resetting (brand switch)
+    if (isResettingRef.current) {
+      return;
+    }
 
     isScrollingRef.current = true;
 
@@ -67,7 +73,8 @@ const CaseStudy = ({ activeClient }) => {
     
     const dots = navDotsOutside.querySelectorAll('.case-study-dot');
     dots.forEach((dot, index) => {
-      if (index === activeIndex) {
+      // For single slide, don't show active (horizontal) dot - just show regular dot
+      if (index === activeIndex && totalSlides > 1) {
         dot.classList.add('active');
       } else {
         dot.classList.remove('active');
@@ -179,12 +186,162 @@ const CaseStudy = ({ activeClient }) => {
     setCurrentSlide(slideIndex);
   };
 
-  // Reset to first slide when client changes and sync heights to match SlideOne
-  useEffect(() => {
-    setCurrentSlide(0);
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollLeft = 0;
+  // Function to move nav dots outside slide wrapper (accessible from multiple useEffects)
+  const moveNavDotsOutside = (allSlides) => {
+    const carousel = scrollContainerRef.current;
+    if (!carousel) return;
+
+    const parentElement = carousel.parentElement;
+    if (!parentElement) return;
+
+    // Check if nav dots already exist
+    const existingNavDotsOutside = parentElement.querySelector('.case-study-nav-dots-outside');
+    
+    // If existing nav dots have the same count, just update them in place (seamless)
+    if (existingNavDotsOutside) {
+      const existingDots = existingNavDotsOutside.querySelectorAll('.case-study-dot-wrapper');
+      if (existingDots.length === totalSlides) {
+        // Same count - just update active state
+        // Always set to slide 0 when switching brands (currentSlide should be 0, but be explicit)
+        const activeSlideIndex = 0; // Force to first slide when updating
+        existingDots.forEach((wrapper, index) => {
+          const dot = wrapper.querySelector('.case-study-dot');
+          if (dot) {
+            // For single slide, don't show active (horizontal) dot - just show regular dot
+            if (index === activeSlideIndex && totalSlides > 1) {
+              dot.classList.add('active');
+            } else {
+              dot.classList.remove('active');
+            }
+          }
+        });
+        
+        // Hide nav dots inside slides
+        if (allSlides) {
+          allSlides.forEach((slide) => {
+            const dots = slide.querySelector('.case-study-nav-dots');
+            if (dots) {
+              dots.style.display = 'none';
+            }
+          });
+        }
+        return; // Done - no need to recreate (click handlers are already set)
+      }
     }
+
+    // Create new nav dots (either don't exist or count changed)
+    const navDotsContainer = document.createElement('div');
+    navDotsContainer.className = 'case-study-nav-dots case-study-nav-dots-outside';
+    
+    // Create a dot for each slide
+    for (let i = 0; i < totalSlides; i++) {
+      const dotWrapper = document.createElement('div');
+      dotWrapper.className = 'case-study-dot-wrapper';
+      dotWrapper.addEventListener('click', () => {
+        goToSlide(i);
+      });
+      
+      const dot = document.createElement('div');
+      // For single slide, don't show active (horizontal) dot - just show regular dot
+      // When creating nav dots for a new brand, always start at slide 0
+      const isActive = i === 0 && totalSlides > 1;
+      dot.className = `case-study-dot ${isActive ? 'active' : ''}`;
+      
+      dotWrapper.appendChild(dot);
+      navDotsContainer.appendChild(dotWrapper);
+    }
+    
+    // Hide nav dots inside slides with CSS instead of removing them (don't break React)
+    if (allSlides) {
+      allSlides.forEach((slide) => {
+        const dots = slide.querySelector('.case-study-nav-dots');
+        if (dots) {
+          dots.style.display = 'none'; // Hide instead of remove
+        }
+      });
+    }
+    
+    // Replace existing nav dots (if any) with new ones, or add if none exist
+    // This ensures seamless transition - new dots are ready before old ones are removed
+    if (existingNavDotsOutside) {
+      existingNavDotsOutside.replaceWith(navDotsContainer);
+    } else {
+      parentElement.appendChild(navDotsContainer);
+    }
+    
+    // Ensure the first slide (index 0) is active after creating nav dots
+    // This is important when switching brands to ensure nav dots show correct state
+    updateNavDotsOutside(0);
+  };
+
+  // Reset to first slide when client changes - use useLayoutEffect to prevent flash
+  // This runs synchronously after DOM mutations but before browser paint
+  useLayoutEffect(() => {
+    // Set flag to prevent handleScroll from updating during reset
+    isResettingRef.current = true;
+    
+    // Reset state immediately
+    setCurrentSlide(0);
+    
+    // Reset scroll position immediately and synchronously (before paint)
+    const carousel = scrollContainerRef.current;
+    if (carousel) {
+      // Disable smooth scrolling temporarily to ensure instant reset
+      const originalScrollBehavior = carousel.style.scrollBehavior;
+      carousel.style.scrollBehavior = 'auto';
+      carousel.scrollLeft = 0;
+      // Force synchronous layout recalculation
+      void carousel.offsetHeight;
+      // Restore original scroll behavior
+      carousel.style.scrollBehavior = originalScrollBehavior || '';
+    }
+    
+    // Update nav dots to show first slide as active immediately (if they exist)
+    // Note: If nav dots don't exist yet, they'll be created with correct active state in the useEffect
+    const navDotsOutside = carousel?.parentElement?.querySelector('.case-study-nav-dots-outside');
+    if (navDotsOutside) {
+      updateNavDotsOutside(0);
+    }
+    
+    // Clear the reset flag after a brief delay to allow scroll position to settle
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        isResettingRef.current = false;
+      });
+    });
+  }, [activeClient]);
+
+  // Sync heights and recreate nav dots when client changes
+  useEffect(() => {
+    
+    // Function to recreate nav dots after React renders new slides
+    // Note: We don't remove old nav dots here - moveNavDotsOutside will handle seamless replacement
+    const recreateNavDots = () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const carousel = scrollContainerRef.current;
+          if (!carousel) return;
+          
+          const allSlides = carousel.querySelectorAll('.case-study-slide-wrapper');
+          
+          // Always hide nav dots inside slides when switching brands (they're replaced by outside nav dots)
+          allSlides.forEach((slide) => {
+            const dots = slide.querySelector('.case-study-nav-dots');
+            if (dots) {
+              dots.style.display = 'none';
+            }
+          });
+          
+          // Recreate nav dots outside with correct count for new brand
+          // Wait a bit for React to finish rendering the new slides
+          setTimeout(() => {
+            if (allSlides.length > 0) {
+              moveNavDotsOutside(allSlides);
+            }
+          }, 50);
+        });
+      });
+    };
     
     // When brand switches, apply the stored SlideOne height to all slides
     // Use multiple requestAnimationFrames to ensure DOM is ready after React renders
@@ -211,17 +368,15 @@ const CaseStudy = ({ activeClient }) => {
           carousel.style.minHeight = '0';
           carousel.style.maxHeight = heightValue;
           
-          // Always hide nav dots inside slides when switching brands (they're replaced by outside nav dots)
-          allSlides.forEach((slide) => {
-            const dots = slide.querySelector('.case-study-nav-dots');
-            if (dots) {
-              dots.style.display = 'none';
-            }
-          });
+          // Recreate nav dots after applying heights
+          recreateNavDots();
         });
       });
+    } else {
+      // Even if height isn't stored yet, still recreate nav dots
+      recreateNavDots();
     }
-  }, [activeClient]);
+  }, [activeClient, totalSlides]);
 
   // Sync all slide heights to match SlideOne's (SWA) rendered height
   // SlideOne (SWA) gets its height from viewport-based CSS dynamically
@@ -275,25 +430,59 @@ const CaseStudy = ({ activeClient }) => {
           return;
         }
         
-        console.log('CaseStudy - Initial load: Found .slide-one, calculating height dynamically');
+        // Check if we're actually on SWA (Small World Adventures) - only calculate height from SWA
+        // If another brand is active, we should wait for SWA to load or use a fallback
+        const isSWA = activeClient === 'SWA';
+        if (!isSWA) {
+          console.log('CaseStudy - Initial load: Not SWA, waiting for SWA to load before calculating height');
+          isSyncing = false;
+          return;
+        }
+        
+        console.log('CaseStudy - Initial load: Found .slide-one for SWA, calculating height dynamically');
         
         // Check if video has loaded - wait for it if not
         const videoElement = slideContent.querySelector('video');
         const checkVideoAndCalculate = () => {
+          // Validate video dimensions if video exists
+          if (videoElement) {
+            const videoHeight = videoElement.videoHeight || videoElement.offsetHeight || 0;
+            const videoWidth = videoElement.videoWidth || videoElement.offsetWidth || 0;
+            if (videoHeight === 0 && videoWidth === 0) {
+              console.log('CaseStudy - Initial load: Video dimensions not ready, will retry');
+              isSyncing = false;
+              setTimeout(() => {
+                syncSlideHeights();
+              }, 500);
+              return;
+            }
+          }
+          
           // We have SlideOne - calculate height dynamically
           // Ensure slide content is using its natural height (auto) and no constraints
           slideContent.style.height = 'auto';
           slideContent.style.minHeight = '0';
           slideContent.style.maxHeight = 'none';
-          
-          // Force a reflow to ensure accurate measurement
+        
+        // Force a reflow to ensure accurate measurement
           void slideContent.offsetHeight;
-          
-          // Get the actual content height using scrollHeight (most accurate for content)
-          // scrollHeight gives the total height of content including padding
+        
+        // Get the actual content height using scrollHeight (most accurate for content)
+        // scrollHeight gives the total height of content including padding
           const slideOneHeight = slideContent.scrollHeight;
           
           console.log('CaseStudy - Initial load: Calculated height from SlideOne:', slideOneHeight);
+          
+          // Validate height - don't store if it's 0 or too small (content not loaded yet)
+          if (slideOneHeight <= 0 || slideOneHeight < 100) {
+            console.log('CaseStudy - Initial load: Height is invalid (0 or too small), will retry');
+            isSyncing = false;
+            // Retry after a short delay
+            setTimeout(() => {
+              syncSlideHeights();
+            }, 500);
+            return;
+          }
           
           // Store the height from SlideOne (SWA) - this will be used for all other slides (SlideMain)
           slideOneHeightRef.current = slideOneHeight;
@@ -303,45 +492,45 @@ const CaseStudy = ({ activeClient }) => {
           console.log('CaseStudy - Initial load: Height stored and ResizeObserver disconnected');
           
           // Apply the calculated height
-          firstSlide.style.height = `${slideOneHeight}px`;
-          firstSlide.style.minHeight = '0';
-          firstSlide.style.maxHeight = `${slideOneHeight}px`;
-          
+        firstSlide.style.height = `${slideOneHeight}px`;
+        firstSlide.style.minHeight = '0';
+        firstSlide.style.maxHeight = `${slideOneHeight}px`;
+        
           // Keep slide content at auto height so it uses its natural size (no overflow)
           slideContent.style.height = 'auto';
-          
-          // Ensure wrapper has absolutely no extra spacing
-          firstSlide.style.padding = '0';
-          firstSlide.style.margin = '0';
-          firstSlide.style.border = 'none';
-          
-          // Set the carousel height to match the slide wrapper height
-          const carousel = firstSlide.parentElement;
-          if (carousel) {
-            carousel.style.height = `${slideOneHeight}px`;
-            carousel.style.minHeight = '0';
-            carousel.style.maxHeight = `${slideOneHeight}px`;
-            carousel.style.padding = '0';
-            carousel.style.margin = '0';
-          }
-          
-          // Apply the same height to all other slide wrappers
-          const allSlides = firstSlide.parentElement?.querySelectorAll('.case-study-slide-wrapper');
-          if (allSlides) {
-            allSlides.forEach((slide) => {
-              if (slide !== firstSlide) {
-                slide.style.height = `${slideOneHeight}px`;
-              }
-              // Ensure all wrappers have no extra spacing
-              slide.style.padding = '0';
-              slide.style.margin = '0';
-            });
-          }
-          
-          // After height is locked, move nav dots outside slide wrapper
-          moveNavDotsOutside(allSlides);
-          
-          isSyncing = false;
+        
+        // Ensure wrapper has absolutely no extra spacing
+        firstSlide.style.padding = '0';
+        firstSlide.style.margin = '0';
+        firstSlide.style.border = 'none';
+        
+        // Set the carousel height to match the slide wrapper height
+        const carousel = firstSlide.parentElement;
+        if (carousel) {
+          carousel.style.height = `${slideOneHeight}px`;
+          carousel.style.minHeight = '0';
+          carousel.style.maxHeight = `${slideOneHeight}px`;
+          carousel.style.padding = '0';
+          carousel.style.margin = '0';
+        }
+        
+        // Apply the same height to all other slide wrappers
+        const allSlides = firstSlide.parentElement?.querySelectorAll('.case-study-slide-wrapper');
+        if (allSlides) {
+          allSlides.forEach((slide) => {
+            if (slide !== firstSlide) {
+              slide.style.height = `${slideOneHeight}px`;
+            }
+            // Ensure all wrappers have no extra spacing
+            slide.style.padding = '0';
+            slide.style.margin = '0';
+          });
+        }
+        
+        // After height is locked, move nav dots outside slide wrapper
+        moveNavDotsOutside(allSlides);
+        
+        isSyncing = false;
         };
         
         // If video exists, wait for it to load before calculating
@@ -372,51 +561,6 @@ const CaseStudy = ({ activeClient }) => {
         // Note: All height calculation and application happens inside checkVideoAndCalculate
         // No code should execute after this point in this function
       });
-    };
-
-    const moveNavDotsOutside = (allSlides) => {
-      const carousel = scrollContainerRef.current;
-      if (!carousel) return;
-
-      // Check if nav dots are already outside (to avoid moving multiple times)
-      const navDotsOutside = carousel.parentElement?.querySelector('.case-study-nav-dots-outside');
-      if (navDotsOutside) {
-        return; // Already moved
-      }
-
-      // Find the nav dots in the first slide
-      const firstSlide = firstSlideRef.current;
-      const navDotsInSlide = firstSlide?.querySelector('.case-study-nav-dots');
-      
-      if (!navDotsInSlide) return;
-
-      // Clone the nav dots structure
-      const navDotsClone = navDotsInSlide.cloneNode(true);
-      navDotsClone.className = 'case-study-nav-dots case-study-nav-dots-outside';
-      
-      // Add click handlers to cloned nav dots
-      const dotWrappers = navDotsClone.querySelectorAll('.case-study-dot-wrapper');
-      dotWrappers.forEach((wrapper, index) => {
-        wrapper.addEventListener('click', () => {
-          goToSlide(index);
-        });
-      });
-      
-      // Hide nav dots inside slides with CSS instead of removing them (don't break React)
-      if (allSlides) {
-        allSlides.forEach((slide) => {
-          const dots = slide.querySelector('.case-study-nav-dots');
-          if (dots) {
-            dots.style.display = 'none'; // Hide instead of remove
-          }
-        });
-      }
-      
-      // Add nav dots outside the carousel
-      carousel.parentElement?.appendChild(navDotsClone);
-      
-      // Update active state
-      updateNavDotsOutside(currentSlide);
     };
 
     // Debounced resize handler
@@ -561,27 +705,27 @@ const CaseStudy = ({ activeClient }) => {
           }
           
           return (
-            <div 
-              key={index}
+              <div
+                key={index}
               ref={isFirstSlide ? firstSlideRef : null}
               className="case-study-slide-wrapper"
             >
               <SlideComponent {...slideConfig.props} preload={preloadValue} />
-              {/* Navigation dots */}
-              <div className="case-study-nav-dots">
+              {/* Navigation dots - always show, even for single slide */}
+          <div className="case-study-nav-dots">
                 {Array.from({ length: totalSlides }).map((_, dotIndex) => (
-                  <div
+              <div
                     key={dotIndex}
-                    className={`case-study-dot-wrapper`}
+                className={`case-study-dot-wrapper`}
                     onClick={() => goToSlide(dotIndex)}
-                  >
-                    <div
-                      className={`case-study-dot ${dotIndex === currentSlide ? 'active' : ''}`}
-                    />
-                  </div>
-                ))}
+              >
+                <div
+                      className={`case-study-dot ${dotIndex === currentSlide && totalSlides > 1 ? 'active' : ''}`}
+                />
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
           );
         })}
       </div>

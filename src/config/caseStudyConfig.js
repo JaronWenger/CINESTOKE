@@ -4,6 +4,7 @@
 import SlideOne from '../components/SlideOne';
 import SlideMain from '../components/SlideMain';
 import SlideGeo from '../components/SlideGeo';
+import SlideLogo from '../components/SlideLogo';
 // Future slides can be imported here
 // import SlideCustom from '../components/SlideCustom';
 
@@ -14,19 +15,36 @@ import { ReactComponent as GFF } from '../assets/GFF.svg';
 import { ReactComponent as IR } from '../assets/IR.svg';
 import { ReactComponent as Slate } from '../assets/Slate.svg';
 import { ReactComponent as SWA } from '../assets/SWA.svg';
+import { ReactComponent as BG } from '../assets/BG.svg';
 
 // Import case study assets
 import swaLogo from '../assets/CASESTUDIES/Brands/SWApp.webp';
 import smallWorldVideo from '../assets/CASESTUDIES/SmallWorldMain.mp4';
+import smallWorldVideoMobile from '../assets/CASESTUDIES/SmallWorldMainPhone.mp4';
 import smallWorldGeoVideo from '../assets/CASESTUDIES/SmallWorldGeo.mp4';
+import smallWorldGeoVideoMobile from '../assets/CASESTUDIES/SmallWorldGeoPhone.mp4';
 import seadooLogo from '../assets/CASESTUDIES/Brands/Seadoopp.webp';
 import seadooVideo from '../assets/CASESTUDIES/SeadooMain.mp4';
+import seadooVideoMobile from '../assets/CASESTUDIES/SeadooMainPhone.mp4';
 import slateLogo from '../assets/CASESTUDIES/Brands/Slatepp.webp';
 import slateVideo from '../assets/CASESTUDIES/SlateMain.mp4';
+import slateVideoMobile from '../assets/CASESTUDIES/SlateMainPhone.mp4';
 import irLogo from '../assets/CASESTUDIES/Brands/IRpp.webp';
 import gffLogo from '../assets/CASESTUDIES/Brands/GFFpp.webp';
 import tcoLogo from '../assets/CASESTUDIES/Brands/TCOpp.webp';
-
+import BGLogo from '../assets/CASESTUDIES/Brands/BGpp.webp';
+import BGVideo from '../assets/CASESTUDIES/BGMain.mp4';
+import BGVideoMobile from '../assets/CASESTUDIES/BGMainPhone.mp4';
+import TCOVideo from '../assets/CASESTUDIES/TCOMain.mp4';
+import TCOVideoMobile from '../assets/CASESTUDIES/TCOMainPhone.mp4';
+import GFFVideo from '../assets/CASESTUDIES/GFFMain.mp4';
+import GFFVideoMobile from '../assets/CASESTUDIES/GFFMainPhone.mp4';
+import IRVideo from '../assets/CASESTUDIES/IRMain.mp4';
+import IRVideoMobile from '../assets/CASESTUDIES/IRMainPhone.mp4';
+import IRLogoVideo from '../assets/CASESTUDIES/IRLogo.mp4';
+import IRLogoVideoMobile from '../assets/CASESTUDIES/IRLogoPhone.mp4';
+import SlateLogoVideo from '../assets/CASESTUDIES/SlateLogo.mp4';
+import SlateLogoVideoMobile from '../assets/CASESTUDIES/SlateLogoPhone.mp4';
 /**
  * Case Study Configuration
  * 
@@ -53,6 +71,7 @@ export const caseStudyConfig = {
           description: 'Join us for 7 days of paddling in a tropical paradise-it\'ll be the kayaking trip of a lifetime! We wrote the book on kayaking in Ecuador (literally).',
           profilePic: swaLogo,
           video: smallWorldVideo,
+          videoMobile: smallWorldVideoMobile,
           logoUrl: 'https://smallworldadventures.com/?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAZXh0bgNhZW0CMTEAc3J0YwZhcHBfaWQMMjU2MjgxMDQwNTU4AAGngnNyxych8dOXUxRyE5LNnjom0WXlb07xOD9eNFb_sys2avnKCtiekB3Mtfw_aem_4vRTq4qC57QgWfcev-Aiow'
         }
       },
@@ -61,7 +80,17 @@ export const caseStudyConfig = {
         component: SlideGeo,
         props: {
           location: '📍 Borja, Napo, Ecuador',
-          video: smallWorldGeoVideo
+          video: smallWorldGeoVideo,
+          videoMobile: smallWorldGeoVideoMobile
+        }
+      },
+      {
+        type: 'logo',
+        component: SlideLogo,
+        props: {
+          title: 'SWA Logo Animation',
+          video: SlateLogoVideo,
+          videoMobile: SlateLogoVideoMobile
         }
       }
     ]
@@ -69,17 +98,18 @@ export const caseStudyConfig = {
   Seadoo: {
     name: 'Seadoo',
     logoComponent: Seadoo,
-    order: 1, // Order in carousel (1-6)
+    order: 7, // Order in carousel (1-6)
     slides: [
       {
         type: 'main',
         component: SlideMain,
         props: {
-          title: 'Seadoo',
+          title: 'Sea-Doo',
           description: 'One of the world leaders in personal watercraft and pontoon boats. Explore new models and cutting-edge technology.',
           profilePic: seadooLogo,
-          video: seadooVideo
-          // No logoUrl - logo won't be clickable
+          video: seadooVideo,
+          videoMobile: seadooVideoMobile,
+          logoUrl: 'https://sea-doo.brp.com/us/en/'
         }
       }
       // No geo slide for Seadoo
@@ -88,7 +118,7 @@ export const caseStudyConfig = {
   Slate: {
     name: 'Slate',
     logoComponent: Slate,
-    order: 5, // Order in carousel (1-6)
+    order: 4, // Order in carousel (1-6)
     slides: [
       {
         type: 'main',
@@ -97,8 +127,18 @@ export const caseStudyConfig = {
           title: 'Slate',
           description: 'Compete against your friends. Create and join real-money contests on your favorite real-life, skill-based games and competitions.',
           profilePic: slateLogo,
-          video: slateVideo
-          // logoUrl is optional - not provided for Slate
+          video: slateVideo,
+          videoMobile: slateVideoMobile,
+          logoUrl: 'https://www.getslate.io/'
+        }
+      },
+      {
+        type: 'logo',
+        component: SlideLogo,
+        props: {
+          title: 'Slate Logo Animation',
+          video: SlateLogoVideo,
+          videoMobile: SlateLogoVideoMobile
         }
       }
     ]
@@ -115,8 +155,9 @@ export const caseStudyConfig = {
             title: 'TCO Fly Shop',
             description: 'Among the oldest and largest fly fishing outfitters, known for delivering the highest quality gear, fly tying materials, and expert customer service.',
             profilePic: tcoLogo,
-            video: slateVideo
-            // logoUrl is optional - not provided for TCO
+            video: TCOVideo,
+            videoMobile: TCOVideoMobile,
+            logoUrl: 'https://www.tcoflyfishing.com/'
           }
         }
       ]
@@ -133,8 +174,9 @@ export const caseStudyConfig = {
             title: 'Great Falls Foundation',
             description: 'A non-profit charitable organization dedicated to promoting whitewater competition and an active and outdoor lifestyle.',
             profilePic: gffLogo,
-            video: slateVideo
-            // logoUrl is optional - not provided for TCO
+            video: GFFVideo,
+            videoMobile: GFFVideoMobile,
+            logoUrl: 'https://www.greatfallsfoundation.org/'
           }
         }
       ]
@@ -142,7 +184,7 @@ export const caseStudyConfig = {
   IR: {
     name: 'IR',
     logoComponent: IR,
-    order: 4, // Order in carousel (1-6)
+    order: 5, // Order in carousel (1-6)
     slides: [
         {
           type: 'main',
@@ -151,11 +193,41 @@ export const caseStudyConfig = {
             title: 'Immersion Research',
             description: 'Immersion Research is a designer and manufacturer of paddling gear for whitewater kayaking, rafting, canoeing, and other paddlesports.',
             profilePic: irLogo,
-            video: slateVideo
-            // logoUrl is optional - not provided for IR
+            video: IRVideo,
+            videoMobile: IRVideoMobile,
+            logoUrl: 'https://immersionresearch.com/'
+          }
+        },
+        {
+          type: 'logo',
+          component: SlideLogo,
+          props: {
+            title: 'IR Logo Animation',
+            video: IRLogoVideo,
+            videoMobile: IRLogoVideoMobile
           }
         }
       ]
+  },
+  BG: {
+    name: 'BG',
+    logoComponent: BG,
+    order: 1, // Order in carousel (1-6)
+    slides: [
+      {
+        type: 'main',
+        component: SlideMain,
+         props: {
+           title: 'Blu Goo Anti-Fog',
+           description: 'An anti fog lens cleaner giving you the best visuals. Perfect for snow goggles, scuba gear, and everyday glasses - just to name a few.',
+           profilePic: BGLogo,
+           video: BGVideo,
+           videoMobile: BGVideoMobile,
+           logoUrl: 'https://blugoo.com/'
+         }
+      }
+      // No geo slide for Seadoo
+    ]
   }
 };
 
