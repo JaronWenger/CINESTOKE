@@ -1,11 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
-// Import the SVG as a React component
-import { ReactComponent as TCO } from '../assets/TCO.svg';
-import { ReactComponent as GFF } from '../assets/GFF.svg';
-import { ReactComponent as IR } from '../assets/IR.svg';
-import { ReactComponent as Seadoo } from '../assets/Seadoo.svg';
-import { ReactComponent as SWA} from '../assets/SWA.svg';
-import { ReactComponent as Slate } from '../assets/Slate.svg';
+// Import client logos and names from centralized config
+import { getClientLogoComponents, getClientNames } from '../config/caseStudyConfig';
 
 const ClientsV2 = ({ onClientChange }) => {
   const scrollContainerRef = useRef(null);
@@ -30,18 +25,9 @@ const ClientsV2 = ({ onClientChange }) => {
   };
   const [isReady, setIsReady] = useState(false); // Hide container until positioned
 
-  // Just add your imported components here - name is auto-generated from component name
-  const clientComponents = [
-    Seadoo,
-    TCO,
-    GFF,
-    IR,
-    Slate,
-    SWA,
-  ];
-
-  // Explicit name mapping by array index (more reliable than object lookup with SVG components)
-  const clientNames = ['Seadoo', 'TCO', 'GFF', 'IR', 'Slate', 'SWA'];
+  // Get client components and names from centralized config
+  const clientComponents = getClientLogoComponents();
+  const clientNames = getClientNames();
 
   // Automatically generate clients array - use explicit name mapping
   const clients = clientComponents.map((Component, index) => {

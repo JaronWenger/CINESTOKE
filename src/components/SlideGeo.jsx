@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SlideGeo = ({ location, video }) => {
+const SlideGeo = ({ location, video, preload = 'auto' }) => {
   return (
     <div className="slide-geo">
       <h2 className="case-study-title">
@@ -13,6 +13,7 @@ const SlideGeo = ({ location, video }) => {
           loop
           muted
           playsInline
+          preload={preload}
           className="case-study-video"
         />
       </div>

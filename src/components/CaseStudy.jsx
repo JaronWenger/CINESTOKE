@@ -549,13 +549,24 @@ const CaseStudy = ({ activeClient }) => {
           const SlideComponent = slideConfig.component;
           const isFirstSlide = index === 0;
           
+          // Determine preload strategy:
+          // - Current slide: preload="auto" (full preload for instant playback)
+          // - Adjacent slides: preload="metadata" (light preload for quick start)
+          // - Other slides: preload="none" (don't preload)
+          let preloadValue = 'none';
+          if (index === currentSlide) {
+            preloadValue = 'auto'; // Current slide - full preload
+          } else if (index === currentSlide + 1 || index === currentSlide - 1) {
+            preloadValue = 'metadata'; // Adjacent slides - metadata only
+          }
+          
           return (
             <div 
               key={index}
               ref={isFirstSlide ? firstSlideRef : null}
               className="case-study-slide-wrapper"
             >
-              <SlideComponent {...slideConfig.props} />
+              <SlideComponent {...slideConfig.props} preload={preloadValue} />
               {/* Navigation dots */}
               <div className="case-study-nav-dots">
                 {Array.from({ length: totalSlides }).map((_, dotIndex) => (

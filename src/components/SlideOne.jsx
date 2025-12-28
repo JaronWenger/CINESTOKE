@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SlideOne = ({ title, description, profilePic, video, logoUrl }) => {
+const SlideOne = ({ title, description, profilePic, video, logoUrl, preload = 'auto' }) => {
   return (
     <div className="slide-one">
       <div className="slide-one-header">
@@ -49,6 +49,7 @@ const SlideOne = ({ title, description, profilePic, video, logoUrl }) => {
           loop
           muted
           playsInline
+          preload={preload}
           className="case-study-video"
         />
       </div>

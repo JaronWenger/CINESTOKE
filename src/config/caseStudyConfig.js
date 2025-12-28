@@ -7,7 +7,15 @@ import SlideGeo from '../components/SlideGeo';
 // Future slides can be imported here
 // import SlideCustom from '../components/SlideCustom';
 
-// Import assets
+// Import SVG logos for carousel
+import { ReactComponent as Seadoo } from '../assets/Seadoo.svg';
+import { ReactComponent as TCO } from '../assets/TCO.svg';
+import { ReactComponent as GFF } from '../assets/GFF.svg';
+import { ReactComponent as IR } from '../assets/IR.svg';
+import { ReactComponent as Slate } from '../assets/Slate.svg';
+import { ReactComponent as SWA } from '../assets/SWA.svg';
+
+// Import case study assets
 import swaLogo from '../assets/CASESTUDIES/Brands/SWApp.webp';
 import smallWorldVideo from '../assets/CASESTUDIES/SmallWorldMain.mp4';
 import smallWorldGeoVideo from '../assets/CASESTUDIES/SmallWorldGeo.mp4';
@@ -34,6 +42,8 @@ import tcoLogo from '../assets/CASESTUDIES/Brands/TCOpp.webp';
 export const caseStudyConfig = {
   SWA: {
     name: 'Small World Adventures',
+    logoComponent: SWA,
+    order: 6, // Order in carousel (1-6)
     slides: [
       {
         type: 'main',
@@ -58,6 +68,8 @@ export const caseStudyConfig = {
   },
   Seadoo: {
     name: 'Seadoo',
+    logoComponent: Seadoo,
+    order: 1, // Order in carousel (1-6)
     slides: [
       {
         type: 'main',
@@ -75,6 +87,8 @@ export const caseStudyConfig = {
   },
   Slate: {
     name: 'Slate',
+    logoComponent: Slate,
+    order: 5, // Order in carousel (1-6)
     slides: [
       {
         type: 'main',
@@ -91,6 +105,8 @@ export const caseStudyConfig = {
   },
   TCO: {
     name: 'TCO',
+    logoComponent: TCO,
+    order: 2, // Order in carousel (1-6)
     slides: [
         {
           type: 'main',
@@ -107,6 +123,8 @@ export const caseStudyConfig = {
   },
   GFF: {
     name: 'GFF',
+    logoComponent: GFF,
+    order: 3, // Order in carousel (1-6)
     slides: [
         {
           type: 'main',
@@ -123,6 +141,8 @@ export const caseStudyConfig = {
   },
   IR: {
     name: 'IR',
+    logoComponent: IR,
+    order: 4, // Order in carousel (1-6)
     slides: [
         {
           type: 'main',
@@ -160,5 +180,28 @@ export const getClientsWithCaseStudies = () => {
   return Object.keys(caseStudyConfig).filter(
     clientName => caseStudyConfig[clientName].slides.length > 0
   );
+};
+
+/**
+ * Get client logo components for carousel
+ * Automatically sorted by order property in config
+ * @returns {array} - Array of React components (SVG logos) in order
+ */
+export const getClientLogoComponents = () => {
+  return Object.values(caseStudyConfig)
+    .sort((a, b) => (a.order || 999) - (b.order || 999))
+    .map(client => client.logoComponent)
+    .filter(Boolean); // Remove any undefined
+};
+
+/**
+ * Get client names in the same order as logo components
+ * Uses the config key as the identifier (e.g., "SWA", "Seadoo")
+ * @returns {array} - Array of client name strings (config keys)
+ */
+export const getClientNames = () => {
+  return Object.entries(caseStudyConfig)
+    .sort(([, a], [, b]) => (a.order || 999) - (b.order || 999))
+    .map(([key]) => key); // Use the config key as the identifier
 };
 
