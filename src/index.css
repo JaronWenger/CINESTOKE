@@ -967,6 +967,106 @@ video {
   padding: 0;
 }
 
+/* Slide Logo Styles - Circular video with fade out edges */
+.slide-logo {
+  text-align: center;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.slide-logo-video-container {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  max-width: 80vw;
+  max-height: 80vw;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto;
+  flex-shrink: 0;
+  /* Smooth fade out edges using radial gradient mask */
+  mask: radial-gradient(circle, rgba(0,0,0,1) 75%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.6) 88%, rgba(0,0,0,0.3) 94%, rgba(0,0,0,0) 100%);
+  -webkit-mask: radial-gradient(circle, rgba(0,0,0,1) 75%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.6) 88%, rgba(0,0,0,0.3) 94%, rgba(0,0,0,0) 100%);
+}
+
+.slide-logo-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+
+.slide-logo-fade-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  pointer-events: none;
+  /* Soft fade overlay that complements the mask for smoother edges */
+  background: radial-gradient(circle, transparent 75%, rgba(0,0,0,0.1) 82%, rgba(0,0,0,0.3) 88%, rgba(0,0,0,0.6) 94%, rgba(0,0,0,0.9) 100%);
+}
+
+/* Mobile responsive for slide-logo */
+@media (max-width: 768px) {
+  .slide-logo-video-container {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+/* Slide Splits Styles - WebP image display */
+.slide-splits {
+  text-align: center;
+  padding: 0;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+.slide-splits-image-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  flex-shrink: 1;
+  min-height: 0;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 0;
+}
+
+.slide-splits-image {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  display: block;
+  object-fit: contain;
+  margin: 0;
+  padding: 0;
+}
+
 /* Navigation dots */
 .case-study-nav-dots {
   display: flex;

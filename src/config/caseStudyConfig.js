@@ -5,6 +5,7 @@ import SlideOne from '../components/SlideOne';
 import SlideMain from '../components/SlideMain';
 import SlideGeo from '../components/SlideGeo';
 import SlideLogo from '../components/SlideLogo';
+import SlideSplits from '../components/SlideSplits';
 // Future slides can be imported here
 // import SlideCustom from '../components/SlideCustom';
 
@@ -35,6 +36,8 @@ import tcoLogo from '../assets/CASESTUDIES/Brands/TCOpp.webp';
 import BGLogo from '../assets/CASESTUDIES/Brands/BGpp.webp';
 import BGVideo from '../assets/CASESTUDIES/BGMain.mp4';
 import BGVideoMobile from '../assets/CASESTUDIES/BGMainPhone.mp4';
+import BGGeoVideo from '../assets/CASESTUDIES/BGGeo.mp4';
+import BGGeoVideoMobile from '../assets/CASESTUDIES/BGGeoPhone.mp4';
 import TCOVideo from '../assets/CASESTUDIES/TCOMain.mp4';
 import TCOVideoMobile from '../assets/CASESTUDIES/TCOMainPhone.mp4';
 import GFFVideo from '../assets/CASESTUDIES/GFFMain.mp4';
@@ -45,6 +48,10 @@ import IRLogoVideo from '../assets/CASESTUDIES/IRLogo.mp4';
 import IRLogoVideoMobile from '../assets/CASESTUDIES/IRLogoPhone.mp4';
 import SlateLogoVideo from '../assets/CASESTUDIES/SlateLogo.mp4';
 import SlateLogoVideoMobile from '../assets/CASESTUDIES/SlateLogoPhone.mp4';
+import GFFSplits from '../assets/CASESTUDIES/Splits/GFFsplits.webp';
+import SeadooSplits from '../assets/CASESTUDIES/Splits/Seadoosplits.webp';
+import SeadooSplits2 from '../assets/CASESTUDIES/Splits/Seadoosplits2.webp';
+import TCOSplits from '../assets/CASESTUDIES/Splits/TCOsplits.webp';
 /**
  * Case Study Configuration
  * 
@@ -56,6 +63,7 @@ import SlateLogoVideoMobile from '../assets/CASESTUDIES/SlateLogoPhone.mp4';
  *   - props: Props to pass to the component
  *     - SlideOne: title, description, profilePic, video, logoUrl (optional)
  *     - SlideGeo: location, video
+ *     - SlideSplits: image
  */
 export const caseStudyConfig = {
   SWA: {
@@ -83,15 +91,6 @@ export const caseStudyConfig = {
           video: smallWorldGeoVideo,
           videoMobile: smallWorldGeoVideoMobile
         }
-      },
-      {
-        type: 'logo',
-        component: SlideLogo,
-        props: {
-          title: 'SWA Logo Animation',
-          video: SlateLogoVideo,
-          videoMobile: SlateLogoVideoMobile
-        }
       }
     ]
   },
@@ -111,8 +110,21 @@ export const caseStudyConfig = {
           videoMobile: seadooVideoMobile,
           logoUrl: 'https://sea-doo.brp.com/us/en/'
         }
+      },
+      {
+        type: 'splits',
+        component: SlideSplits,
+        props: {
+          image: SeadooSplits
+        }
+      },
+      {
+        type: 'splits',
+        component: SlideSplits,
+        props: {
+          image: SeadooSplits2
+        }
       }
-      // No geo slide for Seadoo
     ]
   },
   Slate: {
@@ -159,6 +171,13 @@ export const caseStudyConfig = {
             videoMobile: TCOVideoMobile,
             logoUrl: 'https://www.tcoflyfishing.com/'
           }
+        },
+        {
+          type: 'splits',
+          component: SlideSplits,
+          props: {
+            image: TCOSplits
+          }
         }
       ]
   },
@@ -177,6 +196,13 @@ export const caseStudyConfig = {
             video: GFFVideo,
             videoMobile: GFFVideoMobile,
             logoUrl: 'https://www.greatfallsfoundation.org/'
+          }
+        },
+        {
+          type: 'splits',
+          component: SlideSplits,
+          props: {
+            image: GFFSplits
           }
         }
       ]
@@ -225,6 +251,15 @@ export const caseStudyConfig = {
            videoMobile: BGVideoMobile,
            logoUrl: 'https://blugoo.com/'
          }
+      },
+      {
+        type: 'geo',
+        component: SlideGeo,
+        props: {
+          location: '📍 Mount Bohemia, MI',
+          video: BGGeoVideo,
+          videoMobile: BGGeoVideoMobile
+        }
       }
       // No geo slide for Seadoo
     ]

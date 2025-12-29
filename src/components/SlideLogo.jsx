@@ -18,11 +18,8 @@ const SlideLogo = ({ title, video, videoMobile, preload = 'auto' }) => {
   }, [video, videoMobile]);
 
   return (
-    <div className="slide-geo">
-      <h2 className="case-study-title">
-        {title}
-      </h2>
-      <div className="case-study-video-container">
+    <div className="slide-logo">
+      <div className="slide-logo-video-container">
         <video
           src={videoSrc}
           autoPlay
@@ -30,9 +27,10 @@ const SlideLogo = ({ title, video, videoMobile, preload = 'auto' }) => {
           muted
           playsInline
           preload={preload}
-          className="case-study-video"
+          className="slide-logo-video"
           key={videoSrc} // Force re-render when video source changes
         />
+        <div className="slide-logo-fade-overlay"></div>
       </div>
     </div>
   );
