@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { getCaseStudyForClient } from '../config/caseStudyConfig';
 
-const CaseStudy = ({ activeClient }) => {
+const CaseStudy = ({ activeClient, onShiftBrand }) => {
   const scrollContainerRef = useRef(null);
   const firstSlideRef = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -13,6 +13,7 @@ const CaseStudy = ({ activeClient }) => {
   const isResettingRef = useRef(false); // Flag to prevent handleScroll from updating during brand switch
   const DRAG_THRESHOLD = 50; // Minimum pixels to trigger slide change
   const slideOneHeightRef = useRef(null); // Store the height from SlideOne (SWA) to apply to all slides
+  const touchStartRef = useRef({ x: 0, scrollLeft: 0 }); // Track touch start position for swipe detection
 
   // Get case study data for active client
   const caseStudyData = activeClient ? getCaseStudyForClient(activeClient) : null;
@@ -118,12 +119,26 @@ const CaseStudy = ({ activeClient }) => {
     if (dragDistance > DRAG_THRESHOLD) {
       if (dragDistanceRef.current > 0) {
         // Dragged right - go to previous slide
-        const prevSlide = Math.max(0, currentSlide - 1);
-        goToSlide(prevSlide);
+        if (currentSlide === 0) {
+          // At first slide, shift to previous brand
+          if (onShiftBrand) {
+            onShiftBrand('left');
+          }
+        } else {
+          const prevSlide = currentSlide - 1;
+          goToSlide(prevSlide);
+        }
       } else {
         // Dragged left - go to next slide
-        const nextSlide = Math.min(totalSlides - 1, currentSlide + 1);
-        goToSlide(nextSlide);
+        if (currentSlide === totalSlides - 1) {
+          // At last slide, shift to next brand
+          if (onShiftBrand) {
+            onShiftBrand('right');
+          }
+        } else {
+          const nextSlide = currentSlide + 1;
+          goToSlide(nextSlide);
+        }
       }
     } else {
       // Small drag, snap to current slide
@@ -141,21 +156,64 @@ const CaseStudy = ({ activeClient }) => {
   };
 
   // Touch event handlers for mobile
-  const handleTouchStart = () => {
+  const handleTouchStart = (e) => {
     isScrollingRef.current = true;
+    const container = scrollContainerRef.current;
+    if (container && e.touches.length > 0) {
+      touchStartRef.current = {
+        x: e.touches[0].clientX,
+        scrollLeft: container.scrollLeft
+      };
+    }
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
       scrollTimeoutRef.current = null;
     }
   };
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e) => {
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
     }
+    
+    // Check if user swiped beyond boundaries
+    const container = scrollContainerRef.current;
+    if (container && e.changedTouches.length > 0 && touchStartRef.current.x !== 0) {
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchDeltaX = touchStartRef.current.x - touchEndX;
+      const { scrollLeft, clientWidth } = container;
+      const currentSlideIndex = Math.round(scrollLeft / clientWidth);
+      
+      // If significant swipe detected
+      if (Math.abs(touchDeltaX) > DRAG_THRESHOLD) {
+        if (touchDeltaX > 0) {
+          // Swiped left - trying to go to next slide
+          if (currentSlideIndex === totalSlides - 1) {
+            // At last slide, shift to next brand
+            if (onShiftBrand) {
+              onShiftBrand('right');
+              touchStartRef.current = { x: 0, scrollLeft: 0 }; // Reset
+              return;
+            }
+          }
+        } else {
+          // Swiped right - trying to go to previous slide
+          if (currentSlideIndex === 0) {
+            // At first slide, shift to previous brand
+            if (onShiftBrand) {
+              onShiftBrand('left');
+              touchStartRef.current = { x: 0, scrollLeft: 0 }; // Reset
+              return;
+            }
+          }
+        }
+      }
+    }
+    
     scrollTimeoutRef.current = setTimeout(() => {
       isScrollingRef.current = false;
       snapToSlide();
+      touchStartRef.current = { x: 0, scrollLeft: 0 }; // Reset
     }, 150);
   };
 

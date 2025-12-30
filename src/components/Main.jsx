@@ -24,6 +24,7 @@ const Main = () => {
   const [activeClient, setActiveClient] = useState('SWA'); // Track which client is centered, default to SWA
   const [videoReady, setVideoReady] = useState(false); // Track if video is ready to play
   const [mainVideoLoaded, setMainVideoLoaded] = useState(false); // Track if main video has loaded
+  const clientsV2Ref = useRef(null); // Ref to ClientsV2 component for brand shifting
 
   // Use useLayoutEffect to set mobile state synchronously before paint
   useLayoutEffect(() => {
@@ -187,9 +188,18 @@ const Main = () => {
 
       <Bars />
       <Pics />
-      <ClientsV2 onClientChange={setActiveClient} />
+      <ClientsV2 ref={clientsV2Ref} onClientChange={setActiveClient} />
       {/* Only render CaseStudy after main video has loaded to avoid competing for bandwidth */}
-      {mainVideoLoaded && <CaseStudy activeClient={activeClient} />}
+      {mainVideoLoaded && (
+        <CaseStudy 
+          activeClient={activeClient} 
+          onShiftBrand={(direction) => {
+            if (clientsV2Ref.current?.shiftToAdjacentBrand) {
+              clientsV2Ref.current.shiftToAdjacentBrand(direction);
+            }
+          }}
+        />
+      )}
       <Social />
     </div>
   )

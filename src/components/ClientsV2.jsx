@@ -1,8 +1,8 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 // Import client logos and names from centralized config
 import { getClientLogoComponents, getClientNames } from '../config/caseStudyConfig';
 
-const ClientsV2 = ({ onClientChange }) => {
+const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
   const scrollContainerRef = useRef(null);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   
@@ -42,9 +42,17 @@ const ClientsV2 = ({ onClientChange }) => {
   });
 
   // Dynamic client list that grows as user scrolls
-  // Start with clients prepended so we can scroll left immediately
-  const [displayedClients, setDisplayedClients] = useState([...clients, ...clients, ...clients]);
-  const [prependCount, setPrependCount] = useState(3); // Start with 3 sets prepended
+  // Start with more sets prepended to ensure equal runway on left and right
+  // 5 sets total: 2 left, 1 middle (centered), 2 right
+  const initialSets = 5;
+  const [displayedClients, setDisplayedClients] = useState(() => {
+    const sets = [];
+    for (let i = 0; i < initialSets; i++) {
+      sets.push(...clients);
+    }
+    return sets;
+  });
+  const [prependCount, setPrependCount] = useState(initialSets); // Track prepended sets
   const scrollPositionRef = useRef(0);
   const lastScrollLeftRef = useRef(0);
   const scrollAdjustmentRef = useRef({ needed: false, amount: 0, targetPosition: 0 }); // Track scroll adjustment needed after prepending
@@ -235,6 +243,171 @@ const ClientsV2 = ({ onClientChange }) => {
       console.log('snapToCenter: no closest logo found');
     }
   };
+  
+  // Function to shift to adjacent brand (left or right)
+  // Called from CaseStudy when user tries to swipe beyond first/last slide
+  // Uses the unique space IDs to find the exact adjacent space
+  const shiftToAdjacentBrand = (direction) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+    
+    // Find currently centered client
+    const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
+    if (logoWrappers.length === 0) return;
+    
+    const containerRect = container.getBoundingClientRect();
+    const containerCenterX = containerRect.left + (containerRect.width / 2);
+    const containerLeft = containerRect.left;
+    const containerRight = containerRect.right;
+    
+    let closestLogo = null;
+    let closestDistance = Infinity;
+    
+    // Find the logo closest to center
+    logoWrappers.forEach((logoWrapper) => {
+      const logoRect = logoWrapper.getBoundingClientRect();
+      const isVisible = logoRect.right > containerLeft && logoRect.left < containerRight;
+      if (!isVisible) return;
+      
+      const logoCenterX = logoRect.left + (logoRect.width / 2);
+      const distance = Math.abs(logoCenterX - containerCenterX);
+      
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestLogo = logoWrapper;
+      }
+    });
+    
+    if (!closestLogo) return;
+    
+    // Use the unique space IDs we created to find the exact adjacent space
+    let adjacentSpaceId = null;
+    if (direction === 'left') {
+      // Get the left neighbor's space ID
+      adjacentSpaceId = closestLogo.getAttribute('data-left-space-id');
+    } else if (direction === 'right') {
+      // Get the right neighbor's space ID
+      adjacentSpaceId = closestLogo.getAttribute('data-right-space-id');
+    } else {
+      return;
+    }
+    
+    // If no adjacent space ID (at boundary), wrap around by finding the opposite end
+    if (!adjacentSpaceId || adjacentSpaceId === '') {
+      // Find the current client name to determine wrap-around
+      const currentClientName = getClientNameFromLogo(closestLogo);
+      if (!currentClientName) return;
+      
+      const currentIndex = clientNames.indexOf(currentClientName);
+      if (currentIndex === -1) return;
+      
+      // Calculate wrap-around index
+      let wrapIndex;
+      if (direction === 'left') {
+        wrapIndex = currentIndex === 0 ? clientNames.length - 1 : currentIndex - 1;
+      } else {
+        wrapIndex = currentIndex === clientNames.length - 1 ? 0 : currentIndex + 1;
+      }
+      
+      const wrapClientName = clientNames[wrapIndex];
+      
+      // Find the wrap-around logo (closest instance of that client)
+      let targetLogo = null;
+      let targetDistance = Infinity;
+      
+      logoWrappers.forEach((logoWrapper) => {
+        const clientName = getClientNameFromLogo(logoWrapper);
+        if (clientName === wrapClientName) {
+          const logoRect = logoWrapper.getBoundingClientRect();
+          const logoCenterX = logoRect.left + (logoRect.width / 2);
+          const distance = Math.abs(logoCenterX - containerCenterX);
+          
+          if (distance < targetDistance) {
+            targetDistance = distance;
+            targetLogo = logoWrapper;
+          }
+        }
+      });
+      
+      if (targetLogo) {
+        centerLogo(targetLogo);
+      }
+      return;
+    }
+    
+    // Get current client name to determine adjacent client
+    const currentClientName = getClientNameFromLogo(closestLogo);
+    if (!currentClientName) return;
+    
+    const currentIndex = clientNames.indexOf(currentClientName);
+    if (currentIndex === -1) return;
+    
+    // Calculate adjacent client index
+    let adjacentIndex;
+    if (direction === 'left') {
+      adjacentIndex = currentIndex === 0 ? clientNames.length - 1 : currentIndex - 1;
+    } else {
+      adjacentIndex = currentIndex === clientNames.length - 1 ? 0 : currentIndex + 1;
+    }
+    
+    const adjacentClientName = clientNames[adjacentIndex];
+    
+    // Try to find the adjacent space using space ID first (most accurate)
+    let targetLogo = null;
+    if (adjacentSpaceId && adjacentSpaceId !== '') {
+      const spaceIdLogo = container.querySelector(`[data-space-id="${adjacentSpaceId}"]`);
+      if (spaceIdLogo) {
+        // Verify it's the correct client and reasonably close
+        const spaceIdClientName = getClientNameFromLogo(spaceIdLogo);
+        const spaceIdRect = spaceIdLogo.getBoundingClientRect();
+        const spaceIdCenterX = spaceIdRect.left + (spaceIdRect.width / 2);
+        const spaceIdDistance = Math.abs(spaceIdCenterX - containerCenterX);
+        
+        // Use space ID logo if it matches the client and is reasonably close (within 3 screen widths)
+        if (spaceIdClientName === adjacentClientName && spaceIdDistance < containerRect.width * 3) {
+          targetLogo = spaceIdLogo;
+        }
+      }
+    }
+    
+    // Fallback: Find the closest instance of the adjacent client
+    if (!targetLogo) {
+      let closestAdjacentDistance = Infinity;
+      
+      logoWrappers.forEach((logoWrapper) => {
+        const clientName = getClientNameFromLogo(logoWrapper);
+        if (clientName === adjacentClientName) {
+          const logoRect = logoWrapper.getBoundingClientRect();
+          const logoCenterX = logoRect.left + (logoRect.width / 2);
+          const distance = Math.abs(logoCenterX - containerCenterX);
+          
+          if (distance < closestAdjacentDistance) {
+            closestAdjacentDistance = distance;
+            targetLogo = logoWrapper;
+          }
+        }
+      });
+    }
+    
+    if (targetLogo) {
+      // Center the adjacent brand
+      centerLogo(targetLogo);
+      
+      // Explicitly notify about the client change (don't wait for snapToCenter)
+      // This ensures immediate feedback when shifting brands
+      const targetClientName = getClientNameFromLogo(targetLogo);
+      if (targetClientName && onClientChange && targetClientName !== lastNotifiedClientRef.current) {
+        console.log('✅ ClientsV2 - shiftToAdjacentBrand shifting to:', targetClientName);
+        lastNotifiedClientRef.current = targetClientName;
+        onClientChange(targetClientName);
+      }
+    }
+  };
+  
+  // Expose shiftToAdjacentBrand via ref
+  useImperativeHandle(ref, () => ({
+    shiftToAdjacentBrand
+  }));
   
   // Extract infinite scroll logic to be called from both scroll events and drag handlers
   const checkAndLoadClients = (currentScrollLeft, previousScrollLeft) => {
@@ -567,9 +740,10 @@ const ClientsV2 = ({ onClientChange }) => {
       }
       
       // Find SWA in the middle set - SWA is at index 4 in the original array (order 5, swapped with IR)
-      // With 3 sets prepended, middle set starts at clients.length, so SWA is at clients.length + 4
+      // With 5 sets total, middle set is at index 2, so SWA is at clients.length * 2 + 4
       const allLogos = container.querySelectorAll('.client-logo-wrapper');
-      const targetIndex = clients.length + 4; // SWA position in middle set (now at order 5, index 4)
+      const middleSetIndex = Math.floor(initialSets / 2); // Middle set index (2 for 5 sets)
+      const targetIndex = clients.length * middleSetIndex + 4; // SWA position in middle set (now at order 5, index 4)
       
       let swaLogo = null;
       
@@ -755,8 +929,9 @@ const ClientsV2 = ({ onClientChange }) => {
           const lineWidth = line.offsetWidth;
           const gap = 0.5;
           const itemWidth = logoWidth + lineWidth + gap;
-          const middleStartIndex = clients.length;
-          const targetIndex = middleStartIndex + 5; // SWA in the middle set
+          const middleSetIndex = Math.floor(initialSets / 2); // Middle set index (2 for 5 sets)
+          const middleStartIndex = clients.length * middleSetIndex;
+          const targetIndex = middleStartIndex + 4; // SWA in the middle set (index 4 in original array)
           const linebWidth = 2;
           const estimatedMiddlePosition = linebWidth + (targetIndex * itemWidth);
           const estimatedScrollPosition = estimatedMiddlePosition - (container.clientWidth / 2);
@@ -906,6 +1081,29 @@ const ClientsV2 = ({ onClientChange }) => {
           const { Component, name } = client;
           const key = `client-${index}-${name}`;
           
+          // Calculate unique space identifier: which set this item belongs to and its position in the original array
+          // This ID remains stable even when items are prepended and uniquely identifies each exact space
+          const clientsPerSet = clients.length;
+          const setIndex = Math.floor(index / clientsPerSet);
+          const positionInSet = index % clientsPerSet;
+          const spaceId = `space-${setIndex}-${positionInSet}`;
+          
+          // Calculate left and right neighbor space IDs (exact spaces, not just client names)
+          const leftSpaceId = index > 0 ? (() => {
+            const leftSetIndex = Math.floor((index - 1) / clientsPerSet);
+            const leftPositionInSet = (index - 1) % clientsPerSet;
+            return `space-${leftSetIndex}-${leftPositionInSet}`;
+          })() : null;
+          const rightSpaceId = index < displayedClients.length - 1 ? (() => {
+            const rightSetIndex = Math.floor((index + 1) / clientsPerSet);
+            const rightPositionInSet = (index + 1) % clientsPerSet;
+            return `space-${rightSetIndex}-${rightPositionInSet}`;
+          })() : null;
+          
+          // Also store client names for convenience
+          const leftClient = index > 0 ? displayedClients[index - 1]?.name : null;
+          const rightClient = index < displayedClients.length - 1 ? displayedClients[index + 1]?.name : null;
+          
           // Debug: log first few to verify names
           if (index < 6) {
             console.log(`Rendering client ${index}: name="${name}", Component=${Component.name || Component.displayName || 'unknown'}`);
@@ -916,6 +1114,13 @@ const ClientsV2 = ({ onClientChange }) => {
               <div 
                 className="client-logo-wrapper"
                 data-client-name={name}
+                data-space-id={spaceId}
+                data-left-space-id={leftSpaceId || ''}
+                data-right-space-id={rightSpaceId || ''}
+                data-left-client={leftClient || ''}
+                data-right-client={rightClient || ''}
+                data-set-index={setIndex}
+                data-position-in-set={positionInSet}
                 style={{ 
                   flex: '0 0 auto', 
                   display: 'flex', 
@@ -1042,7 +1247,7 @@ const ClientsV2 = ({ onClientChange }) => {
       `}</style>
     </div>
   );
-};
+});
 
 export default ClientsV2;
 
