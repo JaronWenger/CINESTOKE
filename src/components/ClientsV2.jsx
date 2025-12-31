@@ -845,34 +845,66 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
       scrollPositionRef.current = container.scrollLeft;
       lastScrollLeftRef.current = container.scrollLeft;
       
-      // Refine with one more pass for accuracy
+      // Refine with multiple passes for accuracy (especially important on mobile)
       requestAnimationFrame(() => {
-        if (!container) return;
-        const finalContainerRect = container.getBoundingClientRect();
-        const finalLogoRect = swaLogo.getBoundingClientRect();
-        const finalLogoCenterX = finalLogoRect.left + (finalLogoRect.width / 2) - finalContainerRect.left;
-        const finalContainerCenterX = finalContainerRect.width / 2;
-        const finalOffset = finalLogoCenterX - finalContainerCenterX;
-        
-        if (Math.abs(finalOffset) > 1) {
-          container.style.scrollBehavior = 'auto';
-          container.scrollLeft = container.scrollLeft + finalOffset;
-          scrollPositionRef.current = container.scrollLeft;
-          lastScrollLeftRef.current = container.scrollLeft;
-        }
-        
-        // Mark as initialized and switch to smooth scrolling
-        hasInitializedRef.current = true;
-        initialCenteringCompleteRef.current = true;
-        container.style.scrollBehavior = 'smooth';
-        
-        // Notify about initial centered client
-        if (onClientChange) {
-          const clientName = getClientNameFromLogo(swaLogo);
-          if (clientName) {
-            onClientChange(clientName);
+        requestAnimationFrame(() => {
+          if (!container) return;
+          const finalContainerRect = container.getBoundingClientRect();
+          const finalLogoRect = swaLogo.getBoundingClientRect();
+          const finalLogoCenterX = finalLogoRect.left + (finalLogoRect.width / 2) - finalContainerRect.left;
+          const finalContainerCenterX = finalContainerRect.width / 2;
+          const finalOffset = finalLogoCenterX - finalContainerCenterX;
+          
+          if (Math.abs(finalOffset) > 1) {
+            container.style.scrollBehavior = 'auto';
+            container.scrollLeft = container.scrollLeft + finalOffset;
+            scrollPositionRef.current = container.scrollLeft;
+            lastScrollLeftRef.current = container.scrollLeft;
+            
+            // One more pass for mobile to ensure perfect centering
+            requestAnimationFrame(() => {
+              if (!container) return;
+              const finalContainerRect2 = container.getBoundingClientRect();
+              const finalLogoRect2 = swaLogo.getBoundingClientRect();
+              const finalLogoCenterX2 = finalLogoRect2.left + (finalLogoRect2.width / 2) - finalContainerRect2.left;
+              const finalContainerCenterX2 = finalContainerRect2.width / 2;
+              const finalOffset2 = finalLogoCenterX2 - finalContainerCenterX2;
+              
+              if (Math.abs(finalOffset2) > 1) {
+                container.style.scrollBehavior = 'auto';
+                container.scrollLeft = container.scrollLeft + finalOffset2;
+                scrollPositionRef.current = container.scrollLeft;
+                lastScrollLeftRef.current = container.scrollLeft;
+              }
+              
+              // Mark as initialized and switch to smooth scrolling
+              hasInitializedRef.current = true;
+              initialCenteringCompleteRef.current = true;
+              container.style.scrollBehavior = 'smooth';
+              
+              // Notify about initial centered client
+              if (onClientChange) {
+                const clientName = getClientNameFromLogo(swaLogo);
+                if (clientName) {
+                  onClientChange(clientName);
+                }
+              }
+            });
+          } else {
+            // Already centered, just mark as initialized
+            hasInitializedRef.current = true;
+            initialCenteringCompleteRef.current = true;
+            container.style.scrollBehavior = 'smooth';
+            
+            // Notify about initial centered client
+            if (onClientChange) {
+              const clientName = getClientNameFromLogo(swaLogo);
+              if (clientName) {
+                onClientChange(clientName);
+              }
+            }
           }
-        }
+        });
       });
     };
     
@@ -919,6 +951,9 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
     if (!container) return;
     
     // Wait a bit for DOM to be ready, then check
+    // Use longer timeout on mobile to ensure DOM is fully rendered
+    const isMobile = window.innerWidth <= 768;
+    const timeoutDelay = isMobile ? 200 : 100;
     const timeoutId = setTimeout(() => {
       if (!hasInitializedRef.current) {
         // If not initialized yet, try to initialize now
@@ -941,9 +976,99 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
             container.scrollLeft = estimatedScrollPosition;
             scrollPositionRef.current = container.scrollLeft;
             lastScrollLeftRef.current = container.scrollLeft;
-            hasInitializedRef.current = true;
-            initialCenteringCompleteRef.current = true; // Mark as complete so snapToCenter can run
-            container.style.scrollBehavior = 'smooth';
+            
+            // Refine with actual measurements (especially important on mobile)
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                if (!container) return;
+                const swaLabels = container.querySelectorAll('.client-logo-wrapper[data-client-name="SWA"]');
+                if (swaLabels.length > 0) {
+                  const allLogos = container.querySelectorAll('.client-logo-wrapper');
+                  const targetSWA = allLogos[targetIndex];
+                  const swaLogo = targetSWA && getClientNameFromLogo(targetSWA) === 'SWA' 
+                    ? targetSWA 
+                    : Array.from(swaLabels).find(logo => {
+                        const idx = Array.from(allLogos).indexOf(logo);
+                        return Math.abs(idx - targetIndex) < 5; // Within 5 positions
+                      }) || swaLabels[0];
+                  
+                  if (swaLogo) {
+                    const containerRect = container.getBoundingClientRect();
+                    const logoRect = swaLogo.getBoundingClientRect();
+                    const logoCenterX = logoRect.left + (logoRect.width / 2) - containerRect.left;
+                    const containerCenterX = containerRect.width / 2;
+                    const exactOffset = logoCenterX - containerCenterX;
+                    
+                    if (Math.abs(exactOffset) > 1) {
+                      container.style.scrollBehavior = 'auto';
+                      container.scrollLeft = container.scrollLeft + exactOffset;
+                      scrollPositionRef.current = container.scrollLeft;
+                      lastScrollLeftRef.current = container.scrollLeft;
+                      
+                      // One more pass for mobile
+                      if (isMobile) {
+                        requestAnimationFrame(() => {
+                          if (!container) return;
+                          const finalContainerRect = container.getBoundingClientRect();
+                          const finalLogoRect = swaLogo.getBoundingClientRect();
+                          const finalLogoCenterX = finalLogoRect.left + (finalLogoRect.width / 2) - finalContainerRect.left;
+                          const finalContainerCenterX = finalContainerRect.width / 2;
+                          const finalOffset = finalLogoCenterX - finalContainerCenterX;
+                          
+                          if (Math.abs(finalOffset) > 1) {
+                            container.style.scrollBehavior = 'auto';
+                            container.scrollLeft = container.scrollLeft + finalOffset;
+                            scrollPositionRef.current = container.scrollLeft;
+                            lastScrollLeftRef.current = container.scrollLeft;
+                          }
+                          
+                          hasInitializedRef.current = true;
+                          initialCenteringCompleteRef.current = true;
+                          container.style.scrollBehavior = 'smooth';
+                          
+                          if (onClientChange) {
+                            const clientName = getClientNameFromLogo(swaLogo);
+                            if (clientName) {
+                              onClientChange(clientName);
+                            }
+                          }
+                        });
+                      } else {
+                        hasInitializedRef.current = true;
+                        initialCenteringCompleteRef.current = true;
+                        container.style.scrollBehavior = 'smooth';
+                        
+                        if (onClientChange) {
+                          const clientName = getClientNameFromLogo(swaLogo);
+                          if (clientName) {
+                            onClientChange(clientName);
+                          }
+                        }
+                      }
+                    } else {
+                      hasInitializedRef.current = true;
+                      initialCenteringCompleteRef.current = true;
+                      container.style.scrollBehavior = 'smooth';
+                      
+                      if (onClientChange) {
+                        const clientName = getClientNameFromLogo(swaLogo);
+                        if (clientName) {
+                          onClientChange(clientName);
+                        }
+                      }
+                    }
+                  } else {
+                    hasInitializedRef.current = true;
+                    initialCenteringCompleteRef.current = true;
+                    container.style.scrollBehavior = 'smooth';
+                  }
+                } else {
+                  hasInitializedRef.current = true;
+                  initialCenteringCompleteRef.current = true;
+                  container.style.scrollBehavior = 'smooth';
+                }
+              });
+            });
           }
         }
       }
@@ -969,38 +1094,88 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
             scrollPositionRef.current = container.scrollLeft;
             lastScrollLeftRef.current = container.scrollLeft;
             
-            // Refine with actual measurements
+            // Refine with actual measurements (especially important on mobile)
             requestAnimationFrame(() => {
-              if (!container) return;
-              const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
-              if (logoWrappers.length > targetIndex) {
-                const targetLogo = logoWrappers[targetIndex];
-                if (targetLogo) {
-                  const containerRect = container.getBoundingClientRect();
-                  const logoRect = targetLogo.getBoundingClientRect();
-                  const logoCenterX = logoRect.left + (logoRect.width / 2) - containerRect.left;
-                  const containerCenterX = containerRect.width / 2;
-                  const exactScrollPosition = container.scrollLeft + (logoCenterX - containerCenterX);
-                  
-                  if (Math.abs(container.scrollLeft - exactScrollPosition) > 1) {
-                    container.style.scrollBehavior = 'auto';
-                    container.scrollLeft = Math.max(0, exactScrollPosition);
-                    scrollPositionRef.current = container.scrollLeft;
-                    lastScrollLeftRef.current = container.scrollLeft;
-                  }
-                  
-                  // Notify about centered client
-                  if (onClientChange) {
-                    const clientName = getClientNameFromLogo(targetLogo);
-                    if (clientName) {
-                      onClientChange(clientName);
+              requestAnimationFrame(() => {
+                if (!container) return;
+                const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
+                if (logoWrappers.length > targetIndex) {
+                  const targetLogo = logoWrappers[targetIndex];
+                  if (targetLogo) {
+                    const containerRect = container.getBoundingClientRect();
+                    const logoRect = targetLogo.getBoundingClientRect();
+                    const logoCenterX = logoRect.left + (logoRect.width / 2) - containerRect.left;
+                    const containerCenterX = containerRect.width / 2;
+                    const exactOffset = logoCenterX - containerCenterX;
+                    
+                    if (Math.abs(exactOffset) > 1) {
+                      container.style.scrollBehavior = 'auto';
+                      container.scrollLeft = container.scrollLeft + exactOffset;
+                      scrollPositionRef.current = container.scrollLeft;
+                      lastScrollLeftRef.current = container.scrollLeft;
+                      
+                      // One more pass for mobile to ensure perfect centering
+                      if (isMobile) {
+                        requestAnimationFrame(() => {
+                          if (!container) return;
+                          const finalContainerRect = container.getBoundingClientRect();
+                          const finalLogoRect = targetLogo.getBoundingClientRect();
+                          const finalLogoCenterX = finalLogoRect.left + (finalLogoRect.width / 2) - finalContainerRect.left;
+                          const finalContainerCenterX = finalContainerRect.width / 2;
+                          const finalOffset = finalLogoCenterX - finalContainerCenterX;
+                          
+                          if (Math.abs(finalOffset) > 1) {
+                            container.style.scrollBehavior = 'auto';
+                            container.scrollLeft = container.scrollLeft + finalOffset;
+                            scrollPositionRef.current = container.scrollLeft;
+                            lastScrollLeftRef.current = container.scrollLeft;
+                          }
+                          
+                          container.style.scrollBehavior = 'smooth';
+                          initialCenteringCompleteRef.current = true;
+                          setIsReady(true);
+                          
+                          // Notify about centered client
+                          if (onClientChange) {
+                            const clientName = getClientNameFromLogo(targetLogo);
+                            if (clientName) {
+                              onClientChange(clientName);
+                            }
+                          }
+                        });
+                      } else {
+                        container.style.scrollBehavior = 'smooth';
+                        initialCenteringCompleteRef.current = true;
+                        setIsReady(true);
+                        
+                        // Notify about centered client
+                        if (onClientChange) {
+                          const clientName = getClientNameFromLogo(targetLogo);
+                          if (clientName) {
+                            onClientChange(clientName);
+                          }
+                        }
+                      }
+                    } else {
+                      container.style.scrollBehavior = 'smooth';
+                      initialCenteringCompleteRef.current = true;
+                      setIsReady(true);
+                      
+                      // Notify about centered client
+                      if (onClientChange) {
+                        const clientName = getClientNameFromLogo(targetLogo);
+                        if (clientName) {
+                          onClientChange(clientName);
+                        }
+                      }
                     }
                   }
+                } else {
+                  container.style.scrollBehavior = 'smooth';
+                  initialCenteringCompleteRef.current = true;
+                  setIsReady(true);
                 }
-              }
-              container.style.scrollBehavior = 'smooth';
-              initialCenteringCompleteRef.current = true; // Mark as complete so snapToCenter can run
-              setIsReady(true); // Show container
+              });
             });
           }
         }
@@ -1041,7 +1216,7 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
       if (!isReady) {
         setIsReady(true);
       }
-    }, 100); // Small delay to ensure DOM is ready
+    }, timeoutDelay); // Longer delay on mobile to ensure DOM is ready
     
     return () => clearTimeout(timeoutId);
   }, [displayedClients.length, clients.length]);
