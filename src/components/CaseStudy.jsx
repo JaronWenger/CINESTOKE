@@ -258,20 +258,41 @@ const CaseStudy = ({ activeClient, onClientChange }) => {
     if (!isDragging) return;
 
     const container = scrollContainerRef.current;
-    if (container) {
-      container.style.cursor = 'grab';
-      container.style.userSelect = '';
+    if (!container) {
+      setIsDragging(false);
+      return;
     }
 
-    const dragDistance = Math.abs(dragDistanceRef.current);
+    container.style.cursor = 'grab';
+    container.style.userSelect = '';
 
-    if (dragDistance > DRAG_THRESHOLD) {
-      // Let native scroll-snap handle it
-      // The scroll event will update state
+    const dragDistance = dragDistanceRef.current; // Keep sign for direction
+    const absDragDistance = Math.abs(dragDistance);
+    const { scrollLeft, clientWidth } = container;
+
+    // Calculate current slide position
+    const currentSlideIndex = Math.round(dragStartRef.current.scrollLeft / clientWidth);
+
+    let targetSlideIndex;
+
+    if (absDragDistance > DRAG_THRESHOLD) {
+      // Determine direction and go to next/previous slide
+      if (dragDistance > 0) {
+        // Dragged right = go to previous slide
+        targetSlideIndex = currentSlideIndex - 1;
+      } else {
+        // Dragged left = go to next slide
+        targetSlideIndex = currentSlideIndex + 1;
+      }
     } else {
-      // Small drag, snap to current slide
-      snapToSlide();
+      // Small drag, snap back to current slide
+      targetSlideIndex = currentSlideIndex;
     }
+
+    // Animate smoothly to target slide
+    const targetScroll = targetSlideIndex * clientWidth;
+    container.style.scrollBehavior = 'smooth';
+    container.scrollLeft = targetScroll;
 
     setIsDragging(false);
     dragDistanceRef.current = 0;
