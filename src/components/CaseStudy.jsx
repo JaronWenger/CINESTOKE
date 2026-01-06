@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
 import { getCaseStudyForClient } from '../config/caseStudyConfig';
 
 const CaseStudy = ({ activeClient, onShiftBrand }) => {
@@ -14,6 +14,10 @@ const CaseStudy = ({ activeClient, onShiftBrand }) => {
   const DRAG_THRESHOLD = 50; // Minimum pixels to trigger slide change
   const slideOneHeightRef = useRef(null); // Store the height from SlideOne (SWA) to apply to all slides
   const touchStartRef = useRef({ x: 0, scrollLeft: 0 }); // Track touch start position for swipe detection
+
+  // Trackpad horizontal swipe handling
+  // Uses same mechanics as native scroll-snap for slides, only intervenes at boundaries
+  const isWheelLockedRef = useRef(false); // Lock after triggering brand switch to prevent momentum
 
   // Get case study data for active client
   const caseStudyData = activeClient ? getCaseStudyForClient(activeClient) : null;
@@ -175,7 +179,7 @@ const CaseStudy = ({ activeClient, onShiftBrand }) => {
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
     }
-    
+
     // Check if user swiped beyond boundaries
     const container = scrollContainerRef.current;
     if (container && e.changedTouches.length > 0 && touchStartRef.current.x !== 0) {
@@ -183,7 +187,7 @@ const CaseStudy = ({ activeClient, onShiftBrand }) => {
       const touchDeltaX = touchStartRef.current.x - touchEndX;
       const { scrollLeft, clientWidth } = container;
       const currentSlideIndex = Math.round(scrollLeft / clientWidth);
-      
+
       // If significant swipe detected
       if (Math.abs(touchDeltaX) > DRAG_THRESHOLD) {
         if (touchDeltaX > 0) {
@@ -209,13 +213,69 @@ const CaseStudy = ({ activeClient, onShiftBrand }) => {
         }
       }
     }
-    
+
     scrollTimeoutRef.current = setTimeout(() => {
       isScrollingRef.current = false;
       snapToSlide();
       touchStartRef.current = { x: 0, scrollLeft: 0 }; // Reset
     }, 150);
   };
+
+  // Trackpad horizontal swipe handler (for laptop users)
+  // Simple approach: let native scroll-snap handle slides, only intervene at scroll boundaries
+  const handleWheel = useCallback((e) => {
+    // Only handle horizontal scrolling
+    if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+
+    // Block all wheel events while locked (after brand switch, until transition completes)
+    if (isWheelLockedRef.current || isResettingRef.current) {
+      e.preventDefault();
+      return;
+    }
+
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    const maxScroll = scrollWidth - clientWidth;
+    const currentSlideIndex = Math.round(scrollLeft / clientWidth);
+
+    // Must be on first/last SLIDE (not just near scroll boundary)
+    const onFirstSlide = currentSlideIndex === 0;
+    const onLastSlide = currentSlideIndex === totalSlides - 1;
+
+    // AND at the actual scroll edge
+    const atLeftEdge = scrollLeft <= 5;
+    const atRightEdge = scrollLeft >= maxScroll - 5;
+
+    const swipingRight = e.deltaX < 0; // finger moves right, trying to see previous
+    const swipingLeft = e.deltaX > 0;  // finger moves left, trying to see next
+
+    // Require minimum delta to avoid residual momentum triggering
+    const MIN_DELTA = 8;
+
+    // At first slide, at left edge, swiping right → previous brand
+    if (onFirstSlide && atLeftEdge && swipingRight && Math.abs(e.deltaX) > MIN_DELTA) {
+      e.preventDefault();
+      isWheelLockedRef.current = true;
+      // Safety unlock in case transition doesn't complete (e.g., at first brand)
+      setTimeout(() => { isWheelLockedRef.current = false; }, 400);
+      if (onShiftBrand) onShiftBrand('left');
+      return;
+    }
+
+    // At last slide, at right edge, swiping left → next brand
+    if (onLastSlide && atRightEdge && swipingLeft && Math.abs(e.deltaX) > MIN_DELTA) {
+      e.preventDefault();
+      isWheelLockedRef.current = true;
+      // Safety unlock in case transition doesn't complete (e.g., at last brand)
+      setTimeout(() => { isWheelLockedRef.current = false; }, 400);
+      if (onShiftBrand) onShiftBrand('right');
+      return;
+    }
+
+    // Otherwise, let native scroll-snap handle it (scrolling between slides)
+  }, [totalSlides, onShiftBrand]);
 
   // Snap to nearest slide
   const snapToSlide = () => {
@@ -337,7 +397,10 @@ const CaseStudy = ({ activeClient, onShiftBrand }) => {
   useLayoutEffect(() => {
     // Set flag to prevent handleScroll from updating during reset
     isResettingRef.current = true;
-    
+
+    // Unlock wheel events - transition is complete
+    isWheelLockedRef.current = false;
+
     // Reset state immediately
     setCurrentSlide(0);
     
@@ -711,7 +774,7 @@ const CaseStudy = ({ activeClient, onShiftBrand }) => {
 
       const deltaX = e.clientX - dragStartRef.current.x;
       dragDistanceRef.current = deltaX;
-      
+
       // Allow visual feedback during drag
       const newScrollLeft = dragStartRef.current.scrollLeft - deltaX;
       container.style.scrollBehavior = 'auto';
@@ -730,6 +793,19 @@ const CaseStudy = ({ activeClient, onShiftBrand }) => {
       window.removeEventListener('mouseup', handleGlobalMouseUp);
     };
   }, [isDragging, currentSlide]);
+
+  // Trackpad wheel event listener (needs passive: false to allow preventDefault)
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    // Add wheel listener with passive: false so we can preventDefault
+    container.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      container.removeEventListener('wheel', handleWheel);
+    };
+  }, [handleWheel]);
 
   // Don't render if no active client or no slides
   if (!activeClient || totalSlides === 0) {
