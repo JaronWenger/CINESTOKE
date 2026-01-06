@@ -8,7 +8,7 @@ import { getAllSlidesFlattened, getClientStartIndex } from '../config/caseStudyC
  * Native scroll-snap handles ALL transitions - no special handling needed.
  * Infinite scroll with buffer slides on both ends for seamless looping.
  */
-const CaseStudy = ({ activeClient, onClientChange }) => {
+const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) => {
   const scrollContainerRef = useRef(null);
   const [currentGlobalIndex, setCurrentGlobalIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -19,6 +19,7 @@ const CaseStudy = ({ activeClient, onClientChange }) => {
   const isProgrammaticScrollRef = useRef(false); // Prevent onClientChange during programmatic scroll
   const slideOneHeightRef = useRef(null);
   const hasInitializedRef = useRef(false);
+  const fadeTimeoutRef = useRef(null);
   const DRAG_THRESHOLD = 50;
 
   // Get all slides flattened into one array
@@ -65,7 +66,9 @@ const CaseStudy = ({ activeClient, onClientChange }) => {
 
     // Get client info for current slide
     const slideInfo = allSlides[normalizedIndex];
-    if (slideInfo && onClientChange && slideInfo.clientKey !== activeClient) {
+
+    // Only notify client change if NOT fading (prevents jitter during programmatic scroll)
+    if (slideInfo && onClientChange && slideInfo.clientKey !== activeClient && !isFading) {
       onClientChange(slideInfo.clientKey);
     }
 
@@ -82,7 +85,7 @@ const CaseStudy = ({ activeClient, onClientChange }) => {
       isScrollingRef.current = false;
       checkAndWrapScroll();
     }, 150);
-  }, [allSlides, totalSlides, realStartIndex, activeClient, onClientChange]);
+  }, [allSlides, totalSlides, realStartIndex, activeClient, onClientChange, isFading]);
 
   // Wrap scroll position when reaching buffer zones
   const checkAndWrapScroll = useCallback(() => {
@@ -162,13 +165,32 @@ const CaseStudy = ({ activeClient, onClientChange }) => {
     const clientStartIndex = getClientStartIndex(clientKey);
     if (clientStartIndex === -1) return;
 
-    // Scroll to the client's position in the real section
-    const targetIndex = realStartIndex + clientStartIndex;
-    const { clientWidth } = container;
+    const { scrollLeft, clientWidth } = container;
+    const currentSlideIndex = Math.round(scrollLeft / clientWidth);
+
+    // Find all possible positions for this client (in real section and buffers)
+    // The client appears at: clientStartIndex, clientStartIndex + totalSlides, clientStartIndex - totalSlides (in buffer)
+    const possibleTargets = [
+      clientStartIndex,                           // Start buffer
+      realStartIndex + clientStartIndex,          // Real section
+      realStartIndex + totalSlides + clientStartIndex  // End buffer
+    ];
+
+    // Find the closest target to current position (shortest visual path)
+    let closestTarget = possibleTargets[1]; // Default to real section
+    let closestDistance = Infinity;
+
+    possibleTargets.forEach(targetIndex => {
+      const distance = Math.abs(targetIndex - currentSlideIndex);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestTarget = targetIndex;
+      }
+    });
 
     isProgrammaticScrollRef.current = true;
     container.style.scrollBehavior = 'smooth';
-    container.scrollLeft = targetIndex * clientWidth;
+    container.scrollLeft = closestTarget * clientWidth;
 
     setTimeout(() => {
       isProgrammaticScrollRef.current = false;
@@ -178,7 +200,7 @@ const CaseStudy = ({ activeClient, onClientChange }) => {
     setCurrentGlobalIndex(clientStartIndex);
     const slideInfo = allSlides[clientStartIndex];
     updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1);
-  }, [allSlides, realStartIndex]);
+  }, [allSlides, realStartIndex, totalSlides]);
 
   // When activeClient changes from external source (logo click), scroll to that client
   useEffect(() => {
@@ -189,6 +211,28 @@ const CaseStudy = ({ activeClient, onClientChange }) => {
       scrollToClient(activeClient);
     }
   }, [activeClient]);
+
+  // Handle fade completion - wait for scroll to finish then notify
+  useEffect(() => {
+    if (isFading && onFadeComplete) {
+      // Clear any existing timeout
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current);
+      }
+
+      // Wait for scroll animation to complete (smooth scroll takes ~500ms)
+      // Then notify parent to fade back in
+      fadeTimeoutRef.current = setTimeout(() => {
+        onFadeComplete();
+      }, 600);
+    }
+
+    return () => {
+      if (fadeTimeoutRef.current) {
+        clearTimeout(fadeTimeoutRef.current);
+      }
+    };
+  }, [isFading, activeClient, onFadeComplete]);
 
   // Initial scroll to SWA (or activeClient) on mount
   useLayoutEffect(() => {
@@ -404,6 +448,10 @@ const CaseStudy = ({ activeClient, onClientChange }) => {
         onScroll={handleScroll}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
+        style={{
+          opacity: isFading ? 0 : 1,
+          transition: 'opacity 0.3s ease-in-out'
+        }}
       >
         {infiniteSlides.map((slideData, index) => {
           const SlideComponent = slideData.slide.component;

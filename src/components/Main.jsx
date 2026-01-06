@@ -24,7 +24,22 @@ const Main = () => {
   const [activeClient, setActiveClient] = useState('SWA'); // Track which client is centered, default to SWA
   const [videoReady, setVideoReady] = useState(false); // Track if video is ready to play
   const [mainVideoLoaded, setMainVideoLoaded] = useState(false); // Track if main video has loaded
+  const [isCaseStudyFading, setIsCaseStudyFading] = useState(false); // Track fade state for CaseStudy
   const clientsV2Ref = useRef(null); // Ref to ClientsV2 component for brand shifting
+
+  // Handle client change from ClientsV2 (user click or swipe) - triggers fade
+  const handleClientWillChange = (clientKey) => {
+    // Only trigger fade if actually changing to a different client
+    if (clientKey !== activeClient) {
+      setIsCaseStudyFading(true);
+      setActiveClient(clientKey);
+    }
+  };
+
+  // Handle fade completion from CaseStudy
+  const handleFadeComplete = () => {
+    setIsCaseStudyFading(false);
+  };
 
   // Use useLayoutEffect to set mobile state synchronously before paint
   useLayoutEffect(() => {
@@ -188,15 +203,17 @@ const Main = () => {
 
       <Bars />
       <Pics />
-      <ClientsV2 ref={clientsV2Ref} onClientChange={setActiveClient} />
+      <ClientsV2 ref={clientsV2Ref} onClientChange={handleClientWillChange} />
       {/* Only render CaseStudy after main video has loaded to avoid competing for bandwidth */}
       {/* CaseStudy now uses unified continuous carousel - all slides in sequence */}
       {/* onClientChange syncs the logo carousel when user scrolls through slides */}
       {mainVideoLoaded && (
         <CaseStudy
           activeClient={activeClient}
+          isFading={isCaseStudyFading}
+          onFadeComplete={handleFadeComplete}
           onClientChange={(clientKey) => {
-            // Update active client state
+            // Update active client state (from CaseStudy scroll - no fade needed)
             setActiveClient(clientKey);
             // Sync ClientsV2 logo carousel to show the new client
             if (clientsV2Ref.current?.scrollToClient) {
