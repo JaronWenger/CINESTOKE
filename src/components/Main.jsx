@@ -216,7 +216,8 @@ const Main = () => {
             // Update active client state (from CaseStudy scroll - no fade needed)
             setActiveClient(clientKey);
             // Sync ClientsV2 logo carousel to show the new client
-            if (clientsV2Ref.current?.scrollToClient) {
+            // BUT only if not currently fading (prevents feedback loop when user initiated from ClientsV2)
+            if (clientsV2Ref.current?.scrollToClient && !isCaseStudyFading) {
               clientsV2Ref.current.scrollToClient(clientKey);
             }
           }}

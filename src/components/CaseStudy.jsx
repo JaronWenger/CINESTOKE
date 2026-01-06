@@ -192,9 +192,10 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
     container.style.scrollBehavior = 'smooth';
     container.scrollLeft = closestTarget * clientWidth;
 
+    // Keep programmatic flag true until scroll animation fully completes
     setTimeout(() => {
       isProgrammaticScrollRef.current = false;
-    }, 500);
+    }, 700);
 
     // Update state
     setCurrentGlobalIndex(clientStartIndex);
