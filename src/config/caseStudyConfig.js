@@ -312,3 +312,41 @@ export const getClientNames = () => {
     .map(([key]) => key); // Use the config key as the identifier
 };
 
+/**
+ * Get ALL slides from ALL clients flattened into one array (in order)
+ * Each slide includes client metadata for tracking
+ * @returns {array} - Array of { clientKey, clientName, slideIndex, totalClientSlides, slide }
+ */
+export const getAllSlidesFlattened = () => {
+  const sortedClients = Object.entries(caseStudyConfig)
+    .sort(([, a], [, b]) => (a.order || 999) - (b.order || 999));
+
+  const flattened = [];
+
+  sortedClients.forEach(([clientKey, clientData]) => {
+    clientData.slides.forEach((slide, slideIndex) => {
+      flattened.push({
+        clientKey,
+        clientName: clientData.name,
+        slideIndex,
+        totalClientSlides: clientData.slides.length,
+        isFirstSlideOfClient: slideIndex === 0,
+        isLastSlideOfClient: slideIndex === clientData.slides.length - 1,
+        slide
+      });
+    });
+  });
+
+  return flattened;
+};
+
+/**
+ * Get the global index where a specific client's slides start
+ * @param {string} clientKey - The client key (e.g., "SWA")
+ * @returns {number} - The starting index in the flattened array
+ */
+export const getClientStartIndex = (clientKey) => {
+  const allSlides = getAllSlidesFlattened();
+  return allSlides.findIndex(s => s.clientKey === clientKey);
+};
+

@@ -404,9 +404,55 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
     }
   };
   
-  // Expose shiftToAdjacentBrand via ref
+  // Scroll to a specific client's logo (called when CaseStudy scroll changes client)
+  const scrollToClient = (clientKey) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    // Find all logo wrappers with this client
+    const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
+    const containerRect = container.getBoundingClientRect();
+    const containerCenterX = containerRect.left + (containerRect.width / 2);
+
+    // Find the closest instance of this client to center (in case of duplicates)
+    let targetLogo = null;
+    let closestDistance = Infinity;
+
+    logoWrappers.forEach((logoWrapper) => {
+      const logoClientName = getClientNameFromLogo(logoWrapper);
+      if (logoClientName === clientKey) {
+        const logoRect = logoWrapper.getBoundingClientRect();
+        const logoCenterX = logoRect.left + (logoRect.width / 2);
+        const distance = Math.abs(logoCenterX - containerCenterX);
+
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          targetLogo = logoWrapper;
+        }
+      }
+    });
+
+    if (!targetLogo) return;
+
+    // Calculate scroll needed to center this logo
+    const logoRect = targetLogo.getBoundingClientRect();
+    const logoCenterX = logoRect.left + (logoRect.width / 2);
+    const scrollOffset = logoCenterX - containerCenterX;
+
+    // Smooth scroll to center the logo
+    container.scrollBy({
+      left: scrollOffset,
+      behavior: 'smooth'
+    });
+
+    // Update last notified client to prevent duplicate notifications
+    lastNotifiedClientRef.current = clientKey;
+  };
+
+  // Expose methods via ref
   useImperativeHandle(ref, () => ({
-    shiftToAdjacentBrand
+    shiftToAdjacentBrand,
+    scrollToClient
   }));
   
   // Extract infinite scroll logic to be called from both scroll events and drag handlers

@@ -190,12 +190,17 @@ const Main = () => {
       <Pics />
       <ClientsV2 ref={clientsV2Ref} onClientChange={setActiveClient} />
       {/* Only render CaseStudy after main video has loaded to avoid competing for bandwidth */}
+      {/* CaseStudy now uses unified continuous carousel - all slides in sequence */}
+      {/* onClientChange syncs the logo carousel when user scrolls through slides */}
       {mainVideoLoaded && (
-        <CaseStudy 
-          activeClient={activeClient} 
-          onShiftBrand={(direction) => {
-            if (clientsV2Ref.current?.shiftToAdjacentBrand) {
-              clientsV2Ref.current.shiftToAdjacentBrand(direction);
+        <CaseStudy
+          activeClient={activeClient}
+          onClientChange={(clientKey) => {
+            // Update active client state
+            setActiveClient(clientKey);
+            // Sync ClientsV2 logo carousel to show the new client
+            if (clientsV2Ref.current?.scrollToClient) {
+              clientsV2Ref.current.scrollToClient(clientKey);
             }
           }}
         />
