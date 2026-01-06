@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
-import { getAllSlidesFlattened, getClientStartIndex } from '../config/caseStudyConfig';
+import { getAllSlidesFlattened, getClientStartIndex, getClientOrder } from '../config/caseStudyConfig';
 
 /**
  * CaseStudy - Unified Continuous Carousel
@@ -157,7 +157,7 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
     }
   };
 
-  // Navigate to specific client's first slide (called when logo is clicked)
+  // Navigate to specific client's first slide (called when logo is clicked/swiped)
   const scrollToClient = useCallback((clientKey) => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -168,40 +168,82 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
     const { scrollLeft, clientWidth } = container;
     const currentSlideIndex = Math.round(scrollLeft / clientWidth);
 
+    // Get current client to determine expected scroll direction
+    const currentSlideInfo = getCurrentClientInfo(currentGlobalIndex);
+    const currentClientKey = currentSlideInfo?.clientKey;
+
+    // Get client orders to determine expected direction
+    const currentOrder = currentClientKey ? getClientOrder(currentClientKey) : 0;
+    const targetOrder = getClientOrder(clientKey);
+
+    // Determine expected direction based on client order
+    // Handle wrap-around: if going from order 7 to order 1, that's "forward"
+    // if going from order 1 to order 7, that's "backward"
+    const maxOrder = 7;
+    let shouldScrollForward;
+
+    if (currentOrder === targetOrder) {
+      shouldScrollForward = true; // Same client, default forward
+    } else {
+      const forwardDistance = (targetOrder - currentOrder + maxOrder) % maxOrder || maxOrder;
+      const backwardDistance = (currentOrder - targetOrder + maxOrder) % maxOrder || maxOrder;
+      shouldScrollForward = forwardDistance <= backwardDistance;
+    }
+
     // Find all possible positions for this client (in real section and buffers)
-    // The client appears at: clientStartIndex, clientStartIndex + totalSlides, clientStartIndex - totalSlides (in buffer)
     const possibleTargets = [
       clientStartIndex,                           // Start buffer
       realStartIndex + clientStartIndex,          // Real section
       realStartIndex + totalSlides + clientStartIndex  // End buffer
     ];
 
-    // Find the closest target to current position (shortest visual path)
-    let closestTarget = possibleTargets[1]; // Default to real section
-    let closestDistance = Infinity;
+    // Pick the target that moves in the expected direction
+    let bestTarget = possibleTargets[1]; // Default to real section
 
-    possibleTargets.forEach(targetIndex => {
-      const distance = Math.abs(targetIndex - currentSlideIndex);
-      if (distance < closestDistance) {
-        closestDistance = distance;
-        closestTarget = targetIndex;
+    if (shouldScrollForward) {
+      // Find closest target that is >= currentSlideIndex (moving right/forward)
+      let bestDistance = Infinity;
+      possibleTargets.forEach(targetIndex => {
+        const distance = targetIndex - currentSlideIndex;
+        if (distance >= 0 && distance < bestDistance) {
+          bestDistance = distance;
+          bestTarget = targetIndex;
+        }
+      });
+      // If no forward target found, pick the one that wraps around (smallest index)
+      if (bestDistance === Infinity) {
+        bestTarget = Math.min(...possibleTargets);
       }
-    });
+    } else {
+      // Find closest target that is <= currentSlideIndex (moving left/backward)
+      let bestDistance = Infinity;
+      possibleTargets.forEach(targetIndex => {
+        const distance = currentSlideIndex - targetIndex;
+        if (distance >= 0 && distance < bestDistance) {
+          bestDistance = distance;
+          bestTarget = targetIndex;
+        }
+      });
+      // If no backward target found, pick the one that wraps around (largest index)
+      if (bestDistance === Infinity) {
+        bestTarget = Math.max(...possibleTargets);
+      }
+    }
 
     isProgrammaticScrollRef.current = true;
     container.style.scrollBehavior = 'smooth';
-    container.scrollLeft = closestTarget * clientWidth;
+    container.scrollLeft = bestTarget * clientWidth;
 
     // Keep programmatic flag true until scroll animation fully completes
     setTimeout(() => {
       isProgrammaticScrollRef.current = false;
-    }, 700);
+    }, 800);
 
     // Update state
     setCurrentGlobalIndex(clientStartIndex);
     const slideInfo = allSlides[clientStartIndex];
     updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1);
-  }, [allSlides, realStartIndex, totalSlides]);
+  }, [allSlides, realStartIndex, totalSlides, currentGlobalIndex, getCurrentClientInfo]);
 
   // When activeClient changes from external source (logo click), scroll to that client
   useEffect(() => {
@@ -221,11 +263,11 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
         clearTimeout(fadeTimeoutRef.current);
       }
 
-      // Wait for scroll animation to complete (smooth scroll takes ~500ms)
+      // Wait for scroll animation to complete (smooth scroll takes ~800ms)
       // Then notify parent to fade back in
       fadeTimeoutRef.current = setTimeout(() => {
         onFadeComplete();
-      }, 600);
+      }, 850);
     }
 
     return () => {

@@ -350,3 +350,13 @@ export const getClientStartIndex = (clientKey) => {
   return allSlides.findIndex(s => s.clientKey === clientKey);
 };
 
+/**
+ * Get the order value for a specific client
+ * @param {string} clientKey - The client key (e.g., "SWA")
+ * @returns {number} - The order value (1-7) or 999 if not found
+ */
+export const getClientOrder = (clientKey) => {
+  const client = caseStudyConfig[clientKey];
+  return client?.order || 999;
+};
+
