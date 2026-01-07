@@ -515,18 +515,22 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
 
     const { scrollLeft } = container;
     const previousScrollLeft = scrollPositionRef.current;
-    
+
     scrollPositionRef.current = scrollLeft;
     lastScrollLeftRef.current = scrollLeft;
 
     // Check and load clients if needed
     checkAndLoadClients(scrollLeft, previousScrollLeft);
 
+    // Immediately detect and notify if centered client changes during scroll
+    // This triggers fade right away for trackpad/wheel scrolling
+    detectAndNotifyCenteredClient();
+
     // Clear existing timeout
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
     }
-    
+
     // Set timeout to snap to center when scrolling stops (only if not holding)
     scrollTimeoutRef.current = setTimeout(() => {
       // Mark scrolling as stopped
@@ -630,20 +634,23 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
 
   const handleMouseUp = () => {
     if (!isDragging) return;
-    
+
     const container = scrollContainerRef.current;
     if (!container) return;
-    
+
     // Mark as no longer holding
     isHoldingRef.current = false;
-    
+
+    // Immediately detect and notify closest client to start fade right away
+    detectAndNotifyCenteredClient();
+
     // Simple velocity from last movement (like touch)
     const timeDelta = lastMoveRef.current.time - prevMoveRef.current.time;
     const positionDelta = lastMoveRef.current.x - prevMoveRef.current.x;
-    
+
     // Velocity in pixels per frame
     const velocity = timeDelta > 0 ? (positionDelta / timeDelta) * 16 : 0;
-    
+
     // Apply momentum if there's velocity
     if (Math.abs(velocity) > 0.5) {
       applyMomentum(velocity);
@@ -656,7 +663,7 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
         snapToCenter();
       });
     }
-    
+
     container.style.cursor = 'grab';
     container.style.userSelect = '';
     setIsDragging(false);
@@ -684,6 +691,10 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
   const handleTouchEnd = () => {
     // Mark as no longer holding
     isHoldingRef.current = false;
+
+    // Immediately detect and notify closest client to start fade right away
+    detectAndNotifyCenteredClient();
+
     // Clear any pending scroll timeout
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
@@ -1354,6 +1365,11 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
                   boxSizing: 'border-box'
                 }}
                 onClick={(e) => {
+                  // Immediately notify parent to start fade (before centering animation)
+                  if (onClientChange && name !== lastNotifiedClientRef.current) {
+                    lastNotifiedClientRef.current = name;
+                    onClientChange(name);
+                  }
                   centerLogo(e.currentTarget);
                 }}
               >
