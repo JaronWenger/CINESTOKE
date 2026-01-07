@@ -1354,6 +1354,11 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
                   boxSizing: 'border-box'
                 }}
                 onClick={(e) => {
+                  // Trigger fade immediately on click (before centering animation)
+                  if (onClientChange && name !== lastNotifiedClientRef.current) {
+                    lastNotifiedClientRef.current = name;
+                    onClientChange(name);
+                  }
                   centerLogo(e.currentTarget);
                 }}
               >

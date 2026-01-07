@@ -231,13 +231,38 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
     }
 
     isProgrammaticScrollRef.current = true;
-    container.style.scrollBehavior = 'smooth';
-    container.scrollLeft = bestTarget * clientWidth;
 
-    // Keep programmatic flag true until scroll animation fully completes
+    // Calculate exact target position
+    const targetScrollLeft = Math.round(bestTarget * clientWidth);
+
+    // Disable scroll-snap during transition to prevent browser interference
+    container.style.scrollSnapType = 'none';
+
+    // Start smooth scroll for visual effect during fade out
+    container.style.scrollBehavior = 'smooth';
+    container.scrollLeft = targetScrollLeft;
+
+    // Snap to exact position before fade-in to prevent jitter
+    // Recalculate using actual DOM element position for accuracy
     setTimeout(() => {
+      container.style.scrollBehavior = 'auto';
+      // Get actual slide element position for pixel-perfect alignment
+      const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+      const targetSlide = slideWrappers[bestTarget];
+      if (targetSlide) {
+        container.scrollLeft = targetSlide.offsetLeft;
+      } else {
+        // Fallback to recalculated position
+        container.scrollLeft = Math.round(bestTarget * container.clientWidth);
+      }
+    }, 750);
+
+    // Re-enable scroll-snap and smooth scrolling after transition completes
+    setTimeout(() => {
+      container.style.scrollBehavior = 'smooth';
+      container.style.scrollSnapType = 'x mandatory';
       isProgrammaticScrollRef.current = false;
-    }, 800);
+    }, 900);
 
     // Update state
     setCurrentGlobalIndex(clientStartIndex);
