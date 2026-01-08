@@ -1,21 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-const SlideLogo = ({ title, video, videoMobile, preload = 'auto' }) => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [videoSrc, setVideoSrc] = useState(video);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth <= 768;
-      setIsMobile(mobile);
-      // Use mobile video if available and on mobile, otherwise use regular video
-      setVideoSrc(mobile && videoMobile ? videoMobile : video);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, [video, videoMobile]);
+const SlideLogo = ({ title, video, videoMobile, preload = 'auto', isMobile = false }) => {
+  // Use mobile video if available and on mobile, otherwise use regular video
+  const videoSrc = (isMobile && videoMobile) ? videoMobile : video;
 
   return (
     <div className="slide-logo">

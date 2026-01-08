@@ -212,6 +212,7 @@ const Main = () => {
           activeClient={activeClient}
           isFading={isCaseStudyFading}
           onFadeComplete={handleFadeComplete}
+          isMobile={isMobile}
           onClientChange={(clientKey) => {
             // Update active client state (from CaseStudy scroll - no fade needed)
             setActiveClient(clientKey);
