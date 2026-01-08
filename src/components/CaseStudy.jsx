@@ -21,6 +21,7 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
   const hasInitializedRef = useRef(false);
   const fadeTimeoutRef = useRef(null);
   const DRAG_THRESHOLD = 50;
+  const snapTimeoutRef = useRef(null);
 
   // Get all slides flattened into one array
   const allSlides = getAllSlidesFlattened();
@@ -47,6 +48,42 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
     const normalizedIndex = ((globalIndex % totalSlides) + totalSlides) % totalSlides;
     return allSlides[normalizedIndex];
   }, [allSlides, totalSlides]);
+
+  // Snap to the nearest slide using actual element positions (pixel-perfect)
+  const snapToNearestSlide = useCallback(() => {
+    const container = scrollContainerRef.current;
+    if (!container || isProgrammaticScrollRef.current) return;
+
+    const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+    if (slideWrappers.length === 0) return;
+
+    const { scrollLeft } = container;
+    let closestSlide = null;
+    let closestDistance = Infinity;
+    let closestIndex = 0;
+
+    // Find the slide whose left edge is closest to the current scroll position
+    slideWrappers.forEach((slide, index) => {
+      const distance = Math.abs(slide.offsetLeft - scrollLeft);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestSlide = slide;
+        closestIndex = index;
+      }
+    });
+
+    // Only snap if we're more than 1px off (avoid unnecessary micro-adjustments)
+    if (closestSlide && closestDistance > 1) {
+      container.style.scrollBehavior = 'auto';
+      container.scrollLeft = closestSlide.offsetLeft;
+      // Re-enable smooth scrolling after snap
+      requestAnimationFrame(() => {
+        container.style.scrollBehavior = 'smooth';
+      });
+    }
+
+    return closestIndex;
+  }, []);
 
   // Handle scroll to detect current slide and sync client
   const handleScroll = useCallback(() => {
@@ -80,17 +117,30 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
       clearTimeout(scrollTimeoutRef.current);
     }
 
-    // Check for infinite scroll wrap
+    // Clear any pending snap timeout
+    if (snapTimeoutRef.current) {
+      clearTimeout(snapTimeoutRef.current);
+    }
+
+    // Check for infinite scroll wrap and snap correction
     scrollTimeoutRef.current = setTimeout(() => {
       isScrollingRef.current = false;
       checkAndWrapScroll();
+
+      // Add a slight delay for snap correction to ensure wrap is complete
+      snapTimeoutRef.current = setTimeout(() => {
+        snapToNearestSlide();
+      }, 50);
     }, 150);
-  }, [allSlides, totalSlides, realStartIndex, activeClient, onClientChange, isFading]);
+  }, [allSlides, totalSlides, realStartIndex, activeClient, onClientChange, isFading, snapToNearestSlide]);
 
   // Wrap scroll position when reaching buffer zones
   const checkAndWrapScroll = useCallback(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
+
+    const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+    if (slideWrappers.length === 0) return;
 
     const { scrollLeft, clientWidth } = container;
     const slideIndex = Math.round(scrollLeft / clientWidth);
@@ -99,25 +149,31 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
     if (slideIndex < realStartIndex) {
       const offset = realStartIndex - slideIndex;
       const newIndex = realStartIndex + totalSlides - offset;
-      isProgrammaticScrollRef.current = true;
-      container.style.scrollBehavior = 'auto';
-      container.scrollLeft = newIndex * clientWidth;
-      requestAnimationFrame(() => {
-        isProgrammaticScrollRef.current = false;
-        container.style.scrollBehavior = 'smooth';
-      });
+      const targetSlide = slideWrappers[newIndex];
+      if (targetSlide) {
+        isProgrammaticScrollRef.current = true;
+        container.style.scrollBehavior = 'auto';
+        container.scrollLeft = targetSlide.offsetLeft;
+        requestAnimationFrame(() => {
+          isProgrammaticScrollRef.current = false;
+          container.style.scrollBehavior = 'smooth';
+        });
+      }
     }
     // If in end buffer, jump to corresponding position in real section
     else if (slideIndex >= realStartIndex + totalSlides) {
       const offset = slideIndex - (realStartIndex + totalSlides);
       const newIndex = realStartIndex + offset;
-      isProgrammaticScrollRef.current = true;
-      container.style.scrollBehavior = 'auto';
-      container.scrollLeft = newIndex * clientWidth;
-      requestAnimationFrame(() => {
-        isProgrammaticScrollRef.current = false;
-        container.style.scrollBehavior = 'smooth';
-      });
+      const targetSlide = slideWrappers[newIndex];
+      if (targetSlide) {
+        isProgrammaticScrollRef.current = true;
+        container.style.scrollBehavior = 'auto';
+        container.scrollLeft = targetSlide.offsetLeft;
+        requestAnimationFrame(() => {
+          isProgrammaticScrollRef.current = false;
+          container.style.scrollBehavior = 'smooth';
+        });
+      }
     }
   }, [realStartIndex, totalSlides]);
 
@@ -314,9 +370,18 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
     const targetIndex = swaStartIndex !== -1 ? swaStartIndex : 0;
     const absoluteIndex = realStartIndex + targetIndex;
 
+    // Use actual element position for pixel-perfect alignment
+    const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+    const targetSlide = slideWrappers[absoluteIndex];
+
     // Scroll to position immediately (no animation)
     container.style.scrollBehavior = 'auto';
-    container.scrollLeft = absoluteIndex * container.clientWidth;
+    if (targetSlide) {
+      container.scrollLeft = targetSlide.offsetLeft;
+    } else {
+      // Fallback to calculated position if element not found
+      container.scrollLeft = absoluteIndex * container.clientWidth;
+    }
 
     setCurrentGlobalIndex(targetIndex);
     hasInitializedRef.current = true;
@@ -380,7 +445,10 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
 
     const dragDistance = dragDistanceRef.current; // Keep sign for direction
     const absDragDistance = Math.abs(dragDistance);
-    const { scrollLeft, clientWidth } = container;
+    const { clientWidth } = container;
+
+    // Get slide elements for pixel-perfect positioning
+    const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
 
     // Calculate current slide position
     const currentSlideIndex = Math.round(dragStartRef.current.scrollLeft / clientWidth);
@@ -401,10 +469,15 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
       targetSlideIndex = currentSlideIndex;
     }
 
-    // Animate smoothly to target slide
-    const targetScroll = targetSlideIndex * clientWidth;
+    // Clamp to valid range
+    targetSlideIndex = Math.max(0, Math.min(slideWrappers.length - 1, targetSlideIndex));
+
+    // Animate smoothly to target slide using actual element position
+    const targetSlide = slideWrappers[targetSlideIndex];
     container.style.scrollBehavior = 'smooth';
-    container.scrollLeft = targetScroll;
+    if (targetSlide) {
+      container.scrollLeft = targetSlide.offsetLeft;
+    }
 
     setIsDragging(false);
     dragDistanceRef.current = 0;
@@ -416,17 +489,23 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
     }
   };
 
-  // Snap to nearest slide
+  // Snap to nearest slide using actual element positions
   const snapToSlide = () => {
     const container = scrollContainerRef.current;
     if (!container || isScrollingRef.current) return;
 
+    const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+    if (slideWrappers.length === 0) return;
+
     const { scrollLeft, clientWidth } = container;
     const slideIndex = Math.round(scrollLeft / clientWidth);
-    const targetScroll = slideIndex * clientWidth;
+    const clampedIndex = Math.max(0, Math.min(slideWrappers.length - 1, slideIndex));
+    const targetSlide = slideWrappers[clampedIndex];
 
-    container.style.scrollBehavior = 'smooth';
-    container.scrollLeft = targetScroll;
+    if (targetSlide) {
+      container.style.scrollBehavior = 'smooth';
+      container.scrollLeft = targetSlide.offsetLeft;
+    }
   };
 
   // Global mouse event listeners for drag functionality
@@ -501,6 +580,18 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
     const timeoutId = setTimeout(syncHeights, 200);
 
     return () => clearTimeout(timeoutId);
+  }, []);
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      if (snapTimeoutRef.current) {
+        clearTimeout(snapTimeoutRef.current);
+      }
+    };
   }, []);
 
   // Don't render if no slides
