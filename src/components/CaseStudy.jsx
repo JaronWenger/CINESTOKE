@@ -296,40 +296,17 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
     // Disable scroll-snap during transition to prevent browser interference
     container.style.scrollSnapType = 'none';
 
-    // Start smooth scroll using actual element position
+    // Smooth scroll to the target slide using actual element position
     container.style.scrollBehavior = 'smooth';
     if (targetSlide) {
       container.scrollLeft = targetSlide.offsetLeft;
-    } else {
-      // Fallback to calculated position
-      container.scrollLeft = Math.round(bestTarget * clientWidth);
     }
 
-    // Verify position mid-animation and correct if needed
+    // Re-enable scroll-snap after animation completes
     setTimeout(() => {
-      container.style.scrollBehavior = 'auto';
-      if (targetSlide) {
-        container.scrollLeft = targetSlide.offsetLeft;
-      }
-    }, 750);
-
-    // Re-enable scroll-snap and do final snap correction
-    setTimeout(() => {
-      container.style.scrollBehavior = 'smooth';
       container.style.scrollSnapType = 'x mandatory';
       isProgrammaticScrollRef.current = false;
-
-      // Final snap correction to ensure perfect alignment
-      requestAnimationFrame(() => {
-        if (targetSlide && Math.abs(container.scrollLeft - targetSlide.offsetLeft) > 1) {
-          container.style.scrollBehavior = 'auto';
-          container.scrollLeft = targetSlide.offsetLeft;
-          requestAnimationFrame(() => {
-            container.style.scrollBehavior = 'smooth';
-          });
-        }
-      });
-    }, 900);
+    }, 850);
 
     // Update state
     setCurrentGlobalIndex(clientStartIndex);
