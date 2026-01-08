@@ -1391,21 +1391,19 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
         <div className="lineb" style={{ flex: '0 0 auto' }} />
       </div>
       
-      {/* Solid black overlay on mobile to cover logos to the left of fade */}
-      {screenWidth <= 768 && (
-        <div 
-          style={{
-            position: 'absolute',
-            left: '-40px',
-            top: '2px',
-            bottom: '2px',
-            width: '40px',
-            backgroundColor: '#000000',
-            pointerEvents: 'none',
-            zIndex: 1
-          }}
-        />
-      )}
+      {/* Solid black overlay to cover any leaking lines behind the left fade */}
+      <div
+        style={{
+          position: 'absolute',
+          left: '-40px',
+          top: '2px',
+          bottom: '2px',
+          width: '40px',
+          backgroundColor: '#000000',
+          pointerEvents: 'none',
+          zIndex: 1
+        }}
+      />
       
       {/* Left fade overlay - fixed to viewport, excludes top/bottom borders */}
       <div 
