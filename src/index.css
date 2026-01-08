@@ -734,6 +734,7 @@ video {
 }
 
 .case-study-carousel {
+  position: relative; /* Required for offsetLeft to be relative to this container */
   display: flex;
   align-items: flex-start;
   overflow-x: auto;
