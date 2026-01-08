@@ -289,36 +289,46 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
 
     isProgrammaticScrollRef.current = true;
 
-    // Calculate exact target position
-    const targetScrollLeft = Math.round(bestTarget * clientWidth);
+    // Get actual slide element for pixel-perfect positioning
+    const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+    const targetSlide = slideWrappers[bestTarget];
 
     // Disable scroll-snap during transition to prevent browser interference
     container.style.scrollSnapType = 'none';
 
-    // Start smooth scroll for visual effect during fade out
+    // Start smooth scroll using actual element position
     container.style.scrollBehavior = 'smooth';
-    container.scrollLeft = targetScrollLeft;
+    if (targetSlide) {
+      container.scrollLeft = targetSlide.offsetLeft;
+    } else {
+      // Fallback to calculated position
+      container.scrollLeft = Math.round(bestTarget * clientWidth);
+    }
 
-    // Snap to exact position before fade-in to prevent jitter
-    // Recalculate using actual DOM element position for accuracy
+    // Verify position mid-animation and correct if needed
     setTimeout(() => {
       container.style.scrollBehavior = 'auto';
-      // Get actual slide element position for pixel-perfect alignment
-      const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
-      const targetSlide = slideWrappers[bestTarget];
       if (targetSlide) {
         container.scrollLeft = targetSlide.offsetLeft;
-      } else {
-        // Fallback to recalculated position
-        container.scrollLeft = Math.round(bestTarget * container.clientWidth);
       }
     }, 750);
 
-    // Re-enable scroll-snap and smooth scrolling after transition completes
+    // Re-enable scroll-snap and do final snap correction
     setTimeout(() => {
       container.style.scrollBehavior = 'smooth';
       container.style.scrollSnapType = 'x mandatory';
       isProgrammaticScrollRef.current = false;
+
+      // Final snap correction to ensure perfect alignment
+      requestAnimationFrame(() => {
+        if (targetSlide && Math.abs(container.scrollLeft - targetSlide.offsetLeft) > 1) {
+          container.style.scrollBehavior = 'auto';
+          container.scrollLeft = targetSlide.offsetLeft;
+          requestAnimationFrame(() => {
+            container.style.scrollBehavior = 'smooth';
+          });
+        }
+      });
     }, 900);
 
     // Update state
