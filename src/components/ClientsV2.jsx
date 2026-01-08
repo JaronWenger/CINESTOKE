@@ -409,6 +409,9 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
+    // Prevent snapToCenter from interfering during programmatic scroll
+    isAdjustingRef.current = true;
+
     // Find all logo wrappers with this client
     const logoWrappers = container.querySelectorAll('.client-logo-wrapper');
     const containerRect = container.getBoundingClientRect();
@@ -432,21 +435,32 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
       }
     });
 
-    if (!targetLogo) return;
+    if (!targetLogo) {
+      isAdjustingRef.current = false;
+      return;
+    }
 
     // Calculate scroll needed to center this logo
     const logoRect = targetLogo.getBoundingClientRect();
     const logoCenterX = logoRect.left + (logoRect.width / 2);
     const scrollOffset = logoCenterX - containerCenterX;
 
-    // Smooth scroll to center the logo
-    container.scrollBy({
-      left: scrollOffset,
-      behavior: 'smooth'
-    });
+    // Only scroll if not already centered (within 5px)
+    if (Math.abs(scrollOffset) > 5) {
+      // Use style-based smooth scroll for better Safari compatibility
+      container.style.scrollBehavior = 'smooth';
+      container.scrollLeft = container.scrollLeft + scrollOffset;
+      scrollPositionRef.current = container.scrollLeft;
+      lastScrollLeftRef.current = container.scrollLeft;
+    }
 
     // Update last notified client to prevent duplicate notifications
     lastNotifiedClientRef.current = clientKey;
+
+    // Reset adjusting flag after scroll animation completes
+    setTimeout(() => {
+      isAdjustingRef.current = false;
+    }, 500);
   };
 
   // Expose methods via ref
