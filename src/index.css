@@ -15,6 +15,23 @@ body {
   height: 100vh;
 }
 
+/* Mobile: video takes 2/3 of screen, bars visible in bottom 1/3 */
+@media (max-width: 768px) {
+  .main {
+    height: auto;
+  }
+
+  .main > video {
+    height: 67vh;
+    min-height: 250px;
+  }
+
+  .main > .cinestoke {
+    height: 67vh;
+    min-height: 250px;
+  }
+}
+
 /* Add a specific class for the offers page */
 .offers-main {
   width: 100%;
