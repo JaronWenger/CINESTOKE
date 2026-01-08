@@ -12,6 +12,7 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
   const scrollContainerRef = useRef(null);
   const [currentGlobalIndex, setCurrentGlobalIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isPositioned, setIsPositioned] = useState(false); // Track if initial positioning is complete
   const dragStartRef = useRef({ x: 0, scrollLeft: 0 });
   const dragDistanceRef = useRef(0);
   const isScrollingRef = useRef(false);
@@ -370,27 +371,38 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
     const targetIndex = swaStartIndex !== -1 ? swaStartIndex : 0;
     const absoluteIndex = realStartIndex + targetIndex;
 
-    // Use actual element position for pixel-perfect alignment
-    const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
-    const targetSlide = slideWrappers[absoluteIndex];
-
-    // Scroll to position immediately (no animation)
-    container.style.scrollBehavior = 'auto';
-    if (targetSlide) {
-      container.scrollLeft = targetSlide.offsetLeft;
-    } else {
-      // Fallback to calculated position if element not found
-      container.scrollLeft = absoluteIndex * container.clientWidth;
-    }
-
-    setCurrentGlobalIndex(targetIndex);
-    hasInitializedRef.current = true;
-
-    // Update nav dots
-    const slideInfo = allSlides[targetIndex];
+    // Wait for layout to be fully computed before positioning
+    // Use double RAF to ensure we're past the layout/paint cycle
     requestAnimationFrame(() => {
-      updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1);
-      container.style.scrollBehavior = 'smooth';
+      requestAnimationFrame(() => {
+        const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+        const targetSlide = slideWrappers[absoluteIndex];
+
+        // Scroll to position immediately (no animation)
+        container.style.scrollBehavior = 'auto';
+        if (targetSlide) {
+          container.scrollLeft = targetSlide.offsetLeft;
+        } else {
+          container.scrollLeft = absoluteIndex * container.clientWidth;
+        }
+
+        // Refine position after another frame to handle any layout shifts
+        requestAnimationFrame(() => {
+          const updatedSlide = slideWrappers[absoluteIndex];
+          if (updatedSlide && Math.abs(container.scrollLeft - updatedSlide.offsetLeft) > 1) {
+            container.scrollLeft = updatedSlide.offsetLeft;
+          }
+
+          setCurrentGlobalIndex(targetIndex);
+          hasInitializedRef.current = true;
+          setIsPositioned(true); // Now safe to show
+
+          // Update nav dots and enable smooth scrolling
+          const slideInfo = allSlides[targetIndex];
+          updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1);
+          container.style.scrollBehavior = 'smooth';
+        });
+      });
     });
   }, [allSlides, realStartIndex]);
 
@@ -608,8 +620,8 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
         style={{
-          opacity: isFading ? 0 : 1,
-          transition: 'opacity 0.3s ease-in-out'
+          opacity: (!isPositioned || isFading) ? 0 : 1,
+          transition: isPositioned ? 'opacity 0.3s ease-in-out' : 'none'
         }}
       >
         {infiniteSlides.map((slideData, index) => {
