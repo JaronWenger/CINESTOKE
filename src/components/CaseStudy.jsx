@@ -8,7 +8,7 @@ import { getAllSlidesFlattened, getClientStartIndex, getClientOrder } from '../c
  * Native scroll-snap handles ALL transitions - no special handling needed.
  * Infinite scroll with buffer slides on both ends for seamless looping.
  */
-const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) => {
+const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isMobile }) => {
   const scrollContainerRef = useRef(null);
   const [currentGlobalIndex, setCurrentGlobalIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -626,11 +626,22 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
       >
         {infiniteSlides.map((slideData, index) => {
           const SlideComponent = slideData.slide.component;
-          const isRealSlide = slideData.isBuffer === false;
 
-          // Only preload current and adjacent slides
+          // Calculate distance from current slide for preload optimization
           const distanceFromCurrent = Math.abs(index - (realStartIndex + currentGlobalIndex));
-          const preloadValue = distanceFromCurrent <= 1 ? 'metadata' : 'none';
+
+          // Preload strategy:
+          // - Current slide (distance 0): preload="auto" for immediate playback
+          // - Adjacent slides (distance 1-2): preload="metadata" for quick start
+          // - Far slides (distance > 2): preload="none" to save bandwidth
+          let preloadValue;
+          if (distanceFromCurrent === 0) {
+            preloadValue = 'auto';
+          } else if (distanceFromCurrent <= 2) {
+            preloadValue = 'metadata';
+          } else {
+            preloadValue = 'none';
+          }
 
           return (
             <div
@@ -639,7 +650,11 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete }) =
               data-client={slideData.clientKey}
               data-is-buffer={slideData.isBuffer}
             >
-              <SlideComponent {...slideData.slide.props} preload={preloadValue} />
+              <SlideComponent
+                {...slideData.slide.props}
+                preload={preloadValue}
+                isMobile={isMobile}
+              />
             </div>
           );
         })}

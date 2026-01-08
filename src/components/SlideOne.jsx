@@ -1,21 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 
-const SlideOne = ({ title, description, profilePic, video, videoMobile, logoUrl, preload = 'auto' }) => {
-  const [isMobile, setIsMobile] = useState(false);
-  const [videoSrc, setVideoSrc] = useState(video);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      const mobile = window.innerWidth <= 768;
-      setIsMobile(mobile);
-      // Use mobile video if available and on mobile, otherwise use regular video
-      setVideoSrc(mobile && videoMobile ? videoMobile : video);
-    };
-
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, [video, videoMobile]);
+const SlideOne = ({ title, description, profilePic, video, videoMobile, logoUrl, preload = 'auto', isMobile = false }) => {
+  // Use mobile video if available and on mobile, otherwise use regular video
+  const videoSrc = (isMobile && videoMobile) ? videoMobile : video;
 
   return (
     <div className="slide-one">
