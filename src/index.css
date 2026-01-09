@@ -531,13 +531,13 @@ video {
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   /*////////////////Carosel/////////////////////////////////////////*/
   .carousel-container {
 
     .swiper-slide p {
       margin-bottom: 10px;  /* Space between image and text */
-      font-size: 20px;   /* Increase the text size */
+      font-size: 14px;   /* Smaller text size */
       color: white;       /* Text color */
       text-align: center; /* Center the text horizontally */
       font-weight: bold;  /* Optional: Make the text bold */
@@ -553,7 +553,7 @@ video {
     color: #fff !important;
     opacity: 0;
   }
-  
+
   .swiper-button-prev {
     left: 10px;
     color: #fff !important;

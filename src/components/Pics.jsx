@@ -491,8 +491,7 @@ const Pics = () => {
 
   const getAspectRatio = () => {
     if (screenWidth <= 480) return '1.5 / 16';
-    if (screenWidth <= 640) return '2 / 16';
-    if (screenWidth <= 768) return '3 / 16';
+    if (screenWidth <= 1024) return '2 / 16';
     return '6.6 / 16';
   };
 
@@ -576,7 +575,7 @@ const Pics = () => {
           transform: scale(1.05);
         }
         
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .swiper-slide img {
             object-position: center;
             object-fit: cover;
@@ -602,33 +601,40 @@ const Pics = () => {
             object-fit: cover;
             width: 100%;
             height: auto;
-            aspect-ratio: 1.5 / 16;
-            max-height: 300px;
+            aspect-ratio: 1.2 / 16;
+            max-height: 220px;
           }
-          
+
           .carousel-container {
-            max-height: 400px;
+            max-height: 280px;
           }
-          
+
           .carousel-scroll-container {
-            max-height: 350px;
+            max-height: 260px;
           }
-          
+
           .swiper-slide p {
             margin: 0 0 0.25rem 0;
             font-size: 0.7rem;
           }
         }
-        
+
         @media (max-width: 1024px) {
+          .carousel-container {
+            max-height: 300px;
+          }
+
+          .carousel-scroll-container {
+            max-height: 280px;
+          }
+
+          .swiper-slide img {
+            max-height: 250px;
+            aspect-ratio: 2.5 / 16;
+          }
+
           .swiper-slide {
             width: calc(100vw / 20) !important;
-          }
-        }
-        
-        @media (max-width: 768px) {
-          .swiper-slide {
-            width: calc(100vw / 25) !important;
           }
         }
         
