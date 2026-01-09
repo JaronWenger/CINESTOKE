@@ -1,7 +1,12 @@
 {
   "files": {
-    "main.css": "/static/css/main.45fbe286.css",
-    "main.js": "/static/js/main.f0c417ed.js",
+    "main.css": "/static/css/main.e0d52bb6.css",
+    "main.js": "/static/js/main.6b5f6b89.js",
+    "static/media/TCOrecording.mov": "/static/media/TCOrecording.eb7b0fcfbeacd23158c6.mov",
+    "static/media/SWArecording.mov": "/static/media/SWArecording.ea66d9feaf6976e48484.mov",
+    "static/media/SEADOOrecording.mov": "/static/media/SEADOOrecording.21d93dd98152fc9e1456.mov",
+    "static/media/SLATErecording.mov": "/static/media/SLATErecording.93cf305bca1ffd8c412d.mov",
+    "static/media/IRrecording.mov": "/static/media/IRrecording.5c8b23d307154768bee7.mov",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
     "static/media/SmallWorldMain.mp4": "/static/media/SmallWorldMain.f6e2112b9160ba964e35.mp4",
     "static/media/BGGeo.mp4": "/static/media/BGGeo.e95e6a2dba335a5563a3.mp4",
@@ -36,7 +41,9 @@
     "static/media/SlateLogoPhone.mp4": "/static/media/SlateLogoPhone.fb6e8746ebd59730bb51.mp4",
     "static/media/BG.svg": "/static/media/BG.e5d282ea1130d534d01b250dcd5a1811.svg",
     "static/media/cinestoke-kayak.webp": "/static/media/cinestoke-kayak.3986b094dca79a23e55b.webp",
+    "static/media/SWAsplits.webp": "/static/media/SWAsplits.27e80b0b6b5158de70fa.webp",
     "static/media/cinestoke-drone-shot.webp": "/static/media/cinestoke-drone-shot.25be9dfdaba92fb126ca.webp",
+    "static/media/SWAsplits2.webp": "/static/media/SWAsplits2.c641ecc57fa6d16ca9e8.webp",
     "static/media/cinestoke-portraits.webp": "/static/media/cinestoke-portraits.af3c37d351ca27c0d66c.webp",
     "static/media/cinestoke-boxing.webp": "/static/media/cinestoke-boxing.8bf0474a233b213401c7.webp",
     "static/media/cinestoke-auto.webp": "/static/media/cinestoke-auto.7613ccce8885d923227e.webp",
@@ -58,17 +65,21 @@
     "static/media/Seadoosplits2.webp": "/static/media/Seadoosplits2.7590ae6c9345f3de5d52.webp",
     "static/media/GFFsplits.webp": "/static/media/GFFsplits.e010cbe8c903a22cfed7.webp",
     "static/media/BGpp.webp": "/static/media/BGpp.249d2deb3b67d117c357.webp",
+    "static/media/IRsplits.webp": "/static/media/IRsplits.a6ba2ea3474aed2c355b.webp",
     "static/media/GFFpp.webp": "/static/media/GFFpp.a726f2d55824006ef9b5.webp",
     "static/media/TCOsplits.webp": "/static/media/TCOsplits.fc02efc24d8f73fa7005.webp",
     "static/media/Seadoosplits.webp": "/static/media/Seadoosplits.948bca23cb6d7577d307.webp",
     "static/media/SWA.svg": "/static/media/SWA.1a1b0cf2765f3db44c7ce148483b0487.svg",
     "static/media/TCOpp.webp": "/static/media/TCOpp.b9f962a4065be5f1e0d4.webp",
     "static/media/IR.svg": "/static/media/IR.f3aca9fed078cb9a1bcfea64022c8bb9.svg",
+    "static/media/BGsplits.webp": "/static/media/BGsplits.e898ea291f2fd09b668c.webp",
     "static/media/GFF.svg": "/static/media/GFF.3263872cb4a590d38faf9e7b4e657a30.svg",
     "static/media/Seadoo.svg": "/static/media/Seadoo.c65c2e6461112c4ec08603755056738f.svg",
     "static/media/SWApp.webp": "/static/media/SWApp.f61f907659488c7fd199.webp",
     "static/media/IRpp.webp": "/static/media/IRpp.6adc8455141b240442be.webp",
     "static/media/SSBC.svg": "/static/media/SSBC.503bc30f34da116710649fdd8c016fb1.svg",
+    "static/media/iPhone.webp": "/static/media/iPhone.4c356ca37f027c15d6e9.webp",
+    "static/media/BGsplits2.webp": "/static/media/BGsplits2.e798f68690b35496e948.webp",
     "static/media/Slatepp.webp": "/static/media/Slatepp.322df457dcaf34d7aa4f.webp",
     "static/media/Seadoopp.webp": "/static/media/Seadoopp.3525866eb9063faa371a.webp",
     "static/media/Film.svg": "/static/media/Film.1b8614b269dba8dcd2fe4ec0c292f1ff.svg",
@@ -79,11 +90,11 @@
     "static/media/rightwing.svg": "/static/media/rightwing.908005ec7d6786ebd3ed3957a88a799c.svg",
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
-    "main.45fbe286.css.map": "/static/css/main.45fbe286.css.map",
-    "main.f0c417ed.js.map": "/static/js/main.f0c417ed.js.map"
+    "main.e0d52bb6.css.map": "/static/css/main.e0d52bb6.css.map",
+    "main.6b5f6b89.js.map": "/static/js/main.6b5f6b89.js.map"
   },
   "entrypoints": [
-    "static/css/main.45fbe286.css",
-    "static/js/main.f0c417ed.js"
+    "static/css/main.e0d52bb6.css",
+    "static/js/main.6b5f6b89.js"
   ]
 }
