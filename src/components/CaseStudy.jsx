@@ -111,7 +111,7 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
     }
 
     // Update nav dots
-    updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1);
+    updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
 
     // Clear existing timeout
     if (scrollTimeoutRef.current) {
@@ -178,30 +178,91 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
     }
   }, [realStartIndex, totalSlides]);
 
+  // Track current client for nav dots
+  const currentNavClientRef = useRef(null);
+  const dotsTransitioningRef = useRef(false);
+
   // Update nav dots to show position within current client
-  const updateNavDots = (slideIndex, totalClientSlides) => {
+  const updateNavDots = (slideIndex, totalClientSlides, clientKey) => {
     const carousel = scrollContainerRef.current;
     if (!carousel) return;
 
     const navDotsOutside = carousel.parentElement?.querySelector('.case-study-nav-dots-outside');
     if (!navDotsOutside) return;
 
-    // Update dot count if needed
-    const dots = navDotsOutside.querySelectorAll('.case-study-dot-wrapper');
-    if (dots.length !== totalClientSlides) {
-      // Recreate dots
+    // Skip updates during transition
+    if (dotsTransitioningRef.current) return;
+
+    const currentDots = navDotsOutside.querySelectorAll('.case-study-dot-wrapper');
+    const brandChanged = currentNavClientRef.current !== clientKey;
+    currentNavClientRef.current = clientKey;
+
+    // If brand changed, crossfade the dots
+    if (brandChanged && currentDots.length > 0) {
+      dotsTransitioningRef.current = true;
+
+      // Fade out existing dots
+      currentDots.forEach(wrapper => {
+        wrapper.classList.add('dot-exiting');
+      });
+
+      // After fade out, replace with new dots
+      setTimeout(() => {
+        navDotsOutside.innerHTML = '';
+        const clientStartIdx = getClientStartIndex(clientKey);
+        for (let i = 0; i < totalClientSlides; i++) {
+          const dotWrapper = document.createElement('div');
+          dotWrapper.className = 'case-study-dot-wrapper dot-entering';
+          const dot = document.createElement('div');
+          dot.className = `case-study-dot ${i === slideIndex && totalClientSlides > 1 ? 'active' : ''}`;
+          dotWrapper.addEventListener('click', () => {
+            const container = scrollContainerRef.current;
+            if (container) {
+              const targetGlobalIndex = realStartIndex + clientStartIdx + i;
+              container.scrollTo({
+                left: targetGlobalIndex * container.clientWidth,
+                behavior: 'smooth'
+              });
+            }
+          });
+          dotWrapper.appendChild(dot);
+          navDotsOutside.appendChild(dotWrapper);
+        }
+        // Fade in new dots
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            navDotsOutside.querySelectorAll('.dot-entering').forEach(wrapper => {
+              wrapper.classList.remove('dot-entering');
+            });
+            dotsTransitioningRef.current = false;
+          });
+        });
+      }, 150);
+    } else if (currentDots.length !== totalClientSlides) {
+      // Initial creation (no animation)
       navDotsOutside.innerHTML = '';
+      const clientStartIdx = getClientStartIndex(clientKey);
       for (let i = 0; i < totalClientSlides; i++) {
         const dotWrapper = document.createElement('div');
         dotWrapper.className = 'case-study-dot-wrapper';
         const dot = document.createElement('div');
         dot.className = `case-study-dot ${i === slideIndex && totalClientSlides > 1 ? 'active' : ''}`;
+        dotWrapper.addEventListener('click', () => {
+          const container = scrollContainerRef.current;
+          if (container) {
+            const targetGlobalIndex = realStartIndex + clientStartIdx + i;
+            container.scrollTo({
+              left: targetGlobalIndex * container.clientWidth,
+              behavior: 'smooth'
+            });
+          }
+        });
         dotWrapper.appendChild(dot);
         navDotsOutside.appendChild(dotWrapper);
       }
     } else {
-      // Update active state
-      dots.forEach((wrapper, index) => {
+      // Same brand, just update active state
+      currentDots.forEach((wrapper, index) => {
         const dot = wrapper.querySelector('.case-study-dot');
         if (dot) {
           if (index === slideIndex && totalClientSlides > 1) {
@@ -311,7 +372,7 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
     // Update state
     setCurrentGlobalIndex(clientStartIndex);
     const slideInfo = allSlides[clientStartIndex];
-    updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1);
+    updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
   }, [allSlides, realStartIndex, totalSlides, currentGlobalIndex, getCurrentClientInfo]);
 
   // When activeClient changes from external source (logo click), scroll to that client
@@ -386,7 +447,7 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
 
           // Update nav dots and enable smooth scrolling
           const slideInfo = allSlides[targetIndex];
-          updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1);
+          updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
           container.style.scrollBehavior = 'smooth';
         });
       });
@@ -411,7 +472,7 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
 
     // Initialize with current client's dots
     const slideInfo = allSlides[currentGlobalIndex];
-    updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1);
+    updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
   }, []);
 
   // Mouse drag handlers for desktop
