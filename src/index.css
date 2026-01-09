@@ -1132,8 +1132,8 @@ video {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 93%;
   height: 93%;
+  aspect-ratio: 1170 / 2532;
   overflow: hidden;
   border-radius: 20px;
   z-index: 1;
@@ -1164,8 +1164,14 @@ video {
 
 /* Mobile responsive for slide-social */
 @media (max-width: 768px) {
-  .slide-social-container {
-    max-width: 300px;
+  .slide-social-image-container {
+    height: 100%;
+    width: auto;
+  }
+
+  .slide-social-iphone-frame {
+    height: 100%;
+    width: auto;
   }
 }
 

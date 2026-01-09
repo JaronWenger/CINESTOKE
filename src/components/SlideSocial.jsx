@@ -38,6 +38,13 @@ const SlideSocial = ({ link, video, videoMobile, preload = 'auto', isMobile = fa
       e.preventDefault();
       e.stopPropagation();
       wasDraggingRef.current = false;
+      return;
+    }
+
+    // Only allow click if it was on the video element
+    if (e.target.tagName !== 'VIDEO') {
+      e.preventDefault();
+      e.stopPropagation();
     }
   };
 
