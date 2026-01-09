@@ -6,6 +6,7 @@ import SlideMain from '../components/SlideMain';
 import SlideGeo from '../components/SlideGeo';
 import SlideLogo from '../components/SlideLogo';
 import SlideSplits from '../components/SlideSplits';
+import SlideSocial from '../components/SlideSocial';
 // Future slides can be imported here
 // import SlideCustom from '../components/SlideCustom';
 
@@ -24,9 +25,13 @@ import smallWorldVideo from '../assets/CASESTUDIES/SmallWorldMain.mp4';
 import smallWorldVideoMobile from '../assets/CASESTUDIES/SmallWorldMainPhone.mp4';
 import smallWorldGeoVideo from '../assets/CASESTUDIES/SmallWorldGeo.mp4';
 import smallWorldGeoVideoMobile from '../assets/CASESTUDIES/SmallWorldGeoPhone.mp4';
+import smallWorldSocialVideo from '../assets/CASESTUDIES/Social/SWArecording.mov';
+import smallWorldSplits from '../assets/CASESTUDIES/Splits/SWAsplits.webp';
+import smallWorldSplits2 from '../assets/CASESTUDIES/Splits/SWAsplits2.webp';
 import seadooLogo from '../assets/CASESTUDIES/Brands/Seadoopp.webp';
 import seadooVideo from '../assets/CASESTUDIES/SeadooMain.mp4';
 import seadooVideoMobile from '../assets/CASESTUDIES/SeadooMainPhone.mp4';
+import SeadooSocialVideo from '../assets/CASESTUDIES/Social/SEADOOrecording.mov';
 import slateLogo from '../assets/CASESTUDIES/Brands/Slatepp.webp';
 import slateVideo from '../assets/CASESTUDIES/SlateMain.mp4';
 import slateVideoMobile from '../assets/CASESTUDIES/SlateMainPhone.mp4';
@@ -38,6 +43,8 @@ import BGVideo from '../assets/CASESTUDIES/BGMain.mp4';
 import BGVideoMobile from '../assets/CASESTUDIES/BGMainPhone.mp4';
 import BGGeoVideo from '../assets/CASESTUDIES/BGGeo.mp4';
 import BGGeoVideoMobile from '../assets/CASESTUDIES/BGGeoPhone.mp4';
+import BGSplits from '../assets/CASESTUDIES/Splits/BGsplits.webp';
+import BGSplits2 from '../assets/CASESTUDIES/Splits/BGsplits2.webp';
 import TCOVideo from '../assets/CASESTUDIES/TCOMain.mp4';
 import TCOVideoMobile from '../assets/CASESTUDIES/TCOMainPhone.mp4';
 import GFFVideo from '../assets/CASESTUDIES/GFFMain.mp4';
@@ -46,12 +53,16 @@ import IRVideo from '../assets/CASESTUDIES/IRMain.mp4';
 import IRVideoMobile from '../assets/CASESTUDIES/IRMainPhone.mp4';
 import IRLogoVideo from '../assets/CASESTUDIES/IRLogo.mp4';
 import IRLogoVideoMobile from '../assets/CASESTUDIES/IRLogoPhone.mp4';
+import IRSocialVideo from '../assets/CASESTUDIES/Social/IRrecording.mov';
+import IRSplits from '../assets/CASESTUDIES/Splits/IRsplits.webp';
 import SlateLogoVideo from '../assets/CASESTUDIES/SlateLogo.mp4';
 import SlateLogoVideoMobile from '../assets/CASESTUDIES/SlateLogoPhone.mp4';
+import SlateSocialVideo from '../assets/CASESTUDIES/Social/SLATErecording.mov';
 import GFFSplits from '../assets/CASESTUDIES/Splits/GFFsplits.webp';
 import SeadooSplits from '../assets/CASESTUDIES/Splits/Seadoosplits.webp';
 import SeadooSplits2 from '../assets/CASESTUDIES/Splits/Seadoosplits2.webp';
 import TCOSplits from '../assets/CASESTUDIES/Splits/TCOsplits.webp';
+import TCOSocialVideo from '../assets/CASESTUDIES/Social/TCOrecording.mov';
 /**
  * Case Study Configuration
  * 
@@ -64,6 +75,7 @@ import TCOSplits from '../assets/CASESTUDIES/Splits/TCOsplits.webp';
  *     - SlideOne: title, description, profilePic, video, logoUrl (optional)
  *     - SlideGeo: location, video
  *     - SlideSplits: image
+ *     - SlideSocial: link, video
  */
 export const caseStudyConfig = {
   SWA: {
@@ -91,6 +103,28 @@ export const caseStudyConfig = {
           video: smallWorldGeoVideo,
           videoMobile: smallWorldGeoVideoMobile
         }
+      },
+      {
+        type: 'splits',
+        component: SlideSplits,
+        props: {
+          image: smallWorldSplits2
+        }
+      },
+      {
+        type: 'social',
+        component: SlideSocial,
+        props: {
+          link: 'https://www.instagram.com/p/DSxPFBKDvc8/',
+          video: smallWorldSocialVideo
+        }
+      },
+      {
+        type: 'splits',
+        component: SlideSplits,
+        props: {
+          image: smallWorldSplits
+        }
       }
     ]
   },
@@ -116,6 +150,14 @@ export const caseStudyConfig = {
         component: SlideSplits,
         props: {
           image: SeadooSplits
+        }
+      },
+      {
+        type: 'social',
+        component: SlideSocial,
+        props: {
+          link: 'https://www.instagram.com/p/DFN8bEkxHoE/',
+          video: SeadooSocialVideo
         }
       },
       {
@@ -152,6 +194,14 @@ export const caseStudyConfig = {
           video: SlateLogoVideo,
           videoMobile: SlateLogoVideoMobile
         }
+      },
+      {
+        type: 'social',
+        component: SlideSocial,
+        props: {
+          link: 'https://www.instagram.com/reel/DLIwyB4poCx/',
+          video: SlateSocialVideo
+        }
       }
     ]
   },
@@ -177,6 +227,14 @@ export const caseStudyConfig = {
           component: SlideSplits,
           props: {
             image: TCOSplits
+          }
+        },
+        {
+          type: 'social',
+          component: SlideSocial,
+          props: {
+            link: 'https://www.instagram.com/p/CqGzm_zL6ql/',
+            video: TCOSocialVideo
           }
         }
       ]
@@ -225,6 +283,21 @@ export const caseStudyConfig = {
           }
         },
         {
+          type: 'social',
+          component: SlideSocial,
+          props: {
+            link: 'https://www.instagram.com/p/CoA7bJPtdB-/',
+            video: IRSocialVideo
+          }
+        },
+        {
+          type: 'splits',
+          component: SlideSplits,
+          props: {
+            image: IRSplits
+          }
+        },
+        {
           type: 'logo',
           component: SlideLogo,
           props: {
@@ -253,12 +326,26 @@ export const caseStudyConfig = {
          }
       },
       {
+        type: 'splits',
+        component: SlideSplits,
+        props: {
+          image: BGSplits
+        }
+      },
+      {
         type: 'geo',
         component: SlideGeo,
         props: {
           location: '📍 Mount Bohemia, MI',
           video: BGGeoVideo,
           videoMobile: BGGeoVideoMobile
+        }
+      },
+      {
+        type: 'splits',
+        component: SlideSplits,
+        props: {
+          image: BGSplits2
         }
       }
       // No geo slide for Seadoo
