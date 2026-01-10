@@ -7,7 +7,8 @@ const SlideColor = ({
   videoColorMobile,
   videoRawMobile,
   preload = 'auto',
-  isMobile = false
+  isMobile = false,
+  videosCanLoad = true
 }) => {
   const [sliderPosition, setSliderPosition] = useState(50); // Percentage from left
   const [isDragging, setIsDragging] = useState(false);
@@ -18,6 +19,9 @@ const SlideColor = ({
   // Use mobile videos if available and on mobile
   const colorSrc = (isMobile && videoColorMobile) ? videoColorMobile : videoColor;
   const rawSrc = (isMobile && videoRawMobile) ? videoRawMobile : videoRaw;
+  // Only load after sizing is complete
+  const activeColorSrc = videosCanLoad ? colorSrc : undefined;
+  const activeRawSrc = videosCanLoad ? rawSrc : undefined;
 
   // Sync video playback times
   useEffect(() => {
@@ -124,7 +128,7 @@ const SlideColor = ({
         {/* Raw video (bottom layer - always full width) */}
         <video
           ref={rawVideoRef}
-          src={rawSrc}
+          src={activeRawSrc}
           autoPlay
           loop
           muted
@@ -141,7 +145,7 @@ const SlideColor = ({
         >
           <video
             ref={colorVideoRef}
-            src={colorSrc}
+            src={activeColorSrc}
             autoPlay
             loop
             muted

@@ -13,6 +13,7 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
   const [currentGlobalIndex, setCurrentGlobalIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isPositioned, setIsPositioned] = useState(false); // Track if initial positioning is complete
+  const [videosCanLoad, setVideosCanLoad] = useState(false); // Track if sizing is done, other videos can load
   const dragStartRef = useRef({ x: 0, scrollLeft: 0 });
   const dragDistanceRef = useRef(0);
   const isScrollingRef = useRef(false);
@@ -633,6 +634,9 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
         carousel.style.height = `${height}px`;
         carousel.style.minHeight = '0';
         carousel.style.maxHeight = `${height}px`;
+
+        // Sizing complete - allow other videos to load
+        setVideosCanLoad(true);
       }
     };
 
@@ -702,6 +706,7 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
                 {...slideData.slide.props}
                 preload={preloadValue}
                 isMobile={isMobile}
+                videosCanLoad={videosCanLoad}
               />
             </div>
           );
