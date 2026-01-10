@@ -32,13 +32,18 @@ import smallWorldSplits from '../assets/CASESTUDIES/Splits/SWAsplits.webp';
 import smallWorldSplits2 from '../assets/CASESTUDIES/Splits/SWAsplits2.webp';
 import smallWorldBtsVideo from '../assets/CASESTUDIES/SmallWorldbts.mp4';
 import smallWorldBtsVideoMobile from '../assets/CASESTUDIES/SmallWorldbtsPhone.mp4';
+import smallWorldColorVideo from '../assets/CASESTUDIES/SmallWorldcolor.mp4';
+import smallWorldRawVideo from '../assets/CASESTUDIES/SmallWorldraw.mp4';
 import seadooLogo from '../assets/CASESTUDIES/Brands/Seadoopp.webp';
 import seadooVideo from '../assets/CASESTUDIES/SeadooMain.mp4';
 import seadooVideoMobile from '../assets/CASESTUDIES/SeadooMainPhone.mp4';
 import SeadooSocialVideo from '../assets/CASESTUDIES/Social/SEADOOrecording.mov';
 import seadooColorVideo from '../assets/CASESTUDIES/Seadoocolor.mp4';
 import seadooRawVideo from '../assets/CASESTUDIES/Seadooraw.mp4';
+import seadooBtsVideo from '../assets/CASESTUDIES/Seadoobts.mp4';
+import seadooBtsVideoMobile from '../assets/CASESTUDIES/SeadoobtsPhone.mp4';
 import slateLogo from '../assets/CASESTUDIES/Brands/Slatepp.webp';
+import slateBtsVideo from '../assets/CASESTUDIES/Slatebts.mp4';
 import slateVideo from '../assets/CASESTUDIES/SlateMain.mp4';
 import slateVideoMobile from '../assets/CASESTUDIES/SlateMainPhone.mp4';
 import irLogo from '../assets/CASESTUDIES/Brands/IRpp.webp';
@@ -51,6 +56,9 @@ import BGGeoVideo from '../assets/CASESTUDIES/BGGeo.mp4';
 import BGGeoVideoMobile from '../assets/CASESTUDIES/BGGeoPhone.mp4';
 import BGSplits from '../assets/CASESTUDIES/Splits/BGsplits.webp';
 import BGSplits2 from '../assets/CASESTUDIES/Splits/BGsplits2.webp';
+import BGBtsVideo from '../assets/CASESTUDIES/BGbts.mp4';
+import BGColorVideo from '../assets/CASESTUDIES/BGcolor.mp4';
+import BGRawVideo from '../assets/CASESTUDIES/BGraw.mp4';
 import TCOVideo from '../assets/CASESTUDIES/TCOMain.mp4';
 import TCOVideoMobile from '../assets/CASESTUDIES/TCOMainPhone.mp4';
 import GFFVideo from '../assets/CASESTUDIES/GFFMain.mp4';
@@ -139,6 +147,15 @@ export const caseStudyConfig = {
           video: smallWorldBtsVideo,
           videoMobile: smallWorldBtsVideoMobile
         }
+      },
+      {
+        type: 'color',
+        component: SlideColor,
+        props: {
+          title: 'De Drago Color Grade',
+          videoColor: smallWorldColorVideo,
+          videoRaw: smallWorldRawVideo
+        }
       }
     ]
   },
@@ -189,6 +206,14 @@ export const caseStudyConfig = {
           videoColor: seadooColorVideo,
           videoRaw: seadooRawVideo
         }
+      },
+      {
+        type: 'bts',
+        component: SlideBTS,
+        props: {
+          video: seadooBtsVideo,
+          videoMobile: seadooBtsVideoMobile
+        }
       }
     ]
   },
@@ -210,20 +235,27 @@ export const caseStudyConfig = {
         }
       },
       {
+        type: 'social',
+        component: SlideSocial,
+        props: {
+          link: 'https://www.instagram.com/reel/DLIwyB4poCx/',
+          video: SlateSocialVideo
+        }
+      },
+      {
+        type: 'bts',
+        component: SlideBTS,
+        props: {
+          video: slateBtsVideo
+        }
+      },
+      {
         type: 'logo',
         component: SlideLogo,
         props: {
           title: 'Slate Logo Animation',
           video: SlateLogoVideo,
           videoMobile: SlateLogoVideoMobile
-        }
-      },
-      {
-        type: 'social',
-        component: SlideSocial,
-        props: {
-          link: 'https://www.instagram.com/reel/DLIwyB4poCx/',
-          video: SlateSocialVideo
         }
       }
     ]
@@ -370,8 +402,23 @@ export const caseStudyConfig = {
         props: {
           image: BGSplits2
         }
+      },
+      {
+        type: 'color',
+        component: SlideColor,
+        props: {
+          title: 'Champagne Pow Color Grade',
+          videoColor: BGColorVideo,
+          videoRaw: BGRawVideo
+        }
+      },
+      {
+        type: 'bts',
+        component: SlideBTS,
+        props: {
+          video: BGBtsVideo
+        }
       }
-      // No geo slide for Seadoo
     ]
   }
 };
