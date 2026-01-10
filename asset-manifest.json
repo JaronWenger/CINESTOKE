@@ -1,11 +1,12 @@
 {
   "files": {
     "main.css": "/static/css/main.12ba6a5c.css",
-    "main.js": "/static/js/main.f064cf55.js",
+    "main.js": "/static/js/main.4edd4e07.js",
     "static/media/TCOrecording.mov": "/static/media/TCOrecording.eb7b0fcfbeacd23158c6.mov",
     "static/media/SWArecording.mov": "/static/media/SWArecording.ea66d9feaf6976e48484.mov",
     "static/media/SEADOOrecording.mov": "/static/media/SEADOOrecording.21d93dd98152fc9e1456.mov",
     "static/media/SLATErecording.mov": "/static/media/SLATErecording.93cf305bca1ffd8c412d.mov",
+    "static/media/GFFrecording.mov": "/static/media/GFFrecording.151978a0e6d56406add3.mov",
     "static/media/IRrecording.mov": "/static/media/IRrecording.5c8b23d307154768bee7.mov",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
     "static/media/SmallWorldMain.mp4": "/static/media/SmallWorldMain.f6e2112b9160ba964e35.mp4",
@@ -103,10 +104,10 @@
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
     "main.12ba6a5c.css.map": "/static/css/main.12ba6a5c.css.map",
-    "main.f064cf55.js.map": "/static/js/main.f064cf55.js.map"
+    "main.4edd4e07.js.map": "/static/js/main.4edd4e07.js.map"
   },
   "entrypoints": [
     "static/css/main.12ba6a5c.css",
-    "static/js/main.f064cf55.js"
+    "static/js/main.4edd4e07.js"
   ]
 }
