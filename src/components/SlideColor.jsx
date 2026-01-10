@@ -25,14 +25,10 @@ const SlideColor = ({
     const rawVideo = rawVideoRef.current;
     if (!colorVideo || !rawVideo) return;
 
-    // Sync raw video to color video's time and ensure it's playing
+    // Sync raw video to color video's time
     const syncVideos = () => {
-      if (Math.abs(colorVideo.currentTime - rawVideo.currentTime) > 0.1) {
+      if (Math.abs(colorVideo.currentTime - rawVideo.currentTime) > 0.05) {
         rawVideo.currentTime = colorVideo.currentTime;
-      }
-      // Ensure raw video is playing if color video is playing
-      if (!colorVideo.paused && rawVideo.paused) {
-        rawVideo.play().catch(() => {});
       }
     };
 
@@ -46,22 +42,10 @@ const SlideColor = ({
     // Sync when color video seeks or loops
     const handleSeeked = () => {
       rawVideo.currentTime = colorVideo.currentTime;
-      if (!colorVideo.paused) {
-        rawVideo.play().catch(() => {});
-      }
     };
 
-    // Handle play/pause sync
     const handlePlay = () => rawVideo.play().catch(() => {});
     const handlePause = () => rawVideo.pause();
-
-    // Periodic sync check to catch stuck videos (especially on mobile)
-    const syncInterval = setInterval(() => {
-      if (!colorVideo.paused && rawVideo.paused) {
-        rawVideo.currentTime = colorVideo.currentTime;
-        rawVideo.play().catch(() => {});
-      }
-    }, 500);
 
     colorVideo.addEventListener('timeupdate', syncVideos);
     colorVideo.addEventListener('canplay', handleCanPlay);
@@ -70,7 +54,6 @@ const SlideColor = ({
     colorVideo.addEventListener('pause', handlePause);
 
     return () => {
-      clearInterval(syncInterval);
       colorVideo.removeEventListener('timeupdate', syncVideos);
       colorVideo.removeEventListener('canplay', handleCanPlay);
       colorVideo.removeEventListener('seeked', handleSeeked);
