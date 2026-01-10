@@ -7,6 +7,8 @@ import SlideGeo from '../components/SlideGeo';
 import SlideLogo from '../components/SlideLogo';
 import SlideSplits from '../components/SlideSplits';
 import SlideSocial from '../components/SlideSocial';
+import SlideBTS from '../components/SlideBTS';
+import SlideColor from '../components/SlideColor';
 // Future slides can be imported here
 // import SlideCustom from '../components/SlideCustom';
 
@@ -28,10 +30,14 @@ import smallWorldGeoVideoMobile from '../assets/CASESTUDIES/SmallWorldGeoPhone.m
 import smallWorldSocialVideo from '../assets/CASESTUDIES/Social/SWArecording.mov';
 import smallWorldSplits from '../assets/CASESTUDIES/Splits/SWAsplits.webp';
 import smallWorldSplits2 from '../assets/CASESTUDIES/Splits/SWAsplits2.webp';
+import smallWorldBtsVideo from '../assets/CASESTUDIES/SmallWorldbts.mp4';
+import smallWorldBtsVideoMobile from '../assets/CASESTUDIES/SmallWorldbtsPhone.mp4';
 import seadooLogo from '../assets/CASESTUDIES/Brands/Seadoopp.webp';
 import seadooVideo from '../assets/CASESTUDIES/SeadooMain.mp4';
 import seadooVideoMobile from '../assets/CASESTUDIES/SeadooMainPhone.mp4';
 import SeadooSocialVideo from '../assets/CASESTUDIES/Social/SEADOOrecording.mov';
+import seadooColorVideo from '../assets/CASESTUDIES/Seadoocolor.mp4';
+import seadooRawVideo from '../assets/CASESTUDIES/Seadooraw.mp4';
 import slateLogo from '../assets/CASESTUDIES/Brands/Slatepp.webp';
 import slateVideo from '../assets/CASESTUDIES/SlateMain.mp4';
 import slateVideoMobile from '../assets/CASESTUDIES/SlateMainPhone.mp4';
@@ -125,6 +131,14 @@ export const caseStudyConfig = {
         props: {
           image: smallWorldSplits
         }
+      },
+      {
+        type: 'bts',
+        component: SlideBTS,
+        props: {
+          video: smallWorldBtsVideo,
+          videoMobile: smallWorldBtsVideoMobile
+        }
       }
     ]
   },
@@ -165,6 +179,15 @@ export const caseStudyConfig = {
         component: SlideSplits,
         props: {
           image: SeadooSplits2
+        }
+      },
+      {
+        type: 'color',
+        component: SlideColor,
+        props: {
+          title: 'Glass Color Grade',
+          videoColor: seadooColorVideo,
+          videoRaw: seadooRawVideo
         }
       }
     ]
