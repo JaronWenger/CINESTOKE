@@ -89,6 +89,7 @@ const SlideSocial = ({ link, video, videoMobile, preload = 'auto', isMobile = fa
           src={iphoneMockup}
           alt="iPhone Mockup"
           className="slide-social-iphone-frame"
+          loading="lazy"
         />
       </div>
     </div>

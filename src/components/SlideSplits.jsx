@@ -8,6 +8,7 @@ const SlideSplits = ({ image }) => {
           src={image}
           alt="Splits"
           className="slide-splits-image"
+          loading="lazy"
         />
       </div>
     </div>
