@@ -63,6 +63,7 @@ import TCOVideo from '../assets/CASESTUDIES/TCOMain.mp4';
 import TCOVideoMobile from '../assets/CASESTUDIES/TCOMainPhone.mp4';
 import GFFVideo from '../assets/CASESTUDIES/GFFMain.mp4';
 import GFFVideoMobile from '../assets/CASESTUDIES/GFFMainPhone.mp4';
+import GFFSocialVideo from '../assets/CASESTUDIES/Social/GFFrecording.mov';
 import IRVideo from '../assets/CASESTUDIES/IRMain.mp4';
 import IRVideoMobile from '../assets/CASESTUDIES/IRMainPhone.mp4';
 import IRLogoVideo from '../assets/CASESTUDIES/IRLogo.mp4';
@@ -316,6 +317,14 @@ export const caseStudyConfig = {
           component: SlideSplits,
           props: {
             image: GFFSplits
+          }
+        },
+        {
+          type: 'social',
+          component: SlideSocial,
+          props: {
+            link: 'https://www.instagram.com/reel/CzULlApOFtJ/',
+            video: GFFSocialVideo
           }
         }
       ]
