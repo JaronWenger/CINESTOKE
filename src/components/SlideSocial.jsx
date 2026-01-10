@@ -1,9 +1,11 @@
 import React, { useRef, useEffect } from 'react';
 import iphoneMockup from '../assets/CASESTUDIES/Social/iPhone.webp';
 
-const SlideSocial = ({ link, video, videoMobile, preload = 'auto', isMobile = false }) => {
+const SlideSocial = ({ link, video, videoMobile, preload = 'auto', isMobile = false, videosCanLoad = true }) => {
   // Use mobile video if available and on mobile, otherwise use regular video
   const videoSrc = (isMobile && videoMobile) ? videoMobile : video;
+  // Only load after sizing is complete
+  const activeSrc = videosCanLoad ? videoSrc : undefined;
   const dragStartRef = useRef({ x: 0, y: 0 });
   const wasDraggingRef = useRef(false);
   const linkRef = useRef(null);
@@ -75,14 +77,14 @@ const SlideSocial = ({ link, video, videoMobile, preload = 'auto', isMobile = fa
       <div className="slide-social-image-container">
         <div className="slide-social-video-wrapper">
           <video
-            src={videoSrc}
+            src={activeSrc}
             autoPlay
             loop
             muted
             playsInline
             preload={preload}
             className="slide-social-video"
-            key={videoSrc} // Force re-render when video source changes
+            key={videoSrc}
           />
         </div>
         <img

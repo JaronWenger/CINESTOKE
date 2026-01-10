@@ -54,7 +54,7 @@ const SlideMain = ({ title, description, profilePic, video, videoMobile, logoUrl
           playsInline
           preload={preload}
           className="case-study-video"
-          key={videoSrc} // Force re-render when video source changes
+          key={videoSrc}
         />
       </div>
     </div>
