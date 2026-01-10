@@ -846,6 +846,15 @@ video {
   overflow: hidden;
 }
 
+.slide-bts-caption {
+  font-size: 2rem;
+  margin-top: 1rem;
+  margin-bottom: 0;
+  flex-shrink: 0;
+  font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  color: white;
+}
+
 /* Slide Color - Before/After Comparison */
 .slide-color {
   text-align: center;
@@ -1275,6 +1284,7 @@ video {
   height: 100%;
   justify-content: center;
   align-items: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
 
@@ -1431,7 +1441,11 @@ video {
   .slide-geo .case-study-title {
     font-size: 1.5rem;
   }
-  
+
+  .slide-bts-caption {
+    font-size: 1.5rem;
+  }
+
   .case-study-description {
     font-size: 1.2rem;
     padding: 0 1rem;
@@ -1489,7 +1503,11 @@ video {
   .slide-geo .case-study-title {
     font-size: 1.2rem;
   }
-  
+
+  .slide-bts-caption {
+    font-size: 1.2rem;
+  }
+
   .case-study-description {
     font-size: 1rem;
   }
