@@ -1,23 +1,21 @@
 {
   "files": {
     "main.css": "/static/css/main.b06456cd.css",
-    "main.js": "/static/js/main.7b1047d7.js",
-    "static/media/TCOrecording.mov": "/static/media/TCOrecording.eb7b0fcfbeacd23158c6.mov",
-    "static/media/SWArecording.mov": "/static/media/SWArecording.ea66d9feaf6976e48484.mov",
-    "static/media/SEADOOrecording.mov": "/static/media/SEADOOrecording.21d93dd98152fc9e1456.mov",
-    "static/media/SLATErecording.mov": "/static/media/SLATErecording.93cf305bca1ffd8c412d.mov",
-    "static/media/GFFrecording.mov": "/static/media/GFFrecording.151978a0e6d56406add3.mov",
-    "static/media/IRrecording.mov": "/static/media/IRrecording.5c8b23d307154768bee7.mov",
+    "main.js": "/static/js/main.96b13f2e.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
     "static/media/SmallWorldMain.mp4": "/static/media/SmallWorldMain.f6e2112b9160ba964e35.mp4",
     "static/media/BGGeo.mp4": "/static/media/BGGeo.e95e6a2dba335a5563a3.mp4",
     "static/media/IRMain.mp4": "/static/media/IRMain.4fdba3a3c5e4b76aa235.mp4",
+    "static/media/TCOrecording.mp4": "/static/media/TCOrecording.6ab41439f3d8a6481349.mp4",
     "static/media/SlateMain.mp4": "/static/media/SlateMain.4926ababa2ab53d3d675.mp4",
     "static/media/SmallWorldGeo.mp4": "/static/media/SmallWorldGeo.298eb4a65d1fd276615c.mp4",
     "static/media/GFFMain.mp4": "/static/media/GFFMain.1910c6110338eeff50c2.mp4",
     "static/media/TCOMain.mp4": "/static/media/TCOMain.9f9eece14d32bec9d1a4.mp4",
     "static/media/SeadooMain.mp4": "/static/media/SeadooMain.63ea0e47648f0c1adc0a.mp4",
+    "static/media/SWArecording.mp4": "/static/media/SWArecording.f42cbc0c825fb04afd67.mp4",
+    "static/media/SEADOOrecording.mp4": "/static/media/SEADOOrecording.b1cec4b7e973f1aeea56.mp4",
     "static/media/BGMain.mp4": "/static/media/BGMain.6840e31245e8b840a3e9.mp4",
+    "static/media/SLATErecording.mp4": "/static/media/SLATErecording.3ee97654a2e6c0ef52db.mp4",
     "static/media/SmallWorldbts.mp4": "/static/media/SmallWorldbts.b4cd5c191bf6da2056d9.mp4",
     "static/media/SmallWorldMainPhone.mp4": "/static/media/SmallWorldMainPhone.d09c53db5d03560edaac.mp4",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.1cfc188f75499b14cddc.mp4",
@@ -25,6 +23,8 @@
     "static/media/Seadoobts.mp4": "/static/media/Seadoobts.d149d39d6b8fab20cb8f.mp4",
     "static/media/IRMainPhone.mp4": "/static/media/IRMainPhone.5d97e82e8770c0b6844a.mp4",
     "static/media/TCOMainPhone.mp4": "/static/media/TCOMainPhone.dd9e6197f5b95f1f5283.mp4",
+    "static/media/GFFrecording.mp4": "/static/media/GFFrecording.b64998f19fb19e2bbb71.mp4",
+    "static/media/IRrecording.mp4": "/static/media/IRrecording.fac3073b41a86734369e.mp4",
     "static/media/GFFMainPhone.mp4": "/static/media/GFFMainPhone.187da7eb1ba96cbc116c.mp4",
     "static/media/SlateMainPhone.mp4": "/static/media/SlateMainPhone.2ecd24aff315e4431b99.mp4",
     "static/media/SeadooMainPhone.mp4": "/static/media/SeadooMainPhone.02febd5356e036e56638.mp4",
@@ -104,10 +104,10 @@
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
     "main.b06456cd.css.map": "/static/css/main.b06456cd.css.map",
-    "main.7b1047d7.js.map": "/static/js/main.7b1047d7.js.map"
+    "main.96b13f2e.js.map": "/static/js/main.96b13f2e.js.map"
   },
   "entrypoints": [
     "static/css/main.b06456cd.css",
-    "static/js/main.7b1047d7.js"
+    "static/js/main.96b13f2e.js"
   ]
 }
