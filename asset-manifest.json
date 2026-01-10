@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.12ba6a5c.css",
-    "main.js": "/static/js/main.c23b2b36.js",
+    "main.js": "/static/js/main.f064cf55.js",
     "static/media/TCOrecording.mov": "/static/media/TCOrecording.eb7b0fcfbeacd23158c6.mov",
     "static/media/SWArecording.mov": "/static/media/SWArecording.ea66d9feaf6976e48484.mov",
     "static/media/SEADOOrecording.mov": "/static/media/SEADOOrecording.21d93dd98152fc9e1456.mov",
@@ -21,6 +21,7 @@
     "static/media/SmallWorldMainPhone.mp4": "/static/media/SmallWorldMainPhone.d09c53db5d03560edaac.mp4",
     "static/media/Welcomephone.mp4": "/static/media/Welcomephone.1cfc188f75499b14cddc.mp4",
     "static/media/BGGeoPhone.mp4": "/static/media/BGGeoPhone.efecd2d6db1f590c1f0d.mp4",
+    "static/media/Seadoobts.mp4": "/static/media/Seadoobts.d149d39d6b8fab20cb8f.mp4",
     "static/media/IRMainPhone.mp4": "/static/media/IRMainPhone.5d97e82e8770c0b6844a.mp4",
     "static/media/TCOMainPhone.mp4": "/static/media/TCOMainPhone.dd9e6197f5b95f1f5283.mp4",
     "static/media/GFFMainPhone.mp4": "/static/media/GFFMainPhone.187da7eb1ba96cbc116c.mp4",
@@ -28,13 +29,20 @@
     "static/media/SeadooMainPhone.mp4": "/static/media/SeadooMainPhone.02febd5356e036e56638.mp4",
     "static/media/SmallWorldGeoPhone.mp4": "/static/media/SmallWorldGeoPhone.5fd9749bd914e020f3ba.mp4",
     "static/media/BGMainPhone.mp4": "/static/media/BGMainPhone.338fe6cffa0202c432cd.mp4",
+    "static/media/SmallWorldcolor.mp4": "/static/media/SmallWorldcolor.3b3ef3b77fa73270369a.mp4",
     "static/media/SmallWorldbtsPhone.mp4": "/static/media/SmallWorldbtsPhone.eb6a5e697e8fd0214061.mp4",
+    "static/media/SeadoobtsPhone.mp4": "/static/media/SeadoobtsPhone.b68643756eed19858689.mp4",
+    "static/media/Slatebts.mp4": "/static/media/Slatebts.492f552fef57c389aea7.mp4",
     "static/media/Seadoocolor.mp4": "/static/media/Seadoocolor.26b435804cd2828bf1d3.mp4",
     "static/media/Seadooraw.mp4": "/static/media/Seadooraw.5d459db8091aea1c4be8.mp4",
     "static/media/offers.webp": "/static/media/offers.a43ffbd6e1fe7db415e7.webp",
+    "static/media/BGbts.mp4": "/static/media/BGbts.f73c6522b233f2495ef1.mp4",
+    "static/media/BGcolor.mp4": "/static/media/BGcolor.6b928baf72e153e9e4bd.mp4",
+    "static/media/SmallWorldraw.mp4": "/static/media/SmallWorldraw.6e73d90a693001322148.mp4",
     "static/media/insta.webp": "/static/media/insta.be834b67581026174459.webp",
     "static/media/tiktok.webp": "/static/media/tiktok.0b17e3b5d4cc790b5316.webp",
     "static/media/youtube.webp": "/static/media/youtube.ddb244c83c9089617e44.webp",
+    "static/media/BGraw.mp4": "/static/media/BGraw.c222abcddcbe03c09eef.mp4",
     "static/media/IRLogo.mp4": "/static/media/IRLogo.4fb85d6c1ce2d4e59f2f.mp4",
     "static/media/profile.webp": "/static/media/profile.328f681c8cbed8cf359e.webp",
     "static/media/IRLogoPhone.mp4": "/static/media/IRLogoPhone.0c5fc802d899a78494ef.mp4",
@@ -95,10 +103,10 @@
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
     "main.12ba6a5c.css.map": "/static/css/main.12ba6a5c.css.map",
-    "main.c23b2b36.js.map": "/static/js/main.c23b2b36.js.map"
+    "main.f064cf55.js.map": "/static/js/main.f064cf55.js.map"
   },
   "entrypoints": [
     "static/css/main.12ba6a5c.css",
-    "static/js/main.c23b2b36.js"
+    "static/js/main.f064cf55.js"
   ]
 }
