@@ -7,6 +7,7 @@ import ClientsV2 from './ClientsV2';
 import Pics from './Pics';
 import CaseStudy from './CaseStudy';
 import Social from './Social';
+import { useVideoErrorHandling } from '../hooks/useVideoErrorHandling';
 
 
 const Main = () => {
@@ -26,6 +27,10 @@ const Main = () => {
   const [mainVideoLoaded, setMainVideoLoaded] = useState(false); // Track if main video has loaded
   const [isCaseStudyFading, setIsCaseStudyFading] = useState(false); // Track fade state for CaseStudy
   const clientsV2Ref = useRef(null); // Ref to ClientsV2 component for brand shifting
+
+  // Add stuck video detection for main video (mobile only)
+  const mainVideoSrc = isMobile ? videoBgMobile : videoBg;
+  useVideoErrorHandling(videoRef, mainVideoSrc, isMobile);
 
   // Handle client change from ClientsV2 (user click or swipe) - triggers fade
   const handleClientWillChange = (clientKey) => {

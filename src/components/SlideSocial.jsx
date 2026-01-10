@@ -1,15 +1,20 @@
 import React, { useRef, useEffect } from 'react';
 import iphoneMockup from '../assets/CASESTUDIES/Social/iPhone.webp';
+import { useVideoErrorHandling } from '../hooks/useVideoErrorHandling';
 
 const SlideSocial = ({ link, video, videoMobile, preload = 'auto', isMobile = false, videosCanLoad = true }) => {
   // Use mobile video if available and on mobile, otherwise use regular video
   const videoSrc = (isMobile && videoMobile) ? videoMobile : video;
   // Only load after sizing is complete
   const activeSrc = videosCanLoad ? videoSrc : undefined;
+  const videoRef = useRef(null);
   const dragStartRef = useRef({ x: 0, y: 0 });
   const wasDraggingRef = useRef(false);
   const linkRef = useRef(null);
   const DRAG_THRESHOLD = 10; // Pixels of movement to consider it a drag
+
+  // Add stuck video detection (mobile only)
+  useVideoErrorHandling(videoRef, activeSrc, isMobile);
 
   const handleMouseDown = (e) => {
     dragStartRef.current = {
@@ -77,6 +82,7 @@ const SlideSocial = ({ link, video, videoMobile, preload = 'auto', isMobile = fa
       <div className="slide-social-image-container">
         <div className="slide-social-video-wrapper">
           <video
+            ref={videoRef}
             src={activeSrc}
             autoPlay
             loop
