@@ -146,7 +146,8 @@ export const caseStudyConfig = {
         component: SlideBTS,
         props: {
           video: smallWorldBtsVideo,
-          videoMobile: smallWorldBtsVideoMobile
+          videoMobile: smallWorldBtsVideoMobile,
+          caption: 'Behind the Scenes 📸'
         }
       },
       {
@@ -213,7 +214,8 @@ export const caseStudyConfig = {
         component: SlideBTS,
         props: {
           video: seadooBtsVideo,
-          videoMobile: seadooBtsVideoMobile
+          videoMobile: seadooBtsVideoMobile,
+          caption: 'Behind the Scenes 📸'
         }
       }
     ]
@@ -247,7 +249,8 @@ export const caseStudyConfig = {
         type: 'bts',
         component: SlideBTS,
         props: {
-          video: slateBtsVideo
+          video: slateBtsVideo,
+          caption: 'Behind the Scenes 📸'
         }
       },
       {
@@ -425,7 +428,8 @@ export const caseStudyConfig = {
         type: 'bts',
         component: SlideBTS,
         props: {
-          video: BGBtsVideo
+          video: BGBtsVideo,
+          caption: 'Behind the Scenes 📸'
         }
       }
     ]

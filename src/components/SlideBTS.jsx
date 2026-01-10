@@ -1,6 +1,6 @@
 import React from 'react';
 
-const SlideBTS = ({ video, videoMobile, preload = 'auto', isMobile = false }) => {
+const SlideBTS = ({ video, videoMobile, preload = 'auto', isMobile = false, caption = 'Behind the Scenes 📸' }) => {
   // Use mobile video if available and on mobile, otherwise use regular video
   const videoSrc = (isMobile && videoMobile) ? videoMobile : video;
 
@@ -18,6 +18,9 @@ const SlideBTS = ({ video, videoMobile, preload = 'auto', isMobile = false }) =>
           key={videoSrc}
         />
       </div>
+      <h2 className="slide-bts-caption">
+        {caption}
+      </h2>
     </div>
   );
 };
