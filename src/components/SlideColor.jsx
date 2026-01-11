@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useVideoErrorHandling } from '../hooks/useVideoErrorHandling';
 
 const SlideColor = ({
   title = 'Glass Power Grade',
@@ -19,7 +18,6 @@ const SlideColor = ({
   const overlayRef = useRef(null);
   const handleRef = useRef(null);
   const sliderPositionRef = useRef(50); // Track position without re-renders
-  const lastColorTimeRef = useRef(0); // Track color video time to detect if stuck
 
   // Use mobile videos if available and on mobile
   const colorSrc = (isMobile && videoColorMobile) ? videoColorMobile : videoColor;
@@ -27,10 +25,6 @@ const SlideColor = ({
   // Only load after sizing is complete
   const activeColorSrc = videosCanLoad ? colorSrc : undefined;
   const activeRawSrc = videosCanLoad ? rawSrc : undefined;
-
-  // Use error handling hook for both videos (handles stuck detection, retries)
-  useVideoErrorHandling(colorVideoRef, activeColorSrc, isMobile);
-  useVideoErrorHandling(rawVideoRef, activeRawSrc, isMobile);
 
   // Attempt to play a video - handles autoplay blocking gracefully
   const attemptPlay = useCallback((video) => {
@@ -49,125 +43,64 @@ const SlideColor = ({
     attemptPlay(rawVideoRef.current);
   }, [attemptPlay]);
 
-  // Video sync and playback management
+  // Simple video sync: play together, reset together on loop
   useEffect(() => {
     const colorVideo = colorVideoRef.current;
     const rawVideo = rawVideoRef.current;
     if (!colorVideo || !rawVideo) return;
 
-    // Track if colorVideo is actually advancing (not stuck)
-    let colorStuckCount = 0;
+    let hasStarted = false;
 
-    // Sync raw video to color video - but only if color is actually playing
-    const syncVideos = () => {
-      if (!colorVideo || !rawVideo) return;
-
-      const colorTime = colorVideo.currentTime;
-      const colorAdvancing = Math.abs(colorTime - lastColorTimeRef.current) > 0.01;
-      lastColorTimeRef.current = colorTime;
-
-      // If colorVideo is stuck (not advancing for multiple checks), try to restart it
-      if (!colorVideo.paused && !colorAdvancing && colorVideo.readyState >= 3) {
-        colorStuckCount++;
-        if (colorStuckCount >= 3) {
-          // ColorVideo appears stuck - try to restart it
-          attemptPlay(colorVideo);
-          colorStuckCount = 0;
-        }
-        // Don't sync rawVideo when colorVideo is stuck - prevents 1ms loop
-        return;
-      } else {
-        colorStuckCount = 0;
-      }
-
-      // Only sync if drift is noticeable AND colorVideo is advancing
-      if (colorAdvancing && Math.abs(colorTime - rawVideo.currentTime) > 0.1) {
-        rawVideo.currentTime = colorTime;
-      }
-
-      // Ensure rawVideo is playing if colorVideo is playing
-      if (!colorVideo.paused && rawVideo.paused) {
+    // Start both videos together once both are ready
+    const startBothVideos = () => {
+      if (hasStarted) return;
+      // readyState >= 2 means metadata loaded, >= 3 means can play
+      if (colorVideo.readyState >= 2 && rawVideo.readyState >= 2) {
+        hasStarted = true;
+        colorVideo.currentTime = 0;
+        rawVideo.currentTime = 0;
+        attemptPlay(colorVideo);
         attemptPlay(rawVideo);
       }
     };
 
-    // Handle colorVideo initial load
-    const handleCanPlayThrough = () => {
-      rawVideo.currentTime = colorVideo.currentTime;
+    // When colorVideo ends, reset both to start (manual loop)
+    const handleEnded = () => {
+      colorVideo.currentTime = 0;
+      rawVideo.currentTime = 0;
       attemptPlay(colorVideo);
       attemptPlay(rawVideo);
     };
 
-    // Handle rawVideo ready - sync and play
-    const handleRawCanPlayThrough = () => {
-      rawVideo.currentTime = colorVideo.currentTime;
-      if (!colorVideo.paused) {
-        attemptPlay(rawVideo);
-      }
-    };
+    // Multiple events to catch when videos are ready
+    const handleReady = () => startBothVideos();
 
-    // Handle rawVideo pausing independently (mobile power saving, etc.)
-    const handleRawPause = () => {
-      // Restart raw if color is still playing
-      if (!colorVideo.paused) {
-        attemptPlay(rawVideo);
-      }
-    };
+    // Listen to multiple events for reliability
+    colorVideo.addEventListener('canplaythrough', handleReady);
+    colorVideo.addEventListener('loadeddata', handleReady);
+    colorVideo.addEventListener('canplay', handleReady);
+    rawVideo.addEventListener('canplaythrough', handleReady);
+    rawVideo.addEventListener('loadeddata', handleReady);
+    rawVideo.addEventListener('canplay', handleReady);
+    colorVideo.addEventListener('ended', handleEnded);
 
-    // Sync when color video seeks or loops
-    const handleSeeked = () => {
-      rawVideo.currentTime = colorVideo.currentTime;
-      lastColorTimeRef.current = colorVideo.currentTime;
-    };
+    // Try immediately if already ready (handles cached videos)
+    startBothVideos();
 
-    // When colorVideo plays, play rawVideo
-    const handlePlay = () => attemptPlay(rawVideo);
-
-    // When colorVideo pauses, sync rawVideo (but also check if accidental)
-    const handlePause = () => {
-      // Pause rawVideo to stay in sync
-      rawVideo.pause();
-      // On mobile, check if this was accidental after a short delay
-      if (isMobile && colorVideo.readyState >= 3) {
-        setTimeout(() => {
-          // If colorVideo is paused but hasn't been intentionally stopped,
-          // the useVideoErrorHandling hook will handle recovery
-        }, 500);
-      }
-    };
-
-    // Use setInterval for sync (250ms)
-    const syncInterval = setInterval(syncVideos, 250);
-
-    // ColorVideo listeners
-    colorVideo.addEventListener('canplaythrough', handleCanPlayThrough);
-    colorVideo.addEventListener('seeked', handleSeeked);
-    colorVideo.addEventListener('play', handlePlay);
-    colorVideo.addEventListener('pause', handlePause);
-
-    // RawVideo listeners - detect independent pauses/stalls
-    rawVideo.addEventListener('canplaythrough', handleRawCanPlayThrough);
-    rawVideo.addEventListener('pause', handleRawPause);
-
-    // Try to play immediately if videos are already ready
-    if (colorVideo.readyState >= 3) {
-      attemptPlay(colorVideo);
-      lastColorTimeRef.current = colorVideo.currentTime;
-    }
-    if (rawVideo.readyState >= 3) {
-      attemptPlay(rawVideo);
-    }
+    // Also try after a short delay in case events already fired
+    const checkTimeout = setTimeout(startBothVideos, 100);
 
     return () => {
-      clearInterval(syncInterval);
-      colorVideo.removeEventListener('canplaythrough', handleCanPlayThrough);
-      colorVideo.removeEventListener('seeked', handleSeeked);
-      colorVideo.removeEventListener('play', handlePlay);
-      colorVideo.removeEventListener('pause', handlePause);
-      rawVideo.removeEventListener('canplaythrough', handleRawCanPlayThrough);
-      rawVideo.removeEventListener('pause', handleRawPause);
+      clearTimeout(checkTimeout);
+      colorVideo.removeEventListener('canplaythrough', handleReady);
+      colorVideo.removeEventListener('loadeddata', handleReady);
+      colorVideo.removeEventListener('canplay', handleReady);
+      rawVideo.removeEventListener('canplaythrough', handleReady);
+      rawVideo.removeEventListener('loadeddata', handleReady);
+      rawVideo.removeEventListener('canplay', handleReady);
+      colorVideo.removeEventListener('ended', handleEnded);
     };
-  }, [attemptPlay, isMobile]);
+  }, [attemptPlay]);
 
   // Direct DOM update for slider position - avoids React re-renders for 60fps smoothness
   const updateSliderPosition = useCallback((clientX) => {
@@ -246,12 +179,11 @@ const SlideColor = ({
         ref={containerRef}
         className="slide-color-container"
       >
-        {/* Raw video (bottom layer - always full width) */}
+        {/* Raw video (bottom layer - always full width) - no loop, synced with color */}
         <video
           ref={rawVideoRef}
           src={activeRawSrc}
           autoPlay
-          loop
           muted
           playsInline
           preload={preload}
@@ -259,7 +191,7 @@ const SlideColor = ({
           key={`raw-${rawSrc}`}
         />
 
-        {/* Color video (top layer - clipped) */}
+        {/* Color video (top layer - clipped) - no loop, we handle it manually */}
         <div
           ref={overlayRef}
           className="slide-color-overlay"
@@ -269,7 +201,6 @@ const SlideColor = ({
             ref={colorVideoRef}
             src={activeColorSrc}
             autoPlay
-            loop
             muted
             playsInline
             preload={preload}
