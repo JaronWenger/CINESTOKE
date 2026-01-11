@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { getAllSlidesFlattened, getClientStartIndex, getClientOrder } from '../config/caseStudyConfig';
 
 /**
@@ -8,7 +8,7 @@ import { getAllSlidesFlattened, getClientStartIndex, getClientOrder } from '../c
  * Native scroll-snap handles ALL transitions - no special handling needed.
  * Infinite scroll with buffer slides on both ends for seamless looping.
  */
-const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isMobile }) => {
+const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeComplete, isMobile }, ref) => {
   const scrollContainerRef = useRef(null);
   const [currentGlobalIndex, setCurrentGlobalIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -22,6 +22,7 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
   const slideOneHeightRef = useRef(null);
   const hasInitializedRef = useRef(false);
   const pendingScrollTargetRef = useRef(null); // Store target client for after fade completes
+  const fadeOutCompleteRef = useRef(false); // Track if fade-out has completed (for late-arriving targets)
   const DRAG_THRESHOLD = 50;
   const snapTimeoutRef = useRef(null);
 
@@ -374,17 +375,68 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
     updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
   }, [allSlides, realStartIndex, totalSlides, currentGlobalIndex, getCurrentClientInfo]);
 
+  // Expose scrollToFirstSlide method via ref (for when user re-clicks centered brand)
+  // Uses smooth scrolling (not instant jump) so user sees slides animate back
+  useImperativeHandle(ref, () => ({
+    scrollToFirstSlide: (clientKey) => {
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      const clientStartIndex = getClientStartIndex(clientKey);
+      if (clientStartIndex === -1) return;
+
+      // Target the first slide of this client in the real section
+      const targetIndex = realStartIndex + clientStartIndex;
+      const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+      const targetSlide = slideWrappers[targetIndex];
+
+      if (targetSlide) {
+        // Use smooth scroll so user sees the slides animate back
+        container.style.scrollBehavior = 'smooth';
+        container.scrollLeft = targetSlide.offsetLeft;
+
+        // Update state
+        setCurrentGlobalIndex(clientStartIndex);
+        const slideInfo = allSlides[clientStartIndex];
+        updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
+      }
+    }
+  }), [allSlides, realStartIndex]);
+
+  // Reset fadeOutCompleteRef when fade starts
+  useEffect(() => {
+    if (isFading) {
+      fadeOutCompleteRef.current = false;
+    }
+  }, [isFading]);
+
   // When activeClient changes from external source (logo click), store target for after fade
   // The actual scroll happens in the transitionend handler when fade-out completes
+  // OR immediately if fade-out already completed (late-arriving target)
   useEffect(() => {
     if (!hasInitializedRef.current) return;
 
     const currentSlideInfo = getCurrentClientInfo(currentGlobalIndex);
+    console.log('📍 activeClient useEffect:', {
+      activeClient,
+      currentClientKey: currentSlideInfo?.clientKey,
+      isFading,
+      fadeOutComplete: fadeOutCompleteRef.current
+    });
+
     if (currentSlideInfo?.clientKey !== activeClient) {
-      // Store the target - we'll jump to it after fade-out completes
+      // If fade-out already completed, jump immediately
+      if (isFading && fadeOutCompleteRef.current) {
+        console.log('🚀 Late target arrival - jumping immediately to:', activeClient);
+        scrollToClient(activeClient);
+        onFadeComplete?.();
+        return;
+      }
+      // Otherwise store the target - we'll jump to it after fade-out completes
+      console.log('📝 Storing pending target:', activeClient);
       pendingScrollTargetRef.current = activeClient;
     }
-  }, [activeClient, currentGlobalIndex, getCurrentClientInfo]);
+  }, [activeClient, currentGlobalIndex, getCurrentClientInfo, isFading, scrollToClient, onFadeComplete]);
 
   // Event-driven fade transition using transitionend
   // When fade-out completes (opacity reaches 0), instantly jump to target, then fade back in
@@ -397,17 +449,27 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
       if (e.propertyName !== 'opacity' || e.target !== container) return;
 
       const currentOpacity = parseFloat(getComputedStyle(container).opacity);
+      console.log('🔄 CaseStudy transitionend fired, opacity:', currentOpacity, 'pendingTarget:', pendingScrollTargetRef.current);
 
-      // Fade-out complete (opacity near 0) and we have a pending scroll target
-      if (currentOpacity < 0.1 && pendingScrollTargetRef.current) {
-        const targetClient = pendingScrollTargetRef.current;
-        pendingScrollTargetRef.current = null;
+      // Fade-out complete (opacity near 0)
+      if (currentOpacity < 0.1) {
+        fadeOutCompleteRef.current = true; // Mark that fade-out is done
+        console.log('✅ Fade-out complete, fadeOutCompleteRef set to true');
 
-        // Perform instant jump while screen is black
-        scrollToClient(targetClient);
+        // If we have a pending scroll target, jump to it now
+        if (pendingScrollTargetRef.current) {
+          const targetClient = pendingScrollTargetRef.current;
+          pendingScrollTargetRef.current = null;
+          console.log('🎯 Jumping to target:', targetClient);
 
-        // Trigger fade-in by notifying parent (sets isFading=false → opacity=1)
-        onFadeComplete?.();
+          // Perform instant jump while screen is black
+          scrollToClient(targetClient);
+
+          // Trigger fade-in by notifying parent (sets isFading=false → opacity=1)
+          onFadeComplete?.();
+        } else {
+          console.log('⏳ No pending target yet, staying black');
+        }
       }
     };
 
@@ -721,6 +783,6 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
       </div>
     </div>
   );
-};
+});
 
 export default CaseStudy;

@@ -27,6 +27,7 @@ const Main = () => {
   const [mainVideoLoaded, setMainVideoLoaded] = useState(false); // Track if main video has loaded
   const [isCaseStudyFading, setIsCaseStudyFading] = useState(false); // Track fade state for CaseStudy
   const clientsV2Ref = useRef(null); // Ref to ClientsV2 component for brand shifting
+  const caseStudyRef = useRef(null); // Ref to CaseStudy component for scrolling to first slide
 
   // Add stuck video detection for main video (mobile only)
   const mainVideoSrc = isMobile ? videoBgMobile : videoBg;
@@ -34,16 +35,29 @@ const Main = () => {
 
   // Handle client change from ClientsV2 (user click or swipe) - triggers fade
   const handleClientWillChange = (clientKey) => {
+    console.log('🎬 handleClientWillChange:', { clientKey, activeClient, isCaseStudyFading });
     // Only trigger fade if actually changing to a different client
     if (clientKey !== activeClient) {
+      console.log('✨ Starting fade transition to:', clientKey);
       setIsCaseStudyFading(true);
       setActiveClient(clientKey);
+    } else {
+      console.log('⏭️ Same client, skipping fade');
     }
   };
 
   // Handle fade completion from CaseStudy
   const handleFadeComplete = () => {
+    console.log('🏁 handleFadeComplete - fading back in');
     setIsCaseStudyFading(false);
+  };
+
+  // Handle re-click on already-centered brand (reset to first slide)
+  const handleClientReselect = (clientKey) => {
+    console.log('🔄 handleClientReselect - scrolling to first slide of:', clientKey);
+    if (caseStudyRef.current?.scrollToFirstSlide) {
+      caseStudyRef.current.scrollToFirstSlide(clientKey);
+    }
   };
 
   // Use useLayoutEffect to set mobile state synchronously before paint
@@ -208,12 +222,13 @@ const Main = () => {
 
       <Bars />
       <Pics />
-      <ClientsV2 ref={clientsV2Ref} onClientChange={handleClientWillChange} />
+      <ClientsV2 ref={clientsV2Ref} onClientChange={handleClientWillChange} onClientReselect={handleClientReselect} />
       {/* Only render CaseStudy after main video has loaded to avoid competing for bandwidth */}
       {/* CaseStudy now uses unified continuous carousel - all slides in sequence */}
       {/* onClientChange syncs the logo carousel when user scrolls through slides */}
       {mainVideoLoaded && (
         <CaseStudy
+          ref={caseStudyRef}
           activeClient={activeClient}
           isFading={isCaseStudyFading}
           onFadeComplete={handleFadeComplete}
