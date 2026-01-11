@@ -532,3 +532,47 @@ export const getClientOrder = (clientKey) => {
   return client?.order || 999;
 };
 
+/**
+ * Get all clients sorted by order, with their keys included
+ * @returns {array} - Array of { key, ...clientData } sorted by order
+ */
+export const getOrderedClients = () => {
+  return Object.entries(caseStudyConfig)
+    .sort(([, a], [, b]) => (a.order || 999) - (b.order || 999))
+    .map(([key, data]) => ({ key, ...data }));
+};
+
+/**
+ * Get client by order number (1-7)
+ * @param {number} order - The order number
+ * @returns {object|null} - { key, ...clientData } or null if not found
+ */
+export const getClientByOrder = (order) => {
+  const entry = Object.entries(caseStudyConfig)
+    .find(([, data]) => data.order === order);
+  return entry ? { key: entry[0], ...entry[1] } : null;
+};
+
+/**
+ * Get the adjacent client key in the circular order
+ * @param {string} clientKey - Current client key
+ * @param {string} direction - 'left' or 'right'
+ * @returns {string} - The adjacent client key
+ */
+export const getAdjacentClientKey = (clientKey, direction) => {
+  const orderedClients = getOrderedClients();
+  const currentIndex = orderedClients.findIndex(c => c.key === clientKey);
+  if (currentIndex === -1) return clientKey;
+
+  const totalClients = orderedClients.length;
+  let newIndex;
+
+  if (direction === 'left') {
+    newIndex = (currentIndex - 1 + totalClients) % totalClients;
+  } else {
+    newIndex = (currentIndex + 1) % totalClients;
+  }
+
+  return orderedClients[newIndex].key;
+};
+

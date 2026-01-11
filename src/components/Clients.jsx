@@ -369,6 +369,7 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
   }, [snapToCenter]);
 
   // Scroll to a specific client (called from CaseStudy sync)
+  // Finds the NEAREST instance of the target brand (any buffer set) to minimize scroll distance
   const scrollToClient = useCallback((clientKey) => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -377,15 +378,14 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
     const containerRect = container.getBoundingClientRect();
     const containerCenterX = containerRect.left + (containerRect.width / 2);
 
-    // Find the closest instance of this client to center
+    // Find the NEAREST instance of this client (any buffer set)
+    // This prevents the "360° spin" when syncing from CaseStudy
     let targetLogo = null;
     let closestDistance = Infinity;
 
     logoWrappers.forEach((logoWrapper) => {
       const logoClientName = getClientNameFromLogo(logoWrapper);
-      // Only consider logos in the "real" section (middle set = index 5 with 11 sets)
-      const setIndex = parseInt(logoWrapper.getAttribute('data-set-index') || '0', 10);
-      if (logoClientName === clientKey && setIndex === 5) {
+      if (logoClientName === clientKey) {
         const logoRect = logoWrapper.getBoundingClientRect();
         const logoCenterX = logoRect.left + (logoRect.width / 2);
         const distance = Math.abs(logoCenterX - containerCenterX);
@@ -396,23 +396,6 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
         }
       }
     });
-
-    // Fallback: find any instance of the client
-    if (!targetLogo) {
-      logoWrappers.forEach((logoWrapper) => {
-        const logoClientName = getClientNameFromLogo(logoWrapper);
-        if (logoClientName === clientKey) {
-          const logoRect = logoWrapper.getBoundingClientRect();
-          const logoCenterX = logoRect.left + (logoRect.width / 2);
-          const distance = Math.abs(logoCenterX - containerCenterX);
-
-          if (distance < closestDistance) {
-            closestDistance = distance;
-            targetLogo = logoWrapper;
-          }
-        }
-      });
-    }
 
     if (targetLogo && closestDistance > 5) {
       container.style.scrollBehavior = 'smooth';
