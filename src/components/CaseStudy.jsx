@@ -21,7 +21,7 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
   const isProgrammaticScrollRef = useRef(false); // Prevent onClientChange during programmatic scroll
   const slideOneHeightRef = useRef(null);
   const hasInitializedRef = useRef(false);
-  const fadeTimeoutRef = useRef(null);
+  const pendingScrollTargetRef = useRef(null); // Store target client for after fade completes
   const DRAG_THRESHOLD = 50;
   const snapTimeoutRef = useRef(null);
 
@@ -358,17 +358,15 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
     // Disable scroll-snap during transition to prevent browser interference
     container.style.scrollSnapType = 'none';
 
-    // Smooth scroll to the target slide using actual element position
-    container.style.scrollBehavior = 'smooth';
+    // INSTANT jump (no smooth scroll) - the fade hides this
+    container.style.scrollBehavior = 'auto';
     if (targetSlide) {
       container.scrollLeft = targetSlide.offsetLeft;
     }
 
-    // Re-enable scroll-snap after animation completes
-    setTimeout(() => {
-      container.style.scrollSnapType = 'x mandatory';
-      isProgrammaticScrollRef.current = false;
-    }, 850);
+    // Re-enable scroll-snap immediately (jump is instant)
+    container.style.scrollSnapType = 'x mandatory';
+    isProgrammaticScrollRef.current = false;
 
     // Update state
     setCurrentGlobalIndex(clientStartIndex);
@@ -376,37 +374,46 @@ const CaseStudy = ({ activeClient, onClientChange, isFading, onFadeComplete, isM
     updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
   }, [allSlides, realStartIndex, totalSlides, currentGlobalIndex, getCurrentClientInfo]);
 
-  // When activeClient changes from external source (logo click), scroll to that client
+  // When activeClient changes from external source (logo click), store target for after fade
+  // The actual scroll happens in the transitionend handler when fade-out completes
   useEffect(() => {
     if (!hasInitializedRef.current) return;
 
     const currentSlideInfo = getCurrentClientInfo(currentGlobalIndex);
     if (currentSlideInfo?.clientKey !== activeClient) {
-      scrollToClient(activeClient);
+      // Store the target - we'll jump to it after fade-out completes
+      pendingScrollTargetRef.current = activeClient;
     }
-  }, [activeClient]);
+  }, [activeClient, currentGlobalIndex, getCurrentClientInfo]);
 
-  // Handle fade completion - wait for scroll to finish then notify
+  // Event-driven fade transition using transitionend
+  // When fade-out completes (opacity reaches 0), instantly jump to target, then fade back in
   useEffect(() => {
-    if (isFading && onFadeComplete) {
-      // Clear any existing timeout
-      if (fadeTimeoutRef.current) {
-        clearTimeout(fadeTimeoutRef.current);
-      }
+    const container = scrollContainerRef.current;
+    if (!container) return;
 
-      // Wait for scroll animation to complete (smooth scroll takes ~800ms)
-      // Then notify parent to fade back in
-      fadeTimeoutRef.current = setTimeout(() => {
-        onFadeComplete();
-      }, 850);
-    }
+    const handleTransitionEnd = (e) => {
+      // Only handle opacity transitions on this element (not bubbled from children)
+      if (e.propertyName !== 'opacity' || e.target !== container) return;
 
-    return () => {
-      if (fadeTimeoutRef.current) {
-        clearTimeout(fadeTimeoutRef.current);
+      const currentOpacity = parseFloat(getComputedStyle(container).opacity);
+
+      // Fade-out complete (opacity near 0) and we have a pending scroll target
+      if (currentOpacity < 0.1 && pendingScrollTargetRef.current) {
+        const targetClient = pendingScrollTargetRef.current;
+        pendingScrollTargetRef.current = null;
+
+        // Perform instant jump while screen is black
+        scrollToClient(targetClient);
+
+        // Trigger fade-in by notifying parent (sets isFading=false → opacity=1)
+        onFadeComplete?.();
       }
     };
-  }, [isFading, activeClient, onFadeComplete]);
+
+    container.addEventListener('transitionend', handleTransitionEnd);
+    return () => container.removeEventListener('transitionend', handleTransitionEnd);
+  }, [onFadeComplete, scrollToClient]);
 
   // Initial scroll to SWA (or activeClient) on mount
   useLayoutEffect(() => {

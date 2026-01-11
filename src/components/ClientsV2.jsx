@@ -226,7 +226,15 @@ const ClientsV2 = forwardRef(({ onClientChange }, ref) => {
       
       // Center the logo
       centerLogo(closestLogo);
-      
+
+      // Only notify if logo is already close to center (within 30px)
+      // If far, centerLogo animates and triggers more scroll events,
+      // which will call snapToCenter again when truly settled
+      if (closestDistance > 30) {
+        console.log('snapToCenter: waiting for centering animation to settle, distance:', closestDistance.toFixed(1));
+        return;
+      }
+
       // Notify about the centered client - this is the main trigger for case study updates
       if (clientName && onClientChange) {
         if (clientName !== lastNotifiedClientRef.current) {
