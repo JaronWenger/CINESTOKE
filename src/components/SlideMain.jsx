@@ -1,8 +1,13 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { useVideoErrorHandling } from '../hooks/useVideoErrorHandling';
 
 const SlideMain = ({ title, description, profilePic, video, videoMobile, logoUrl, preload = 'auto', isMobile = false }) => {
   // Use mobile video if available and on mobile, otherwise use regular video
   const videoSrc = (isMobile && videoMobile) ? videoMobile : video;
+  const videoRef = useRef(null);
+
+  // Add stuck video detection (mobile only)
+  useVideoErrorHandling(videoRef, videoSrc, isMobile);
 
   return (
     <div className="slide-one">
@@ -47,6 +52,7 @@ const SlideMain = ({ title, description, profilePic, video, videoMobile, logoUrl
       </div>
       <div className="case-study-video-container">
         <video
+          ref={videoRef}
           src={videoSrc}
           autoPlay
           loop
