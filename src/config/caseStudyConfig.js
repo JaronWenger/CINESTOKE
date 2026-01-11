@@ -78,6 +78,7 @@ import SeadooSplits from '../assets/CASESTUDIES/Splits/Seadoosplits.webp';
 import SeadooSplits2 from '../assets/CASESTUDIES/Splits/Seadoosplits2.webp';
 import TCOSplits from '../assets/CASESTUDIES/Splits/TCOsplits.webp';
 import TCOSocialVideo from '../assets/CASESTUDIES/Social/TCOrecording.mp4';
+import TCOSocialVideoMobile from '../assets/CASESTUDIES/Social/TCOrecordingPhone.mp4';
 /**
  * Case Study Configuration
  * 
@@ -293,7 +294,8 @@ export const caseStudyConfig = {
           component: SlideSocial,
           props: {
             link: 'https://www.instagram.com/p/CqGzm_zL6ql/',
-            video: TCOSocialVideo
+            video: TCOSocialVideo,
+            videoMobile: TCOSocialVideoMobile
           }
         }
       ]
