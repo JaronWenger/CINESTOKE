@@ -921,12 +921,13 @@ video {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 30px;
+  width: 44px;
   transform: translateX(-50%);
   z-index: 3;
   touch-action: none;
   display: flex;
   justify-content: center;
+  cursor: pointer;
 }
 
 .slide-color-slider-hitarea {
@@ -934,6 +935,7 @@ video {
   top: 0;
   bottom: 0;
   width: 100%;
+  cursor: pointer;
 }
 
 .slide-color-line {
@@ -962,6 +964,17 @@ video {
   align-items: center;
   touch-action: none;
   padding: 0 10px;
+}
+
+.slide-color-handle-hitarea {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-top: 4px;
+  cursor: pointer;
 }
 
 .slide-color-handle-line {
