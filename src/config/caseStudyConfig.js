@@ -83,7 +83,7 @@ import TCOSocialVideoMobile from '../assets/CASESTUDIES/Social/TCOrecordingPhone
  * Case Study Configuration
  * 
  * Structure:
- * - clientName: Must match the component name from ClientsV2 (e.g., "SWA", "Seadoo")
+ * - clientName: Must match the component name from Clients (e.g., "SWA", "Seadoo")
  * - slides: Array of slide configurations
  *   - type: String identifier for the slide type
  *   - component: React component to render
@@ -440,7 +440,7 @@ export const caseStudyConfig = {
 
 /**
  * Get case study config for a specific client
- * @param {string} clientName - The client name (must match ClientsV2 component name)
+ * @param {string} clientName - The client name (must match Clients component name)
  * @returns {object|null} - The client's case study config or null if not found
  */
 export const getCaseStudyForClient = (clientName) => {
