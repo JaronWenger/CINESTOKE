@@ -3,14 +3,14 @@ import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle, us
 import { getClientLogoComponents, getClientNames } from '../config/caseStudyConfig';
 
 /**
- * ClientsV2 - Apple-style infinite carousel with fixed buffer approach
+ * Clients - Apple-style infinite carousel with fixed buffer approach
  *
  * Architecture:
  * - Fixed 3 copies: [Buffer Start] [Real Section] [Buffer End]
  * - When user scrolls into buffer zone → instant teleport to corresponding position in real section
  * - No dynamic DOM growth, no prepend math, no edge cases
  */
-const ClientsV2 = forwardRef(({ onClientChange, onClientReselect }, ref) => {
+const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
   const scrollContainerRef = useRef(null);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [isReady, setIsReady] = useState(false);
@@ -218,7 +218,7 @@ const ClientsV2 = forwardRef(({ onClientChange, onClientReselect }, ref) => {
 
       // Notify if client changed
       if (clientName && onClientChange && clientName !== lastNotifiedClientRef.current) {
-        console.log('✅ ClientsV2 - snapToCenter:', clientName);
+        console.log('✅ Clients - snapToCenter:', clientName);
         lastNotifiedClientRef.current = clientName;
         onClientChange(clientName);
       }
@@ -562,7 +562,7 @@ const ClientsV2 = forwardRef(({ onClientChange, onClientReselect }, ref) => {
       // Find SWA index in client array
       const swaIndex = clients.findIndex(c => c.name === 'SWA');
       if (swaIndex === -1) {
-        console.warn('ClientsV2: SWA not found in clients');
+        console.warn('Clients: SWA not found in clients');
         hasInitializedRef.current = true;
         setIsReady(true);
         return;
@@ -817,4 +817,4 @@ const ClientsV2 = forwardRef(({ onClientChange, onClientReselect }, ref) => {
   );
 });
 
-export default ClientsV2;
+export default Clients;

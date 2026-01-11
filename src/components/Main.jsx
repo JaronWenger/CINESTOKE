@@ -3,7 +3,7 @@ import videoBg from '../assets/Welcome.mp4'
 import videoBgMobile from '../assets/Welcomephone.mp4'
 import Bars from './Bars'
 
-import ClientsV2 from './ClientsV2';
+import Clients from './Clients';
 import Pics from './Pics';
 import CaseStudy from './CaseStudy';
 import Social from './Social';
@@ -26,14 +26,14 @@ const Main = () => {
   const [videoReady, setVideoReady] = useState(false); // Track if video is ready to play
   const [mainVideoLoaded, setMainVideoLoaded] = useState(false); // Track if main video has loaded
   const [isCaseStudyFading, setIsCaseStudyFading] = useState(false); // Track fade state for CaseStudy
-  const clientsV2Ref = useRef(null); // Ref to ClientsV2 component for brand shifting
+  const clientsRef = useRef(null); // Ref to Clients component for brand shifting
   const caseStudyRef = useRef(null); // Ref to CaseStudy component for scrolling to first slide
 
   // Add stuck video detection for main video (mobile only)
   const mainVideoSrc = isMobile ? videoBgMobile : videoBg;
   useVideoErrorHandling(videoRef, mainVideoSrc, isMobile);
 
-  // Handle client change from ClientsV2 (user click or swipe) - triggers fade
+  // Handle client change from Clients (user click or swipe) - triggers fade
   const handleClientWillChange = (clientKey) => {
     console.log('🎬 handleClientWillChange:', { clientKey, activeClient, isCaseStudyFading });
     // Only trigger fade if actually changing to a different client
@@ -222,7 +222,7 @@ const Main = () => {
 
       <Bars />
       <Pics />
-      <ClientsV2 ref={clientsV2Ref} onClientChange={handleClientWillChange} onClientReselect={handleClientReselect} />
+      <Clients ref={clientsRef} onClientChange={handleClientWillChange} onClientReselect={handleClientReselect} />
       {/* Only render CaseStudy after main video has loaded to avoid competing for bandwidth */}
       {/* CaseStudy now uses unified continuous carousel - all slides in sequence */}
       {/* onClientChange syncs the logo carousel when user scrolls through slides */}
@@ -236,10 +236,10 @@ const Main = () => {
           onClientChange={(clientKey) => {
             // Update active client state (from CaseStudy scroll - no fade needed)
             setActiveClient(clientKey);
-            // Sync ClientsV2 logo carousel to show the new client
-            // BUT only if not currently fading (prevents feedback loop when user initiated from ClientsV2)
-            if (clientsV2Ref.current?.scrollToClient && !isCaseStudyFading) {
-              clientsV2Ref.current.scrollToClient(clientKey);
+            // Sync Clients logo carousel to show the new client
+            // BUT only if not currently fading (prevents feedback loop when user initiated from Clients)
+            if (clientsRef.current?.scrollToClient && !isCaseStudyFading) {
+              clientsRef.current.scrollToClient(clientKey);
             }
           }}
         />
