@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 
 const SlideColor = ({
   title = 'Glass Power Grade',
@@ -10,11 +10,14 @@ const SlideColor = ({
   isMobile = false,
   videosCanLoad = true
 }) => {
-  const [sliderPosition, setSliderPosition] = useState(50); // Percentage from left
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
   const colorVideoRef = useRef(null);
   const rawVideoRef = useRef(null);
+  const sliderRef = useRef(null);
+  const overlayRef = useRef(null);
+  const handleRef = useRef(null);
+  const sliderPositionRef = useRef(50); // Track position without re-renders
 
   // Use mobile videos if available and on mobile
   const colorSrc = (isMobile && videoColorMobile) ? videoColorMobile : videoColor;
@@ -23,7 +26,24 @@ const SlideColor = ({
   const activeColorSrc = videosCanLoad ? colorSrc : undefined;
   const activeRawSrc = videosCanLoad ? rawSrc : undefined;
 
-  // Sync video playback times
+  // Attempt to play a video - handles autoplay blocking gracefully
+  const attemptPlay = useCallback((video) => {
+    if (!video) return;
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.catch(() => {
+        // Autoplay was blocked - will play on user interaction
+      });
+    }
+  }, []);
+
+  // Ensure videos are playing when user interacts
+  const ensureVideosPlaying = useCallback(() => {
+    attemptPlay(colorVideoRef.current);
+    attemptPlay(rawVideoRef.current);
+  }, [attemptPlay]);
+
+  // Video sync and playback management
   useEffect(() => {
     const colorVideo = colorVideoRef.current;
     const rawVideo = rawVideoRef.current;
@@ -31,16 +51,18 @@ const SlideColor = ({
 
     // Sync raw video to color video's time
     const syncVideos = () => {
-      if (Math.abs(colorVideo.currentTime - rawVideo.currentTime) > 0.05) {
+      if (!colorVideo || !rawVideo) return;
+      // Only sync if drift is noticeable (100ms threshold for better performance)
+      if (Math.abs(colorVideo.currentTime - rawVideo.currentTime) > 0.1) {
         rawVideo.currentTime = colorVideo.currentTime;
       }
     };
 
-    // Sync on initial load
-    const handleCanPlay = () => {
+    // Handle initial load and canplay events
+    const handleCanPlayThrough = () => {
       rawVideo.currentTime = colorVideo.currentTime;
-      colorVideo.play().catch(() => {});
-      rawVideo.play().catch(() => {});
+      attemptPlay(colorVideo);
+      attemptPlay(rawVideo);
     };
 
     // Sync when color video seeks or loops
@@ -48,45 +70,73 @@ const SlideColor = ({
       rawVideo.currentTime = colorVideo.currentTime;
     };
 
-    const handlePlay = () => rawVideo.play().catch(() => {});
+    const handlePlay = () => attemptPlay(rawVideo);
     const handlePause = () => rawVideo.pause();
 
-    colorVideo.addEventListener('timeupdate', syncVideos);
-    colorVideo.addEventListener('canplay', handleCanPlay);
+    // Use setInterval for sync instead of timeupdate (less frequent, better perf)
+    const syncInterval = setInterval(syncVideos, 250);
+
+    colorVideo.addEventListener('canplaythrough', handleCanPlayThrough);
     colorVideo.addEventListener('seeked', handleSeeked);
     colorVideo.addEventListener('play', handlePlay);
     colorVideo.addEventListener('pause', handlePause);
 
+    // Try to play immediately if videos are already ready
+    if (colorVideo.readyState >= 3) {
+      attemptPlay(colorVideo);
+    }
+    if (rawVideo.readyState >= 3) {
+      attemptPlay(rawVideo);
+    }
+
     return () => {
-      colorVideo.removeEventListener('timeupdate', syncVideos);
-      colorVideo.removeEventListener('canplay', handleCanPlay);
+      clearInterval(syncInterval);
+      colorVideo.removeEventListener('canplaythrough', handleCanPlayThrough);
       colorVideo.removeEventListener('seeked', handleSeeked);
       colorVideo.removeEventListener('play', handlePlay);
       colorVideo.removeEventListener('pause', handlePause);
     };
-  }, []);
+  }, [attemptPlay]);
 
-  const updateSliderPosition = (clientX) => {
+  // Direct DOM update for slider position - avoids React re-renders for 60fps smoothness
+  const updateSliderPosition = useCallback((clientX) => {
     const container = containerRef.current;
     if (!container) return;
 
     const rect = container.getBoundingClientRect();
     const x = clientX - rect.left;
     const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderPosition(percentage);
-  };
+
+    // Update ref (no re-render)
+    sliderPositionRef.current = percentage;
+
+    // Direct DOM manipulation for smooth 60fps updates
+    if (sliderRef.current) {
+      sliderRef.current.style.left = `${percentage}%`;
+    }
+    if (overlayRef.current) {
+      overlayRef.current.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+    }
+    if (handleRef.current) {
+      handleRef.current.style.left = `${percentage}%`;
+    }
+  }, []);
 
   const handleMouseDown = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(true);
     updateSliderPosition(e.clientX);
+    // Ensure videos are playing on user interaction (fixes autoplay blocking)
+    ensureVideosPlaying();
   };
 
   const handleTouchStart = (e) => {
     e.stopPropagation();
     setIsDragging(true);
     updateSliderPosition(e.touches[0].clientX);
+    // Ensure videos are playing on user interaction (fixes autoplay blocking)
+    ensureVideosPlaying();
   };
 
   useEffect(() => {
@@ -106,7 +156,7 @@ const SlideColor = ({
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleEnd);
-    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('touchend', handleEnd);
 
     return () => {
@@ -115,7 +165,7 @@ const SlideColor = ({
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleEnd);
     };
-  }, [isDragging]);
+  }, [isDragging, updateSliderPosition]);
 
   return (
     <div className="slide-color">
@@ -140,8 +190,9 @@ const SlideColor = ({
 
         {/* Color video (top layer - clipped) */}
         <div
+          ref={overlayRef}
           className="slide-color-overlay"
-          style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
+          style={{ clipPath: `inset(0 ${100 - sliderPositionRef.current}% 0 0)` }}
         >
           <video
             ref={colorVideoRef}
@@ -158,8 +209,9 @@ const SlideColor = ({
 
         {/* Slider line - with hit area for dragging */}
         <div
+          ref={sliderRef}
           className="slide-color-slider"
-          style={{ left: `${sliderPosition}%` }}
+          style={{ left: `${sliderPositionRef.current}%` }}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
         >
@@ -171,8 +223,9 @@ const SlideColor = ({
       {/* Handle below videos */}
       <div className="slide-color-handle-container">
         <div
+          ref={handleRef}
           className="slide-color-handle"
-          style={{ left: `${sliderPosition}%` }}
+          style={{ left: `${sliderPositionRef.current}%` }}
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
         >
