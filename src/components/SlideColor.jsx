@@ -49,20 +49,40 @@ const SlideColor = ({
     const rawVideo = rawVideoRef.current;
     if (!colorVideo || !rawVideo) return;
 
-    // Sync raw video to color video's time
+    // Sync raw video to color video's time AND playback state
     const syncVideos = () => {
       if (!colorVideo || !rawVideo) return;
       // Only sync if drift is noticeable (100ms threshold for better performance)
       if (Math.abs(colorVideo.currentTime - rawVideo.currentTime) > 0.1) {
         rawVideo.currentTime = colorVideo.currentTime;
       }
+      // Ensure rawVideo is playing if colorVideo is playing (fixes mobile pause)
+      if (!colorVideo.paused && rawVideo.paused) {
+        attemptPlay(rawVideo);
+      }
     };
 
-    // Handle initial load and canplay events
+    // Handle colorVideo initial load
     const handleCanPlayThrough = () => {
       rawVideo.currentTime = colorVideo.currentTime;
       attemptPlay(colorVideo);
       attemptPlay(rawVideo);
+    };
+
+    // Handle rawVideo ready - sync and play
+    const handleRawCanPlayThrough = () => {
+      rawVideo.currentTime = colorVideo.currentTime;
+      if (!colorVideo.paused) {
+        attemptPlay(rawVideo);
+      }
+    };
+
+    // Handle rawVideo pausing independently (mobile power saving, etc.)
+    const handleRawPause = () => {
+      // Restart raw if color is still playing
+      if (!colorVideo.paused) {
+        attemptPlay(rawVideo);
+      }
     };
 
     // Sync when color video seeks or loops
@@ -76,10 +96,15 @@ const SlideColor = ({
     // Use setInterval for sync instead of timeupdate (less frequent, better perf)
     const syncInterval = setInterval(syncVideos, 250);
 
+    // ColorVideo listeners
     colorVideo.addEventListener('canplaythrough', handleCanPlayThrough);
     colorVideo.addEventListener('seeked', handleSeeked);
     colorVideo.addEventListener('play', handlePlay);
     colorVideo.addEventListener('pause', handlePause);
+
+    // RawVideo listeners - detect independent pauses/stalls
+    rawVideo.addEventListener('canplaythrough', handleRawCanPlayThrough);
+    rawVideo.addEventListener('pause', handleRawPause);
 
     // Try to play immediately if videos are already ready
     if (colorVideo.readyState >= 3) {
@@ -95,6 +120,8 @@ const SlideColor = ({
       colorVideo.removeEventListener('seeked', handleSeeked);
       colorVideo.removeEventListener('play', handlePlay);
       colorVideo.removeEventListener('pause', handlePause);
+      rawVideo.removeEventListener('canplaythrough', handleRawCanPlayThrough);
+      rawVideo.removeEventListener('pause', handleRawPause);
     };
   }, [attemptPlay]);
 
