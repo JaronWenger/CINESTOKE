@@ -87,6 +87,12 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
   // Initialize slides around SWA (or activeClient)
   const [circularSlides, setCircularSlides] = useState(() => getCircularSlides('SWA'));
 
+  // Ref to always access current slides (for click handlers that would otherwise have stale closures)
+  const circularSlidesRef = useRef(circularSlides);
+  useEffect(() => {
+    circularSlidesRef.current = circularSlides;
+  }, [circularSlides]);
+
   // Get current slide's client info from circular slides
   const getCurrentClientInfo = useCallback((slideIndex) => {
     if (slideIndex >= 0 && slideIndex < circularSlides.length) {
@@ -282,8 +288,11 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
           dotWrapper.addEventListener('click', () => {
             const container = scrollContainerRef.current;
             if (container) {
-              // Find the slide in circular array
-              const targetIndex = findSlideInCircular(clientKey, slideIdxCopy);
+              // Use ref to get CURRENT slides (not stale closure)
+              const currentSlides = circularSlidesRef.current;
+              const targetIndex = currentSlides.findIndex(
+                s => s.clientKey === clientKey && s.slideIndex === slideIdxCopy
+              );
               if (targetIndex !== -1) {
                 const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
                 const targetSlide = slideWrappers[targetIndex];
@@ -321,7 +330,11 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
         dotWrapper.addEventListener('click', () => {
           const container = scrollContainerRef.current;
           if (container) {
-            const targetIndex = findSlideInCircular(clientKey, slideIdxCopy);
+            // Use ref to get CURRENT slides (not stale closure)
+            const currentSlides = circularSlidesRef.current;
+            const targetIndex = currentSlides.findIndex(
+              s => s.clientKey === clientKey && s.slideIndex === slideIdxCopy
+            );
             if (targetIndex !== -1) {
               const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
               const targetSlide = slideWrappers[targetIndex];
@@ -350,7 +363,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
         }
       });
     }
-  }, [findSlideInCircular]);
+  }, []);
 
   // Navigate to specific client's first slide (called when logo is clicked/swiped)
   // With dynamic circular buffer: reorder slides around new focus, then scroll to first slide
