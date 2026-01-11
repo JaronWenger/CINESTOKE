@@ -4,6 +4,7 @@ import instaImage from '../assets/insta.webp';
 import tiktokImage from '../assets/tiktok.webp';
 import youtubeImage from '../assets/youtube.webp';
 import websiteImage from '../assets/website.webp';
+import Social from './Social';
 
 // Social media logo components
 const InstagramLogo = () => (
@@ -294,12 +295,13 @@ const Links = () => {
     <div style={{
       backgroundColor: 'black',
       color: 'white',
-      minHeight: '100vh',
+      minHeight: '110vh',
       width: '100%',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      fontFamily: 'Bebas Neue, Impact, Arial Narrow Bold, sans-serif'
+      fontFamily: 'Bebas Neue, Impact, Arial Narrow Bold, sans-serif',
+      paddingBottom: '5rem'
     }}>
       {/* CINESTOKE Text */}
       <div style={{
@@ -384,7 +386,7 @@ const Links = () => {
               color: 'white',
               fontSize: '1.1rem',
               fontWeight: '500',
-              cursor: 'pointer',
+              cursor: 'default',
               transition: 'all 0.3s ease',
               display: 'flex',
               alignItems: 'center',
@@ -452,19 +454,7 @@ const Links = () => {
         ))}
       </div>
 
-      {/* Footer */}
-      <div style={{
-        marginTop: '3rem',
-        textAlign: 'center',
-        opacity: 0.6
-      }}>
-        <p style={{
-          fontSize: '0.9rem',
-          margin: 0
-        }}>
-
-        </p>
-      </div>
+      <Social />
     </div>
   );
 };
