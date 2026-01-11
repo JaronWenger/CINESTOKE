@@ -1,12 +1,16 @@
 import React, { useRef, useState, useEffect, useLayoutEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
-import { getAllSlidesFlattened, getClientStartIndex, getClientOrder } from '../config/caseStudyConfig';
+import { flushSync } from 'react-dom';
+import { getAllSlidesFlattened, getOrderedClients, getAdjacentClientKey } from '../config/caseStudyConfig';
 
 /**
- * CaseStudy - Unified Continuous Carousel
+ * CaseStudy - Dynamic Circular Carousel
  *
  * All slides from all clients are rendered in one continuous sequence.
- * Native scroll-snap handles ALL transitions - no special handling needed.
- * Infinite scroll with buffer slides on both ends for seamless looping.
+ * Uses dynamic circular ordering - slides reorder around the focused brand.
+ * This reduces DOM from 102 elements (3x buffer) to just 34 elements.
+ * Each video is loaded only ONCE instead of 3 times.
+ *
+ * Transitions between brands use fade animation which hides the reordering.
  */
 const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeComplete, isMobile }, ref) => {
   const scrollContainerRef = useRef(null);
@@ -25,32 +29,71 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
   const fadeOutCompleteRef = useRef(false); // Track if fade-out has completed (for late-arriving targets)
   const DRAG_THRESHOLD = 50;
   const snapTimeoutRef = useRef(null);
+  const focusedClientRef = useRef('SWA'); // Track the currently focused client for circular ordering
 
-  // Get all slides flattened into one array
-  const allSlides = getAllSlidesFlattened();
-  const totalSlides = allSlides.length;
+  // Get all clients in their default order
+  const orderedClients = getOrderedClients();
+  const totalClients = orderedClients.length;
 
-  // For infinite scroll, we create buffer copies on both ends
-  // Buffer size = total slides (one full copy on each end)
-  const BUFFER_SIZE = totalSlides;
+  /**
+   * Generate slides in circular order around the focused client
+   * If SWA (order 5) is focused, order: [Slate(3)] [IR(4)] [SWA(5)] [Seadoo(6)] [BG(7)] [TCO(1)] [GFF(2)]
+   * The focused client's slides are in the CENTER of the array
+   */
+  const getCircularSlides = useCallback((focusedClientKey) => {
+    const focusIndex = orderedClients.findIndex(c => c.key === focusedClientKey);
+    if (focusIndex === -1) return getAllSlidesFlattened();
 
-  // Create the infinite array: [buffer] [original] [buffer]
-  // This allows seamless wrapping in both directions
-  const infiniteSlides = [
-    ...allSlides.map((s, i) => ({ ...s, bufferIndex: i - BUFFER_SIZE, isBuffer: 'start' })),
-    ...allSlides.map((s, i) => ({ ...s, bufferIndex: i, isBuffer: false })),
-    ...allSlides.map((s, i) => ({ ...s, bufferIndex: i + BUFFER_SIZE, isBuffer: 'end' })),
-  ];
+    // Rotate array so focus is in center (for 7 clients, put focus at index 3)
+    // This gives 3 clients to the left, focused client, 3 clients to the right
+    const halfCount = Math.floor(totalClients / 2);
+    const rotatedClients = [];
 
-  // The "real" slides start at index BUFFER_SIZE
-  const realStartIndex = BUFFER_SIZE;
+    for (let offset = -halfCount; offset <= totalClients - 1 - halfCount; offset++) {
+      const idx = (focusIndex + offset + totalClients) % totalClients;
+      rotatedClients.push(orderedClients[idx]);
+    }
 
-  // Get current slide's client info
-  const getCurrentClientInfo = useCallback((globalIndex) => {
-    // Normalize index to be within original slides
-    const normalizedIndex = ((globalIndex % totalSlides) + totalSlides) % totalSlides;
-    return allSlides[normalizedIndex];
-  }, [allSlides, totalSlides]);
+    // Flatten to slides with position metadata
+    let globalSlideIndex = 0;
+    const slides = [];
+
+    rotatedClients.forEach((client, clientPositionInArray) => {
+      const isLeftBuffer = clientPositionInArray < halfCount;
+      const isRightBuffer = clientPositionInArray > halfCount;
+      const isFocused = clientPositionInArray === halfCount;
+
+      client.slides.forEach((slide, slideIndex) => {
+        slides.push({
+          clientKey: client.key,
+          clientName: client.name,
+          slideIndex,
+          totalClientSlides: client.slides.length,
+          isFirstSlideOfClient: slideIndex === 0,
+          isLastSlideOfClient: slideIndex === client.slides.length - 1,
+          slide,
+          // Position metadata for edge detection
+          isLeftBuffer,
+          isRightBuffer,
+          isFocused,
+          globalIndex: globalSlideIndex++
+        });
+      });
+    });
+
+    return slides;
+  }, [orderedClients, totalClients]);
+
+  // Initialize slides around SWA (or activeClient)
+  const [circularSlides, setCircularSlides] = useState(() => getCircularSlides('SWA'));
+
+  // Get current slide's client info from circular slides
+  const getCurrentClientInfo = useCallback((slideIndex) => {
+    if (slideIndex >= 0 && slideIndex < circularSlides.length) {
+      return circularSlides[slideIndex];
+    }
+    return null;
+  }, [circularSlides]);
 
   // Snap to the nearest slide using actual element positions (pixel-perfect)
   const snapToNearestSlide = useCallback(() => {
@@ -88,6 +131,56 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     return closestIndex;
   }, []);
 
+  // Silent reorder: when user swipes to a different brand, reorder around that brand
+  // without any visible glitch - maintains visual position while updating the buffer
+  // Uses flushSync to make state update synchronous, eliminating the flicker
+  const silentReorderAroundBrand = useCallback((newFocusBrand, currentSlideWithinBrand) => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    // Prevent scroll handler from interfering
+    isProgrammaticScrollRef.current = true;
+
+    // 1. Generate new slides centered on the new brand
+    const newSlides = getCircularSlides(newFocusBrand);
+
+    // 2. Find where the current slide is in the new array
+    const newIndex = newSlides.findIndex(s =>
+      s.clientKey === newFocusBrand && s.slideIndex === currentSlideWithinBrand
+    );
+
+    if (newIndex === -1) {
+      isProgrammaticScrollRef.current = false;
+      return;
+    }
+
+    // 3. Update focused client ref
+    focusedClientRef.current = newFocusBrand;
+
+    // 4. SYNCHRONOUSLY update slides state (forces immediate re-render)
+    // This ensures DOM is updated before we adjust scroll position
+    flushSync(() => {
+      setCircularSlides(newSlides);
+    });
+
+    // 5. IMMEDIATELY adjust scroll (same synchronous block, before browser paints)
+    const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+    const targetSlide = slideWrappers[newIndex];
+
+    if (targetSlide) {
+      container.style.scrollBehavior = 'auto';
+      container.scrollLeft = targetSlide.offsetLeft;
+    }
+
+    setCurrentGlobalIndex(newIndex);
+    isProgrammaticScrollRef.current = false;
+
+    // Snap to ensure perfect alignment
+    snapTimeoutRef.current = setTimeout(() => {
+      snapToNearestSlide();
+    }, 50);
+  }, [getCircularSlides, snapToNearestSlide]);
+
   // Handle scroll to detect current slide and sync client
   const handleScroll = useCallback(() => {
     const container = scrollContainerRef.current;
@@ -98,14 +191,12 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     const { scrollLeft, clientWidth } = container;
     const slideIndex = Math.round(scrollLeft / clientWidth);
 
-    // Convert to real index (accounting for buffer)
-    const realIndex = slideIndex - realStartIndex;
-    const normalizedIndex = ((realIndex % totalSlides) + totalSlides) % totalSlides;
-
-    setCurrentGlobalIndex(normalizedIndex);
+    // Clamp to valid range
+    const clampedIndex = Math.max(0, Math.min(circularSlides.length - 1, slideIndex));
+    setCurrentGlobalIndex(clampedIndex);
 
     // Get client info for current slide
-    const slideInfo = allSlides[normalizedIndex];
+    const slideInfo = circularSlides[clampedIndex];
 
     // Only notify client change if NOT fading (prevents jitter during programmatic scroll)
     if (slideInfo && onClientChange && slideInfo.clientKey !== activeClient && !isFading) {
@@ -125,67 +216,38 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
       clearTimeout(snapTimeoutRef.current);
     }
 
-    // Check for infinite scroll wrap and snap correction
+    // When scroll ends, check if we need to silently reorder around the new brand
     scrollTimeoutRef.current = setTimeout(() => {
       isScrollingRef.current = false;
-      checkAndWrapScroll();
 
-      // Add a slight delay for snap correction to ensure wrap is complete
-      snapTimeoutRef.current = setTimeout(() => {
-        snapToNearestSlide();
-      }, 50);
+      // Get current slide info
+      const currentSlideInfo = circularSlides[clampedIndex];
+
+      // Check if user has scrolled to a different brand than the focused one
+      if (currentSlideInfo && currentSlideInfo.clientKey !== focusedClientRef.current) {
+        // Perform silent reorder to keep user centered in the buffer
+        silentReorderAroundBrand(currentSlideInfo.clientKey, currentSlideInfo.slideIndex);
+      } else {
+        // Same brand, just snap to nearest slide
+        snapTimeoutRef.current = setTimeout(() => {
+          snapToNearestSlide();
+        }, 50);
+      }
     }, 150);
-  }, [allSlides, totalSlides, realStartIndex, activeClient, onClientChange, isFading, snapToNearestSlide]);
+  }, [circularSlides, activeClient, onClientChange, isFading, snapToNearestSlide, silentReorderAroundBrand]);
 
-  // Wrap scroll position when reaching buffer zones
-  const checkAndWrapScroll = useCallback(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
-    if (slideWrappers.length === 0) return;
-
-    const { scrollLeft, clientWidth } = container;
-    const slideIndex = Math.round(scrollLeft / clientWidth);
-
-    // If in start buffer, jump to corresponding position in real section
-    if (slideIndex < realStartIndex) {
-      const offset = realStartIndex - slideIndex;
-      const newIndex = realStartIndex + totalSlides - offset;
-      const targetSlide = slideWrappers[newIndex];
-      if (targetSlide) {
-        isProgrammaticScrollRef.current = true;
-        container.style.scrollBehavior = 'auto';
-        container.scrollLeft = targetSlide.offsetLeft;
-        requestAnimationFrame(() => {
-          isProgrammaticScrollRef.current = false;
-          container.style.scrollBehavior = 'smooth';
-        });
-      }
-    }
-    // If in end buffer, jump to corresponding position in real section
-    else if (slideIndex >= realStartIndex + totalSlides) {
-      const offset = slideIndex - (realStartIndex + totalSlides);
-      const newIndex = realStartIndex + offset;
-      const targetSlide = slideWrappers[newIndex];
-      if (targetSlide) {
-        isProgrammaticScrollRef.current = true;
-        container.style.scrollBehavior = 'auto';
-        container.scrollLeft = targetSlide.offsetLeft;
-        requestAnimationFrame(() => {
-          isProgrammaticScrollRef.current = false;
-          container.style.scrollBehavior = 'smooth';
-        });
-      }
-    }
-  }, [realStartIndex, totalSlides]);
 
   // Track current client for nav dots
   const currentNavClientRef = useRef(null);
   const dotsTransitioningRef = useRef(false);
 
+  // Helper to find slide index in circular array by client and slide index
+  const findSlideInCircular = useCallback((clientKey, slideIdx) => {
+    return circularSlides.findIndex(s => s.clientKey === clientKey && s.slideIndex === slideIdx);
+  }, [circularSlides]);
+
   // Update nav dots to show position within current client
-  const updateNavDots = (slideIndex, totalClientSlides, clientKey) => {
+  const updateNavDots = useCallback((slideIndex, totalClientSlides, clientKey) => {
     const carousel = scrollContainerRef.current;
     if (!carousel) return;
 
@@ -211,20 +273,27 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
       // After fade out, replace with new dots
       setTimeout(() => {
         navDotsOutside.innerHTML = '';
-        const clientStartIdx = getClientStartIndex(clientKey);
         for (let i = 0; i < totalClientSlides; i++) {
           const dotWrapper = document.createElement('div');
           dotWrapper.className = 'case-study-dot-wrapper dot-entering';
           const dot = document.createElement('div');
           dot.className = `case-study-dot ${i === slideIndex && totalClientSlides > 1 ? 'active' : ''}`;
+          const slideIdxCopy = i; // Capture for closure
           dotWrapper.addEventListener('click', () => {
             const container = scrollContainerRef.current;
             if (container) {
-              const targetGlobalIndex = realStartIndex + clientStartIdx + i;
-              container.scrollTo({
-                left: targetGlobalIndex * container.clientWidth,
-                behavior: 'smooth'
-              });
+              // Find the slide in circular array
+              const targetIndex = findSlideInCircular(clientKey, slideIdxCopy);
+              if (targetIndex !== -1) {
+                const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+                const targetSlide = slideWrappers[targetIndex];
+                if (targetSlide) {
+                  container.scrollTo({
+                    left: targetSlide.offsetLeft,
+                    behavior: 'smooth'
+                  });
+                }
+              }
             }
           });
           dotWrapper.appendChild(dot);
@@ -243,20 +312,26 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     } else if (currentDots.length !== totalClientSlides) {
       // Initial creation (no animation)
       navDotsOutside.innerHTML = '';
-      const clientStartIdx = getClientStartIndex(clientKey);
       for (let i = 0; i < totalClientSlides; i++) {
         const dotWrapper = document.createElement('div');
         dotWrapper.className = 'case-study-dot-wrapper';
         const dot = document.createElement('div');
         dot.className = `case-study-dot ${i === slideIndex && totalClientSlides > 1 ? 'active' : ''}`;
+        const slideIdxCopy = i;
         dotWrapper.addEventListener('click', () => {
           const container = scrollContainerRef.current;
           if (container) {
-            const targetGlobalIndex = realStartIndex + clientStartIdx + i;
-            container.scrollTo({
-              left: targetGlobalIndex * container.clientWidth,
-              behavior: 'smooth'
-            });
+            const targetIndex = findSlideInCircular(clientKey, slideIdxCopy);
+            if (targetIndex !== -1) {
+              const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+              const targetSlide = slideWrappers[targetIndex];
+              if (targetSlide) {
+                container.scrollTo({
+                  left: targetSlide.offsetLeft,
+                  behavior: 'smooth'
+                });
+              }
+            }
           }
         });
         dotWrapper.appendChild(dot);
@@ -275,105 +350,48 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
         }
       });
     }
-  };
+  }, [findSlideInCircular]);
 
   // Navigate to specific client's first slide (called when logo is clicked/swiped)
+  // With dynamic circular buffer: reorder slides around new focus, then scroll to first slide
   const scrollToClient = useCallback((clientKey) => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    const clientStartIndex = getClientStartIndex(clientKey);
-    if (clientStartIndex === -1) return;
+    // Update the focused client ref
+    focusedClientRef.current = clientKey;
 
-    const { scrollLeft, clientWidth } = container;
-    const currentSlideIndex = Math.round(scrollLeft / clientWidth);
+    // Reorder slides around the new focus
+    const newSlides = getCircularSlides(clientKey);
+    setCircularSlides(newSlides);
 
-    // Get current client to determine expected scroll direction
-    const currentSlideInfo = getCurrentClientInfo(currentGlobalIndex);
-    const currentClientKey = currentSlideInfo?.clientKey;
+    // After React re-renders with new slide order, scroll to first slide of focus
+    // The focused client is always in the center of the circular array
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+        const focusStartIndex = newSlides.findIndex(s => s.isFocused && s.isFirstSlideOfClient);
 
-    // Get client orders to determine expected direction
-    const currentOrder = currentClientKey ? getClientOrder(currentClientKey) : 0;
-    const targetOrder = getClientOrder(clientKey);
+        if (focusStartIndex !== -1 && slideWrappers[focusStartIndex]) {
+          isProgrammaticScrollRef.current = true;
 
-    // Determine expected direction based on client order
-    // Handle wrap-around: if going from order 7 to order 1, that's "forward"
-    // if going from order 1 to order 7, that's "backward"
-    const maxOrder = 7;
-    let shouldScrollForward;
+          // Disable scroll-snap during transition
+          container.style.scrollSnapType = 'none';
+          container.style.scrollBehavior = 'auto';
+          container.scrollLeft = slideWrappers[focusStartIndex].offsetLeft;
 
-    if (currentOrder === targetOrder) {
-      shouldScrollForward = true; // Same client, default forward
-    } else {
-      const forwardDistance = (targetOrder - currentOrder + maxOrder) % maxOrder || maxOrder;
-      const backwardDistance = (currentOrder - targetOrder + maxOrder) % maxOrder || maxOrder;
-      shouldScrollForward = forwardDistance <= backwardDistance;
-    }
+          // Re-enable scroll-snap
+          container.style.scrollSnapType = 'x mandatory';
+          isProgrammaticScrollRef.current = false;
 
-    // Find all possible positions for this client (in real section and buffers)
-    const possibleTargets = [
-      clientStartIndex,                           // Start buffer
-      realStartIndex + clientStartIndex,          // Real section
-      realStartIndex + totalSlides + clientStartIndex  // End buffer
-    ];
-
-    // Pick the target that moves in the expected direction
-    let bestTarget = possibleTargets[1]; // Default to real section
-
-    if (shouldScrollForward) {
-      // Find closest target that is >= currentSlideIndex (moving right/forward)
-      let bestDistance = Infinity;
-      possibleTargets.forEach(targetIndex => {
-        const distance = targetIndex - currentSlideIndex;
-        if (distance >= 0 && distance < bestDistance) {
-          bestDistance = distance;
-          bestTarget = targetIndex;
+          // Update state
+          setCurrentGlobalIndex(focusStartIndex);
+          const slideInfo = newSlides[focusStartIndex];
+          updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
         }
       });
-      // If no forward target found, pick the one that wraps around (smallest index)
-      if (bestDistance === Infinity) {
-        bestTarget = Math.min(...possibleTargets);
-      }
-    } else {
-      // Find closest target that is <= currentSlideIndex (moving left/backward)
-      let bestDistance = Infinity;
-      possibleTargets.forEach(targetIndex => {
-        const distance = currentSlideIndex - targetIndex;
-        if (distance >= 0 && distance < bestDistance) {
-          bestDistance = distance;
-          bestTarget = targetIndex;
-        }
-      });
-      // If no backward target found, pick the one that wraps around (largest index)
-      if (bestDistance === Infinity) {
-        bestTarget = Math.max(...possibleTargets);
-      }
-    }
-
-    isProgrammaticScrollRef.current = true;
-
-    // Get actual slide element for pixel-perfect positioning
-    const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
-    const targetSlide = slideWrappers[bestTarget];
-
-    // Disable scroll-snap during transition to prevent browser interference
-    container.style.scrollSnapType = 'none';
-
-    // INSTANT jump (no smooth scroll) - the fade hides this
-    container.style.scrollBehavior = 'auto';
-    if (targetSlide) {
-      container.scrollLeft = targetSlide.offsetLeft;
-    }
-
-    // Re-enable scroll-snap immediately (jump is instant)
-    container.style.scrollSnapType = 'x mandatory';
-    isProgrammaticScrollRef.current = false;
-
-    // Update state
-    setCurrentGlobalIndex(clientStartIndex);
-    const slideInfo = allSlides[clientStartIndex];
-    updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
-  }, [allSlides, realStartIndex, totalSlides, currentGlobalIndex, getCurrentClientInfo]);
+    });
+  }, [getCircularSlides, updateNavDots]);
 
   // Expose scrollToFirstSlide method via ref (for when user re-clicks centered brand)
   // Uses smooth scrolling (not instant jump) so user sees slides animate back
@@ -382,11 +400,10 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
       const container = scrollContainerRef.current;
       if (!container) return;
 
-      const clientStartIndex = getClientStartIndex(clientKey);
-      if (clientStartIndex === -1) return;
+      // Find first slide of this client in circular array
+      const targetIndex = circularSlides.findIndex(s => s.clientKey === clientKey && s.isFirstSlideOfClient);
+      if (targetIndex === -1) return;
 
-      // Target the first slide of this client in the real section
-      const targetIndex = realStartIndex + clientStartIndex;
       const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
       const targetSlide = slideWrappers[targetIndex];
 
@@ -396,12 +413,12 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
         container.scrollLeft = targetSlide.offsetLeft;
 
         // Update state
-        setCurrentGlobalIndex(clientStartIndex);
-        const slideInfo = allSlides[clientStartIndex];
+        setCurrentGlobalIndex(targetIndex);
+        const slideInfo = circularSlides[targetIndex];
         updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
       }
     }
-  }), [allSlides, realStartIndex]);
+  }), [circularSlides, updateNavDots]);
 
   // Reset fadeOutCompleteRef when fade starts
   useEffect(() => {
@@ -477,36 +494,35 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     return () => container.removeEventListener('transitionend', handleTransitionEnd);
   }, [onFadeComplete, scrollToClient]);
 
-  // Initial scroll to SWA (or activeClient) on mount
+  // Initial scroll to SWA (first slide of focused client) on mount
   useLayoutEffect(() => {
     if (hasInitializedRef.current) return;
 
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    // Find SWA's starting position
-    const swaStartIndex = getClientStartIndex('SWA');
-    const targetIndex = swaStartIndex !== -1 ? swaStartIndex : 0;
-    const absoluteIndex = realStartIndex + targetIndex;
+    // With circular buffer, find the first slide of the focused client (center of array)
+    const focusStartIndex = circularSlides.findIndex(s => s.isFocused && s.isFirstSlideOfClient);
+    const targetIndex = focusStartIndex !== -1 ? focusStartIndex : 0;
 
     // Wait for layout to be fully computed before positioning
     // Use double RAF to ensure we're past the layout/paint cycle
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
-        const targetSlide = slideWrappers[absoluteIndex];
+        const targetSlide = slideWrappers[targetIndex];
 
         // Scroll to position immediately (no animation)
         container.style.scrollBehavior = 'auto';
         if (targetSlide) {
           container.scrollLeft = targetSlide.offsetLeft;
         } else {
-          container.scrollLeft = absoluteIndex * container.clientWidth;
+          container.scrollLeft = targetIndex * container.clientWidth;
         }
 
         // Refine position after another frame to handle any layout shifts
         requestAnimationFrame(() => {
-          const updatedSlide = slideWrappers[absoluteIndex];
+          const updatedSlide = slideWrappers[targetIndex];
           if (updatedSlide && Math.abs(container.scrollLeft - updatedSlide.offsetLeft) > 1) {
             container.scrollLeft = updatedSlide.offsetLeft;
           }
@@ -516,13 +532,13 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
           setIsPositioned(true); // Now safe to show
 
           // Update nav dots and enable smooth scrolling
-          const slideInfo = allSlides[targetIndex];
+          const slideInfo = circularSlides[targetIndex];
           updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
           container.style.scrollBehavior = 'smooth';
         });
       });
     });
-  }, [allSlides, realStartIndex]);
+  }, [circularSlides, updateNavDots]);
 
   // Create nav dots container on mount
   useEffect(() => {
@@ -541,7 +557,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     }
 
     // Initialize with current client's dots
-    const slideInfo = allSlides[currentGlobalIndex];
+    const slideInfo = circularSlides[currentGlobalIndex];
     updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
   }, []);
 
@@ -582,6 +598,33 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
 
     // Calculate current slide position
     const currentSlideIndex = Math.round(dragStartRef.current.scrollLeft / clientWidth);
+    const currentSlide = circularSlides[currentSlideIndex];
+
+    // Edge detection: check if trying to swipe past the carousel boundaries
+    if (absDragDistance > DRAG_THRESHOLD && currentSlide) {
+      // Dragging right (positive) at first slide = trying to go left past start
+      if (dragDistance > 0 && currentSlideIndex === 0) {
+        const adjacentClient = getAdjacentClientKey(focusedClientRef.current, 'left');
+        if (onClientChange && adjacentClient !== focusedClientRef.current) {
+          // Trigger fade transition to previous brand
+          onClientChange(adjacentClient);
+          setIsDragging(false);
+          dragDistanceRef.current = 0;
+          return;
+        }
+      }
+      // Dragging left (negative) at last slide = trying to go right past end
+      if (dragDistance < 0 && currentSlideIndex === circularSlides.length - 1) {
+        const adjacentClient = getAdjacentClientKey(focusedClientRef.current, 'right');
+        if (onClientChange && adjacentClient !== focusedClientRef.current) {
+          // Trigger fade transition to next brand
+          onClientChange(adjacentClient);
+          setIsDragging(false);
+          dragDistanceRef.current = 0;
+          return;
+        }
+      }
+    }
 
     let targetSlideIndex;
 
@@ -616,25 +659,6 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
   const handleMouseLeave = () => {
     if (isDragging) {
       handleMouseUp();
-    }
-  };
-
-  // Snap to nearest slide using actual element positions
-  const snapToSlide = () => {
-    const container = scrollContainerRef.current;
-    if (!container || isScrollingRef.current) return;
-
-    const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
-    if (slideWrappers.length === 0) return;
-
-    const { scrollLeft, clientWidth } = container;
-    const slideIndex = Math.round(scrollLeft / clientWidth);
-    const clampedIndex = Math.max(0, Math.min(slideWrappers.length - 1, slideIndex));
-    const targetSlide = slideWrappers[clampedIndex];
-
-    if (targetSlide) {
-      container.style.scrollBehavior = 'smooth';
-      container.scrollLeft = targetSlide.offsetLeft;
     }
   };
 
@@ -728,7 +752,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
   }, []);
 
   // Don't render if no slides
-  if (totalSlides === 0) {
+  if (circularSlides.length === 0) {
     return null;
   }
 
@@ -745,11 +769,11 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
           transition: isPositioned ? 'opacity 0.3s ease-in-out' : 'none'
         }}
       >
-        {infiniteSlides.map((slideData, index) => {
+        {circularSlides.map((slideData, index) => {
           const SlideComponent = slideData.slide.component;
 
           // Calculate distance from current slide for preload optimization
-          const distanceFromCurrent = Math.abs(index - (realStartIndex + currentGlobalIndex));
+          const distanceFromCurrent = Math.abs(index - currentGlobalIndex);
 
           // Preload strategy:
           // - Current slide (distance 0): preload="auto" for immediate playback
@@ -766,10 +790,12 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
 
           return (
             <div
-              key={`${slideData.isBuffer}-${index}`}
+              key={`${slideData.clientKey}-${slideData.slideIndex}`}
               className="case-study-slide-wrapper"
               data-client={slideData.clientKey}
-              data-is-buffer={slideData.isBuffer}
+              data-is-left-buffer={slideData.isLeftBuffer}
+              data-is-right-buffer={slideData.isRightBuffer}
+              data-is-focused={slideData.isFocused}
             >
               <SlideComponent
                 {...slideData.slide.props}
