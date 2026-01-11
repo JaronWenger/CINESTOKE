@@ -256,6 +256,7 @@ const SlideColor = ({
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
         >
+          <div className="slide-color-handle-hitarea" />
           <div className="slide-color-handle-line" />
           <div className="slide-color-handle-circle" />
         </div>
