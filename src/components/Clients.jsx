@@ -168,13 +168,21 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
       const targetCenterX = targetRect.left - containerRect.left + (targetRect.width / 2);
       const scrollOffset = targetCenterX - containerCenterX;
 
+      // Hide container during teleport to prevent Chrome blink
+      container.style.visibility = 'hidden';
       container.style.scrollBehavior = 'auto';
       container.scrollLeft = container.scrollLeft + scrollOffset;
-    }
 
-    requestAnimationFrame(() => {
-      isWrappingRef.current = false;
-    });
+      // Restore visibility after the teleport completes
+      requestAnimationFrame(() => {
+        container.style.visibility = 'visible';
+        isWrappingRef.current = false;
+      });
+    } else {
+      requestAnimationFrame(() => {
+        isWrappingRef.current = false;
+      });
+    }
 
     return true;
   }, []);
