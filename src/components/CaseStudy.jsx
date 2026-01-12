@@ -371,6 +371,10 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     const container = scrollContainerRef.current;
     if (!container) return;
 
+    // Set flag BEFORE re-render to block scroll events during state update
+    // This prevents the Chrome ping-pong bug where scroll events from re-render trigger onClientChange
+    isProgrammaticScrollRef.current = true;
+
     // Update the focused client ref
     focusedClientRef.current = clientKey;
 
@@ -386,8 +390,6 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
         const focusStartIndex = newSlides.findIndex(s => s.isFocused && s.isFirstSlideOfClient);
 
         if (focusStartIndex !== -1 && slideWrappers[focusStartIndex]) {
-          isProgrammaticScrollRef.current = true;
-
           // Disable scroll-snap during transition
           container.style.scrollSnapType = 'none';
           container.style.scrollBehavior = 'auto';
@@ -395,13 +397,17 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
 
           // Re-enable scroll-snap
           container.style.scrollSnapType = 'x mandatory';
-          isProgrammaticScrollRef.current = false;
 
           // Update state
           setCurrentGlobalIndex(focusStartIndex);
           const slideInfo = newSlides[focusStartIndex];
           updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
         }
+
+        // Delay clearing flag to let scroll events settle
+        setTimeout(() => {
+          isProgrammaticScrollRef.current = false;
+        }, 100);
       });
     });
   }, [getCircularSlides, updateNavDots]);
