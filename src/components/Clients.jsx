@@ -697,7 +697,9 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
                     alt={client.alt}
                     style={{
                       transition: 'filter 0.3s ease',
-                      filter: 'none'
+                      filter: 'none',
+                      willChange: 'filter',
+                      transform: 'translateZ(0)'
                     }}
                     onMouseEnter={(e) => {
                       if (screenWidth > 768) {

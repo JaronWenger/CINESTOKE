@@ -935,7 +935,7 @@ video {
   top: 0;
   bottom: 0;
   width: 100%;
-  cursor: pointer;
+  cursor: default;
 }
 
 .slide-color-line {
@@ -974,7 +974,7 @@ video {
   left: 50%;
   transform: translate(-50%, -50%);
   margin-top: 4px;
-  cursor: pointer;
+  cursor: default;
 }
 
 .slide-color-handle-line {
