@@ -40,18 +40,17 @@ const SlideSocial = ({ link, video, videoMobile, preload = 'auto', isMobile = fa
   };
 
   const handleClick = (e) => {
-    // Prevent link navigation if it was a drag
+    e.preventDefault();
+
+    // Don't navigate if it was a drag
     if (wasDraggingRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
       wasDraggingRef.current = false;
       return;
     }
 
-    // Only allow click if it was on the video element
-    if (e.target.tagName !== 'VIDEO') {
-      e.preventDefault();
-      e.stopPropagation();
+    // Only navigate if clicked on the video element
+    if (e.target.tagName === 'VIDEO' && link) {
+      window.open(link, '_blank', 'noopener,noreferrer');
     }
   };
 
@@ -103,22 +102,28 @@ const SlideSocial = ({ link, video, videoMobile, preload = 'auto', isMobile = fa
     </div>
   );
 
-  // If link is provided, wrap in anchor tag with drag detection
+  // If link is provided, wrap in clickable div (no href = no browser link preview)
   if (link) {
     return (
-      <a
+      <div
         ref={linkRef}
-        href={link}
-        target="_blank"
-        rel="noopener noreferrer"
+        role="link"
+        tabIndex={0}
         className="slide-social-link"
+        style={{ cursor: 'pointer' }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onClick={handleClick}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            window.open(link, '_blank', 'noopener,noreferrer');
+          }
+        }}
       >
         {content}
-      </a>
+      </div>
     );
   }
 
