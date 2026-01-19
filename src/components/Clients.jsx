@@ -12,6 +12,7 @@ import { getClientLogoComponents, getClientNames } from '../config/caseStudyConf
  */
 const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
   const scrollContainerRef = useRef(null);
+  const sectionRef = useRef(null); // Ref to the section wrapper for scroll-to-top
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [isReady, setIsReady] = useState(false);
 
@@ -413,6 +414,21 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
     lastNotifiedClientRef.current = clientKey;
   }, [getClientNameFromLogo, centerLogo]);
 
+  // Scroll the section to the top of the viewport with a gap above
+  const scrollSectionToTop = useCallback(() => {
+    if (sectionRef.current) {
+      const gap = 40; // Gap in pixels above the section
+      const threshold = 150; // Don't scroll if already within this distance
+      const sectionTop = sectionRef.current.getBoundingClientRect().top;
+
+      // Only scroll if user is not already close to the target position
+      if (Math.abs(sectionTop - gap) > threshold) {
+        const targetScroll = sectionTop + window.scrollY - gap;
+        window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+      }
+    }
+  }, []);
+
   // Shift to adjacent brand (for edge swiping)
   const shiftToAdjacentBrand = useCallback((direction) => {
     const container = scrollContainerRef.current;
@@ -615,7 +631,7 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
   }, [clients, realStartIndex, getItemWidth, onClientChange]);
 
   return (
-    <div className="cinestoke-section">
+    <div className="cinestoke-section" ref={sectionRef}>
       <div style={{ position: 'relative', width: '100%' }}>
         <div
           ref={scrollContainerRef}
@@ -681,6 +697,8 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
                       }
                     }
                     centerLogo(e.currentTarget);
+                    // Scroll section to top of viewport to show CaseStudy
+                    scrollSectionToTop();
                   }}
                   onAuxClick={(e) => {
                     // Middle mouse button click (scroll wheel click)
@@ -698,6 +716,8 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
                         }
                       }
                       centerLogo(e.currentTarget);
+                      // Scroll section to top of viewport to show CaseStudy
+                      scrollSectionToTop();
                     }
                   }}
                 >

@@ -22,8 +22,8 @@ src/
 │   └── caseStudyConfig.js   # Centralized client/slide data
 ├── components/
 │   ├── Main.jsx        # Homepage orchestrator
-│   ├── ClientsV2.jsx   # Infinite logo carousel
-│   ├── CaseStudy.jsx   # Case study slides (synced with ClientsV2)
+│   ├── Clients.jsx     # Infinite logo carousel
+│   ├── CaseStudy.jsx   # Case study slides (synced with Clients)
 │   ├── Slide*.jsx      # Slide components (One, Main, Logo, Splits, Geo)
 │   ├── Pics.jsx        # Portfolio image carousel
 │   ├── Offers.jsx      # Pricing page
@@ -52,7 +52,7 @@ npm test        # Run tests
 |------|---------|
 | `src/config/caseStudyConfig.js` | Single source of truth for all client data |
 | `src/components/Main.jsx:1-200` | Homepage state management, video preloading |
-| `src/components/ClientsV2.jsx` | Infinite scroll carousel with drag support |
+| `src/components/Clients.jsx` | Infinite scroll carousel with drag support |
 | `src/components/CaseStudy.jsx` | Synced carousel, height synchronization logic |
 | `public/index.html` | GTM, meta tags, preloads |
 
@@ -61,7 +61,7 @@ npm test        # Run tests
 ```
 Main.jsx
 ├── manages: isMobile, activeClient, mainVideoLoaded
-├── ClientsV2 → onClientChange → updates activeClient
+├── Clients → onClientChange → updates activeClient
 └── CaseStudy ← receives activeClient, renders slides from config
 ```
 
