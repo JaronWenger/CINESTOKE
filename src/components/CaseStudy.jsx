@@ -794,14 +794,13 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
           // Calculate distance from current slide for preload optimization
           const distanceFromCurrent = Math.abs(index - currentGlobalIndex);
 
-          // Preload strategy:
-          // - Current slide (distance 0): preload="auto" for immediate playback
-          // - Adjacent slides (distance 1-2): preload="metadata" for quick start
-          // - Far slides (distance > 2): preload="none" to save bandwidth
+          // Preload strategy (more aggressive on mobile to save bandwidth):
+          // Desktop: current=auto, adjacent=metadata, far=none
+          // Mobile: current=auto, everything else=none
           let preloadValue;
           if (distanceFromCurrent === 0) {
             preloadValue = 'auto';
-          } else if (distanceFromCurrent <= 2) {
+          } else if (!isMobile && distanceFromCurrent <= 2) {
             preloadValue = 'metadata';
           } else {
             preloadValue = 'none';
