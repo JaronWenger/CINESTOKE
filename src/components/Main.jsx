@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import videoBg from '../assets/Welcome.mp4'
 import videoBgMobile from '../assets/Welcomephone.mp4'
+import posterImage from '../assets/PosterImage.webp'
 import Bars from './Bars'
 
 import Clients from './Clients';
@@ -209,6 +210,7 @@ const Main = () => {
         loop
         muted
         playsInline
+        poster={posterImage}
         // Use auto preload for immediate playback (both mobile and desktop)
         preload="auto"
         // Add fetchpriority for faster loading
