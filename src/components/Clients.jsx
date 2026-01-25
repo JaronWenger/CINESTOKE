@@ -227,7 +227,7 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
 
       // Notify if client changed
       if (clientName && onClientChange && clientName !== lastNotifiedClientRef.current) {
-        console.log('✅ Clients - snapToCenter:', clientName);
+        // console.log('✅ Clients - snapToCenter:', clientName);
         lastNotifiedClientRef.current = clientName;
         onClientChange(clientName);
       }
@@ -813,12 +813,12 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
         />
       </div>
 
-      <style jsx>{`
+      <style>{`
         .carousel-scroll-container::-webkit-scrollbar {
           display: none;
         }
 
-        .carousel-scroll-container :global(svg) {
+        .carousel-scroll-container svg {
           flex-shrink: 0;
           transition: filter 0.3s ease;
         }
@@ -836,7 +836,7 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
         }
 
         @media (min-width: 769px) {
-          .client-logo-wrapper:hover :global(svg) {
+          .client-logo-wrapper:hover svg {
             filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 1))
                     drop-shadow(0px 0px 10px rgba(255, 255, 255, 1))
                     drop-shadow(0px 0px 15px rgba(255, 255, 255, 0.9))
@@ -845,8 +845,8 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
           }
         }
 
-        .carousel-scroll-container :global(.line),
-        .carousel-scroll-container :global(.lineb) {
+        .carousel-scroll-container .line,
+        .carousel-scroll-container .lineb {
           flex-shrink: 0;
           position: relative;
           z-index: 2;
