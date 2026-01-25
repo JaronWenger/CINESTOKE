@@ -5,6 +5,16 @@
   cursor: default; /* Simple black arrow cursor with no stem */
 }
 
+/* Accessibility: Custom focus styles */
+*:focus {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+}
+
 body {
   background-color: black; /* Set the background color of the body to black */
   color: white; /* Optional: set the txt color to white to contrast with the black background */
@@ -231,6 +241,12 @@ video {
 
 .social-button:hover {
   transform: scale(1.1);
+}
+
+.social-button:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .social-button svg {
@@ -634,6 +650,11 @@ video {
 
 .offer-card:hover {
   transform: scale(1.02);
+}
+
+.offer-card:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 2px;
 }
 
 .offer-card.selected {

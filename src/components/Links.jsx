@@ -405,10 +405,10 @@ const Links = () => {
               transition: 'opacity 0.5s ease, transform 0.5s ease'
             }}
             onFocus={(e) => {
-              e.target.style.outline = 'none';
+              e.target.style.boxShadow = '0 0 0 2px rgba(255, 255, 255, 0.5)';
             }}
             onBlur={(e) => {
-              e.target.style.outline = 'none';
+              e.target.style.boxShadow = 'none';
             }}
           >
             {link.image ? (

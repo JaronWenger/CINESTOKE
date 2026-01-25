@@ -17,9 +17,14 @@ const Offers = () => {
           <RightWing className="wing right-wing" />
         </div>
         <div className="offers-grid">
-          <div 
+          <div
             className={`offer-card ${selectedCard === 'deluxe' ? 'selected' : ''}`}
             onClick={() => setSelectedCard('deluxe')}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedCard('deluxe'); } }}
+            role="button"
+            tabIndex={0}
+            aria-label="Select Deluxe package"
+            aria-pressed={selectedCard === 'deluxe'}
           >
             <h2>Deluxe</h2>
             <div className="price">$800</div>
@@ -32,9 +37,14 @@ const Offers = () => {
             </ul>
           </div>
 
-          <div 
+          <div
             className={`offer-card ${selectedCard === 'premium' ? 'selected' : ''}`}
             onClick={() => setSelectedCard('premium')}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedCard('premium'); } }}
+            role="button"
+            tabIndex={0}
+            aria-label="Select Premium package"
+            aria-pressed={selectedCard === 'premium'}
           >
             <h2>Premium</h2>
             <div className="price">$1,200</div>
@@ -48,9 +58,14 @@ const Offers = () => {
             </ul>
           </div>
 
-          <div 
+          <div
             className={`offer-card ${selectedCard === 'elite' ? 'selected' : ''}`}
             onClick={() => setSelectedCard('elite')}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedCard('elite'); } }}
+            role="button"
+            tabIndex={0}
+            aria-label="Select Elite package"
+            aria-pressed={selectedCard === 'elite'}
           >
             <h2>Elite</h2>
             <div className="price">$500 + Rev Share</div>
