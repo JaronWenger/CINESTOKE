@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.831dea62.css",
-    "main.js": "/static/js/main.2b764f71.js",
+    "main.js": "/static/js/main.18d5e911.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
     "static/media/SmallWorldMain.mp4": "/static/media/SmallWorldMain.f6e2112b9160ba964e35.mp4",
     "static/media/BGGeo.mp4": "/static/media/BGGeo.e95e6a2dba335a5563a3.mp4",
@@ -53,7 +53,6 @@
     "static/media/SlateLogo.mp4": "/static/media/SlateLogo.50e8eb2d922d1ab5f6bf.mp4",
     "static/media/cinestoke-real-estate.webp": "/static/media/cinestoke-real-estate.9e3eaa09fca57b9ed2c3.webp",
     "static/media/SlateLogoPhone.mp4": "/static/media/SlateLogoPhone.fb6e8746ebd59730bb51.mp4",
-    "static/media/PosterImage.webp": "/static/media/PosterImage.7fc1831c21e8559a9897.webp",
     "static/media/BG.svg": "/static/media/BG.e5d282ea1130d534d01b250dcd5a1811.svg",
     "static/media/cinestoke-kayak.webp": "/static/media/cinestoke-kayak.3986b094dca79a23e55b.webp",
     "static/media/SWAsplits.webp": "/static/media/SWAsplits.27e80b0b6b5158de70fa.webp",
@@ -82,6 +81,7 @@
     "static/media/BGpp.webp": "/static/media/BGpp.249d2deb3b67d117c357.webp",
     "static/media/IRsplits.webp": "/static/media/IRsplits.a6ba2ea3474aed2c355b.webp",
     "static/media/GFFpp.webp": "/static/media/GFFpp.a726f2d55824006ef9b5.webp",
+    "static/media/PosterImage.webp": "/static/media/PosterImage.a806c9aaf8b6e1e3e56b.webp",
     "static/media/TCOsplits.webp": "/static/media/TCOsplits.fc02efc24d8f73fa7005.webp",
     "static/media/Seadoosplits.webp": "/static/media/Seadoosplits.948bca23cb6d7577d307.webp",
     "static/media/SWA.svg": "/static/media/SWA.1a1b0cf2765f3db44c7ce148483b0487.svg",
@@ -106,10 +106,10 @@
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
     "main.831dea62.css.map": "/static/css/main.831dea62.css.map",
-    "main.2b764f71.js.map": "/static/js/main.2b764f71.js.map"
+    "main.18d5e911.js.map": "/static/js/main.18d5e911.js.map"
   },
   "entrypoints": [
     "static/css/main.831dea62.css",
-    "static/js/main.2b764f71.js"
+    "static/js/main.18d5e911.js"
   ]
 }
