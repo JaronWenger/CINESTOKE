@@ -36,26 +36,27 @@ const Main = () => {
 
   // Handle client change from Clients (user click or swipe) - triggers fade
   const handleClientWillChange = (clientKey) => {
-    console.log('🎬 handleClientWillChange:', { clientKey, activeClient, isCaseStudyFading });
+    // Debug logging (uncomment for debugging):
+    // console.log('🎬 handleClientWillChange:', { clientKey, activeClient, isCaseStudyFading });
     // Only trigger fade if actually changing to a different client
     if (clientKey !== activeClient) {
-      console.log('✨ Starting fade transition to:', clientKey);
+      // console.log('✨ Starting fade transition to:', clientKey);
       setIsCaseStudyFading(true);
       setActiveClient(clientKey);
     } else {
-      console.log('⏭️ Same client, skipping fade');
+      // console.log('⏭️ Same client, skipping fade');
     }
   };
 
   // Handle fade completion from CaseStudy
   const handleFadeComplete = () => {
-    console.log('🏁 handleFadeComplete - fading back in');
+    // console.log('🏁 handleFadeComplete - fading back in');
     setIsCaseStudyFading(false);
   };
 
   // Handle re-click on already-centered brand (reset to first slide)
   const handleClientReselect = (clientKey) => {
-    console.log('🔄 handleClientReselect - scrolling to first slide of:', clientKey);
+    // console.log('🔄 handleClientReselect - scrolling to first slide of:', clientKey);
     if (caseStudyRef.current?.scrollToFirstSlide) {
       caseStudyRef.current.scrollToFirstSlide(clientKey);
     }
@@ -69,12 +70,13 @@ const Main = () => {
     setIsMobile(isMobileDevice);
 
     // Preload the appropriate video immediately for faster loading with high priority
+    // Note: Using 'fetch' as the 'as' value since 'video' is not widely supported
     const videoToPreload = isMobileDevice ? videoBgMobile : videoBg;
     const link = document.createElement('link');
     link.rel = 'preload';
-    link.as = 'video';
+    link.as = 'fetch';
     link.href = videoToPreload;
-    link.type = 'video/mp4';
+    link.crossOrigin = 'anonymous';
     // Add fetchpriority for faster loading (especially on mobile)
     if (link.setAttribute) {
       link.setAttribute('fetchpriority', 'high');
@@ -210,8 +212,8 @@ const Main = () => {
         poster={posterImage}
         // Use auto preload for immediate playback (both mobile and desktop)
         preload="auto"
-        // Add fetchpriority for faster loading
-        fetchPriority="high"
+        // Add fetchpriority for faster loading (lowercase for React DOM compatibility)
+        fetchpriority="high"
         // Disable picture-in-picture for better performance
         disablePictureInPicture
       />

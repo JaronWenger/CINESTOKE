@@ -60,25 +60,29 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Cache-first strategy for static assets (images, videos, fonts, CSS, JS)
+  // Cache-first strategy for static assets (images, fonts, CSS, JS)
+  // Note: Videos are excluded because they return 206 partial responses which can't be cached
+  const isVideo = request.destination === 'video' || url.pathname.endsWith('.mp4');
+
   if (
-    request.destination === 'image' ||
-    request.destination === 'video' ||
-    request.destination === 'font' ||
-    request.destination === 'style' ||
-    request.destination === 'script' ||
-    url.pathname.endsWith('.webp') ||
-    url.pathname.endsWith('.mp4') ||
-    url.pathname.endsWith('.woff2') ||
-    url.pathname.endsWith('.css') ||
-    url.pathname.endsWith('.js')
+    !isVideo && (
+      request.destination === 'image' ||
+      request.destination === 'font' ||
+      request.destination === 'style' ||
+      request.destination === 'script' ||
+      url.pathname.endsWith('.webp') ||
+      url.pathname.endsWith('.woff2') ||
+      url.pathname.endsWith('.css') ||
+      url.pathname.endsWith('.js')
+    )
   ) {
     event.respondWith(
       caches.match(request).then((cached) => {
         if (cached) {
           // Return cached, but update cache in background
           fetch(request).then((response) => {
-            if (response.ok) {
+            // Only cache complete responses (status 200), not partial (206)
+            if (response.ok && response.status === 200) {
               caches.open(CACHE_NAME).then((cache) => cache.put(request, response));
             }
           }).catch(() => {});
@@ -86,7 +90,8 @@ self.addEventListener('fetch', (event) => {
         }
         // Not cached - fetch and cache
         return fetch(request).then((response) => {
-          if (response.ok) {
+          // Only cache complete responses (status 200), not partial (206)
+          if (response.ok && response.status === 200) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
           }

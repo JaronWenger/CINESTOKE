@@ -453,23 +453,24 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     if (!hasInitializedRef.current) return;
 
     const currentSlideInfo = getCurrentClientInfo(currentGlobalIndex);
-    console.log('📍 activeClient useEffect:', {
-      activeClient,
-      currentClientKey: currentSlideInfo?.clientKey,
-      isFading,
-      fadeOutComplete: fadeOutCompleteRef.current
-    });
+    // Debug logging (uncomment for debugging):
+    // console.log('📍 activeClient useEffect:', {
+    //   activeClient,
+    //   currentClientKey: currentSlideInfo?.clientKey,
+    //   isFading,
+    //   fadeOutComplete: fadeOutCompleteRef.current
+    // });
 
     if (currentSlideInfo?.clientKey !== activeClient) {
       // If fade-out already completed, jump immediately
       if (isFading && fadeOutCompleteRef.current) {
-        console.log('🚀 Late target arrival - jumping immediately to:', activeClient);
+        // console.log('🚀 Late target arrival - jumping immediately to:', activeClient);
         scrollToClient(activeClient);
         onFadeComplete?.();
         return;
       }
       // Otherwise store the target - we'll jump to it after fade-out completes
-      console.log('📝 Storing pending target:', activeClient);
+      // console.log('📝 Storing pending target:', activeClient);
       pendingScrollTargetRef.current = activeClient;
     }
   }, [activeClient, currentGlobalIndex, getCurrentClientInfo, isFading, scrollToClient, onFadeComplete]);
@@ -485,18 +486,18 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
       if (e.propertyName !== 'opacity' || e.target !== container) return;
 
       const currentOpacity = parseFloat(getComputedStyle(container).opacity);
-      console.log('🔄 CaseStudy transitionend fired, opacity:', currentOpacity, 'pendingTarget:', pendingScrollTargetRef.current);
+      // console.log('🔄 CaseStudy transitionend fired, opacity:', currentOpacity, 'pendingTarget:', pendingScrollTargetRef.current);
 
       // Fade-out complete (opacity near 0)
       if (currentOpacity < 0.1) {
         fadeOutCompleteRef.current = true; // Mark that fade-out is done
-        console.log('✅ Fade-out complete, fadeOutCompleteRef set to true');
+        // console.log('✅ Fade-out complete, fadeOutCompleteRef set to true');
 
         // If we have a pending scroll target, jump to it now
         if (pendingScrollTargetRef.current) {
           const targetClient = pendingScrollTargetRef.current;
           pendingScrollTargetRef.current = null;
-          console.log('🎯 Jumping to target:', targetClient);
+          // console.log('🎯 Jumping to target:', targetClient);
 
           // Perform instant jump while screen is black
           scrollToClient(targetClient);
@@ -504,7 +505,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
           // Trigger fade-in by notifying parent (sets isFading=false → opacity=1)
           onFadeComplete?.();
         } else {
-          console.log('⏳ No pending target yet, staying black');
+          // console.log('⏳ No pending target yet, staying black');
         }
       }
     };

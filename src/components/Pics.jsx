@@ -555,15 +555,15 @@ const Pics = () => {
         })}
       </div>
       
-      <style jsx>{`
+      <style>{`
         .carousel-scroll-container::-webkit-scrollbar {
           display: none;
         }
-        
+
         .swiper-slide {
           text-align: center;
         }
-        
+
         .swiper-slide p {
           margin: 0 0 0.5rem 0;
           font-size: 0.9rem;
@@ -572,15 +572,15 @@ const Pics = () => {
           text-transform: uppercase;
           letter-spacing: 0.5px;
         }
-        
+
         .swiper-slide img {
           transition: transform 0.3s ease;
         }
-        
+
         .swiper-slide:hover img {
           transform: scale(1.05);
         }
-        
+
         @media (max-width: 1024px) {
           .swiper-slide img {
             object-position: center;
@@ -590,7 +590,7 @@ const Pics = () => {
             aspect-ratio: 3 / 16;
           }
         }
-        
+
         @media (max-width: 640px) {
           .swiper-slide img {
             object-position: center;
@@ -600,7 +600,7 @@ const Pics = () => {
             aspect-ratio: 2 / 16;
           }
         }
-        
+
         @media (max-width: 480px) {
           .swiper-slide img {
             object-position: center;
@@ -643,25 +643,25 @@ const Pics = () => {
             width: calc(100vw / 20) !important;
           }
         }
-        
+
         @media (max-width: 640px) {
           .swiper-slide {
             width: calc(100vw / 30) !important;
           }
         }
-        
+
         @media (max-width: 480px) {
           .swiper-slide {
             width: calc(100vw / 35) !important;
           }
         }
-        
+
         @media (max-width: 375px) {
           .swiper-slide {
             width: calc(100vw / 40) !important;
           }
         }
-        
+
         @media (max-width: 320px) {
           .swiper-slide {
             width: calc(100vw / 45) !important;
