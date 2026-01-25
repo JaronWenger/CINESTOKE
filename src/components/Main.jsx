@@ -97,11 +97,8 @@ const Main = () => {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      // Clean up preload link
-      const preloadLink = document.querySelector(`link[href="${videoToPreload}"]`);
-      if (preloadLink) {
-        preloadLink.remove();
-      }
+      // Don't remove preload link - let browser handle caching
+      // Removing it cancels the video download, hurting LCP
     };
   }, []);
 
