@@ -673,6 +673,9 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
                   data-client-name={name}
                   data-set-index={setIndex}
                   data-global-index={globalIndex}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Select ${name} client`}
                   style={{
                     flex: '0 0 auto',
                     display: 'flex',
@@ -682,6 +685,23 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
                     WebkitTapHighlightColor: 'transparent',
                     overflow: 'hidden',
                     boxSizing: 'border-box'
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      if (name === lastNotifiedClientRef.current) {
+                        if (onClientReselect) {
+                          onClientReselect(name);
+                        }
+                      } else {
+                        if (onClientChange) {
+                          lastNotifiedClientRef.current = name;
+                          onClientChange(name);
+                        }
+                      }
+                      centerLogo(e.currentTarget);
+                      scrollSectionToTop();
+                    }
                   }}
                   onClick={(e) => {
                     // If clicking the already-centered brand, trigger reselect (reset to first slide)
@@ -807,6 +827,12 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
           -webkit-tap-highlight-color: transparent;
           overflow: hidden;
           box-sizing: border-box;
+        }
+
+        .client-logo-wrapper:focus-visible {
+          outline: 2px solid rgba(255, 255, 255, 0.6);
+          outline-offset: 4px;
+          border-radius: 4px;
         }
 
         @media (min-width: 769px) {
