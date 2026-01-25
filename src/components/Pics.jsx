@@ -412,9 +412,11 @@ const Pics = () => {
       // Only update if significantly different to avoid micro-adjustments
       if (Math.abs(container.scrollLeft - exactScrollPosition) > 1) {
         container.style.scrollBehavior = 'auto';
-        container.scrollLeft = Math.max(0, exactScrollPosition);
-        scrollPositionRef.current = container.scrollLeft;
-        lastScrollLeftRef.current = container.scrollLeft;
+        const targetPosition = Math.max(0, exactScrollPosition);
+        container.scrollLeft = targetPosition;
+        // Use cached value to avoid forced reflow (reading scrollLeft after writing)
+        scrollPositionRef.current = targetPosition;
+        lastScrollLeftRef.current = targetPosition;
         
         // Final refinement pass for pixel-perfect centering
         requestAnimationFrame(() => {
@@ -434,9 +436,11 @@ const Pics = () => {
           const finalOffset = finalDroneCenterX - finalContainerCenterX;
           
           if (Math.abs(finalOffset) > 0.5) {
-            container.scrollLeft = container.scrollLeft + finalOffset;
-            scrollPositionRef.current = container.scrollLeft;
-            lastScrollLeftRef.current = container.scrollLeft;
+            const newPosition = container.scrollLeft + finalOffset;
+            container.scrollLeft = newPosition;
+            // Use cached value to avoid forced reflow
+            scrollPositionRef.current = newPosition;
+            lastScrollLeftRef.current = newPosition;
           }
           
           // Mark as initialized and re-enable smooth scrolling
@@ -532,9 +536,11 @@ const Pics = () => {
               }}
             >
               <p>{image.label}</p>
-              <img 
-                src={image.src} 
+              <img
+                src={image.src}
                 alt={image.alt}
+                width={296}
+                height={717}
                 loading="lazy"
                 style={{
                   width: '100%',
