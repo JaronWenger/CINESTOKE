@@ -40,6 +40,12 @@ const IMAGES = [
   { src: moto, alt: "Motorcycle Cinematic Production", label: "Motorcycles" },
 ];
 
+// 7 sets = 84 fixed DOM nodes. Middle set (index 3) is the "home" zone.
+// On the smallest phones, each set is ~128px wide, giving 3 sets (384px) of buffer
+// on each side — enough headroom for even a fast iOS fling before wrap fires.
+const SET_COUNT = 7;
+const CENTER_SET = 3;
+
 const Pics = () => {
   const scrollContainerRef = useRef(null);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
@@ -47,31 +53,62 @@ const Pics = () => {
   const hasInitializedRef = useRef(false);
   const hasScrolledRef = useRef(false);
 
+  // Scroll state tracking for deferred wrap
+  const isScrollingRef = useRef(false);
+  const isTouchingRef = useRef(false);
+  const scrollTimeoutRef = useRef(null);
+
+  // Desktop drag state
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef({ x: 0, scrollLeft: 0 });
   const lastMoveRef = useRef({ x: 0, time: 0 });
   const prevMoveRef = useRef({ x: 0, time: 0 });
   const momentumAnimationRef = useRef(null);
 
-  // Teleport scroll position to equivalent position in adjacent set — no growing DOM
+  // Teleport to equivalent position within the safe center zone.
+  // Called only after scroll fully stops so iOS native momentum is never interrupted.
   const checkAndWrap = useCallback(() => {
     const container = scrollContainerRef.current;
     if (!container) return;
-    const setWidth = container.scrollWidth / 3;
+    const setWidth = container.scrollWidth / SET_COUNT;
     if (setWidth <= 0) return;
-    if (container.scrollLeft < setWidth) {
+
+    const lo = 2 * setWidth;
+    const hi = 5 * setWidth;
+
+    if (container.scrollLeft < lo) {
+      const setsOff = Math.ceil((lo - container.scrollLeft) / setWidth);
       container.style.visibility = 'hidden';
-      container.scrollLeft += setWidth;
+      container.scrollLeft += setsOff * setWidth;
       container.style.visibility = '';
-    } else if (container.scrollLeft > 2 * setWidth) {
+    } else if (container.scrollLeft > hi) {
+      const setsOff = Math.ceil((container.scrollLeft - hi) / setWidth);
       container.style.visibility = 'hidden';
-      container.scrollLeft -= setWidth;
+      container.scrollLeft -= setsOff * setWidth;
       container.style.visibility = '';
     }
   }, []);
 
+  // Schedule wrap 150ms after last scroll event — matches Clients.jsx pattern.
+  // During native iOS momentum we only observe; we never write scrollLeft until it stops.
+  const scheduleWrap = useCallback(() => {
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = setTimeout(() => {
+      isScrollingRef.current = false;
+      if (!isTouchingRef.current) checkAndWrap();
+    }, 150);
+  }, [checkAndWrap]);
+
   const handleScroll = useCallback(() => {
-    checkAndWrap();
+    isScrollingRef.current = true;
+    if (isTouchingRef.current) {
+      // Mobile native momentum: defer so we never cancel it mid-fling
+      scheduleWrap();
+    } else {
+      // Desktop trackpad/wheel: wrap synchronously to prevent edge
+      checkAndWrap();
+    }
+
     if (!hasScrolledRef.current && window.dataLayer) {
       hasScrolledRef.current = true;
       window.dataLayer.push({
@@ -80,8 +117,23 @@ const Pics = () => {
       });
       setTimeout(() => { hasScrolledRef.current = false; }, 2000);
     }
-  }, [checkAndWrap]);
+  }, [checkAndWrap, scheduleWrap]);
 
+  // Touch handlers: track finger presence so we don't wrap mid-momentum
+  const handleTouchStart = useCallback(() => {
+    isTouchingRef.current = true;
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = null;
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    isTouchingRef.current = false;
+    scheduleWrap();
+  }, [scheduleWrap]);
+
+  // Desktop momentum: programmatic scrolling, so wrapping mid-animation is safe
   const applyMomentum = useCallback((velocity) => {
     const container = scrollContainerRef.current;
     if (!container) return;
@@ -161,10 +213,13 @@ const Pics = () => {
   useEffect(() => {
     const handleResize = () => setScreenWidth(window.innerWidth);
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    };
   }, []);
 
-  // Ref callback: center on Drone in the middle set, then reveal
+  // Ref callback: position at center set, then center on Drone, then reveal
   const setScrollContainerRef = useCallback((container) => {
     scrollContainerRef.current = container;
     if (!container || hasInitializedRef.current) return;
@@ -173,13 +228,12 @@ const Pics = () => {
     const attemptCenter = (retryCount = 0) => {
       if (hasInitializedRef.current) return;
 
-      // Position at start of middle set as base
-      const setWidth = container.scrollWidth / 3;
-      if (setWidth > 0 && container.scrollLeft === 0) {
-        container.scrollLeft = setWidth;
+      const setWidth = container.scrollWidth / SET_COUNT;
+      if (setWidth > 0) {
+        container.scrollLeft = CENTER_SET * setWidth;
       }
 
-      const droneSlide = container.querySelector('[data-set-index="1"][data-label="Drone"]');
+      const droneSlide = container.querySelector(`[data-set-index="${CENTER_SET}"][data-label="Drone"]`);
       if (!droneSlide) {
         if (retryCount < 5) setTimeout(() => attemptCenter(retryCount + 1), 100);
         return;
@@ -196,7 +250,7 @@ const Pics = () => {
       const target = container.scrollLeft + (droneCenterX - containerRect.width / 2);
       container.scrollLeft = Math.max(0, target);
 
-      // Final sub-pixel refinement pass
+      // Final sub-pixel refinement
       requestAnimationFrame(() => {
         if (!container) return;
         const r2 = container.getBoundingClientRect();
@@ -208,7 +262,7 @@ const Pics = () => {
       });
     };
 
-    // Double rAF ensures CSS layout is complete before measuring
+    // Double rAF: ensures CSS layout is complete before measuring
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         attemptCenter();
@@ -230,6 +284,8 @@ const Pics = () => {
         onScroll={handleScroll}
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
         style={{
           display: 'flex',
           gap: '0.5px',
@@ -244,7 +300,7 @@ const Pics = () => {
           opacity: isReady ? 1 : 0
         }}
       >
-        {[0, 1, 2].flatMap(setIndex =>
+        {[0, 1, 2, 3, 4, 5, 6].flatMap(setIndex =>
           IMAGES.map(image => (
             <div
               key={`${setIndex}-${image.label}`}
