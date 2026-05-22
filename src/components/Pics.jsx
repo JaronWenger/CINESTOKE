@@ -40,11 +40,12 @@ const IMAGES = [
   { src: moto, alt: "Motorcycle Cinematic Production", label: "Motorcycles" },
 ];
 
-// 7 sets = 84 fixed DOM nodes. Middle set (index 3) is the "home" zone.
-// On the smallest phones, each set is ~128px wide, giving 3 sets (384px) of buffer
-// on each side — enough headroom for even a fast iOS fling before wrap fires.
-const SET_COUNT = 7;
-const CENTER_SET = 3;
+// 21 sets = 252 fixed DOM nodes. Middle set (index 10) is the "home" zone.
+// On the smallest phones each set is ~960px wide (80px slide × 12), giving
+// 10 sets (~9600px) of buffer on each side — enough for even the longest iOS fling.
+// Desktop sets are ~2160px wide, giving ~21600px of buffer per side.
+const SET_COUNT = 21;
+const CENTER_SET = 10;
 
 const Pics = () => {
   const scrollContainerRef = useRef(null);
@@ -74,7 +75,7 @@ const Pics = () => {
     if (setWidth <= 0) return;
 
     const lo = 2 * setWidth;
-    const hi = 5 * setWidth;
+    const hi = (SET_COUNT - 2) * setWidth;
 
     if (container.scrollLeft < lo) {
       const setsOff = Math.ceil((lo - container.scrollLeft) / setWidth);
@@ -101,13 +102,7 @@ const Pics = () => {
 
   const handleScroll = useCallback(() => {
     isScrollingRef.current = true;
-    if (isTouchingRef.current) {
-      // Mobile native momentum: defer so we never cancel it mid-fling
-      scheduleWrap();
-    } else {
-      // Desktop trackpad/wheel: wrap synchronously to prevent edge
-      checkAndWrap();
-    }
+    scheduleWrap(); // always defer — 21 sets of buffer handles desktop; deferral handles mobile momentum
 
     if (!hasScrolledRef.current && window.dataLayer) {
       hasScrolledRef.current = true;
@@ -117,7 +112,7 @@ const Pics = () => {
       });
       setTimeout(() => { hasScrolledRef.current = false; }, 2000);
     }
-  }, [checkAndWrap, scheduleWrap]);
+  }, [scheduleWrap]);
 
   // Touch handlers: track finger presence so we don't wrap mid-momentum
   const handleTouchStart = useCallback(() => {
@@ -300,7 +295,7 @@ const Pics = () => {
           opacity: isReady ? 1 : 0
         }}
       >
-        {[0, 1, 2, 3, 4, 5, 6].flatMap(setIndex =>
+        {Array.from({ length: SET_COUNT }, (_, i) => i).flatMap(setIndex =>
           IMAGES.map(image => (
             <div
               key={`${setIndex}-${image.label}`}
