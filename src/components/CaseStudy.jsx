@@ -779,6 +779,38 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     };
   }, []);
 
+  // On mobile, autoPlay doesn't re-trigger when src changes on an existing element.
+  // Explicitly play the active slide's videos whenever the slide changes or videos become available.
+  useEffect(() => {
+    if (!videosCanLoad) return;
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const tryPlay = (video) => {
+      if (!video.src || !video.paused) return;
+      if (video.readyState >= 2) {
+        video.play().catch(() => {});
+      } else {
+        video.addEventListener('canplay', () => {
+          video.play().catch(() => {});
+        }, { once: true });
+      }
+    };
+
+    const playActiveSlide = () => {
+      const slideWrappers = container.querySelectorAll('.case-study-slide-wrapper');
+      const activeSlide = slideWrappers[currentGlobalIndex];
+      if (activeSlide) {
+        activeSlide.querySelectorAll('video').forEach(tryPlay);
+      }
+    };
+
+    playActiveSlide();
+    // Second attempt after a short delay covers videos still buffering
+    const timeout = setTimeout(playActiveSlide, 400);
+    return () => clearTimeout(timeout);
+  }, [currentGlobalIndex, videosCanLoad]);
+
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {

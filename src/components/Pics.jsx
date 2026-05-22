@@ -28,6 +28,7 @@ import mtnbike from '../assets/cinestoke-mtn-bike.webp';
 const Pics = () => {
   const scrollContainerRef = useRef(null);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
+  const [isReady, setIsReady] = useState(false);
 
   const images = [
     { src: mtnbike, alt: "Mountain Bike Cinematic Production", label: "Mtn Biking" },
@@ -428,6 +429,7 @@ const Pics = () => {
           if (finalContainerRect.width === 0 || finalDroneRect.width === 0) {
             hasInitializedRef.current = true;
             container.style.scrollBehavior = 'smooth';
+            setIsReady(true);
             return;
           }
           
@@ -446,11 +448,13 @@ const Pics = () => {
           // Mark as initialized and re-enable smooth scrolling
           hasInitializedRef.current = true;
           container.style.scrollBehavior = 'smooth';
+          setIsReady(true);
         });
       } else {
         // Mark as initialized and re-enable smooth scrolling
         hasInitializedRef.current = true;
         container.style.scrollBehavior = 'smooth';
+        setIsReady(true);
       }
     };
     
@@ -517,7 +521,8 @@ const Pics = () => {
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           willChange: 'scroll-position',
-          cursor: 'default'
+          cursor: 'default',
+          opacity: isReady ? 1 : 0
         }}
       >
         {displayedImages.map((image, index) => {
