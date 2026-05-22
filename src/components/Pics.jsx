@@ -39,7 +39,7 @@ const Pics = () => {
     { src: automotive, alt: "Automotive Cinematic Production", label: "Automotive" },
     { src: dirtbike, alt: "Dirtbike Cinematic Production", label: "Dirt Bikes" },
     { src: nature, alt: "Nature Cinematic Production", label: "Outdoors" },
-    { src: snowboard, alt: "Snowboarding Cinematic Production", label: "Snowboarding" },
+    { src: snowboard, alt: "Snowboarding Cinematic Production", label: "Snow" },
     { src: jetski, alt: "Jet Ski Cinematic Production", label: "Jet Ski" },
     { src: moto, alt: "Motorcycle Cinematic Production", label: "Motorcycles" },
   ];
