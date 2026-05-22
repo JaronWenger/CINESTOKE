@@ -51,7 +51,7 @@ const Main = () => {
   // to avoid React Router remounting Main and resetting state
   useEffect(() => {
     if (clientId) {
-      window.history.replaceState(null, '', window.location.pathname + '#/');
+      window.history.replaceState(null, '', window.location.origin);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
