@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useLayoutEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
+import React, { useRef, useState, useEffect, useLayoutEffect, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { flushSync } from 'react-dom';
 import { getAllSlidesFlattened, getOrderedClients, getAdjacentClientKey } from '../config/caseStudyConfig';
 
@@ -31,8 +31,8 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
   const snapTimeoutRef = useRef(null);
   const focusedClientRef = useRef(initialClient); // Track the currently focused client for circular ordering
 
-  // Get all clients in their default order
-  const orderedClients = getOrderedClients();
+  // Get all clients in their default order — memoized so derived callbacks stay stable
+  const orderedClients = useMemo(() => getOrderedClients(), []);
   const totalClients = orderedClients.length;
 
   /**
@@ -443,7 +443,13 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
   useEffect(() => {
     if (isFading) {
       fadeOutCompleteRef.current = false;
+    } else if (pendingScrollTargetRef.current) {
+      // isFading went false (safety timeout) but a target is still pending — scroll to it now
+      const target = pendingScrollTargetRef.current;
+      pendingScrollTargetRef.current = null;
+      scrollToClient(target);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFading]);
 
   // When activeClient changes from external source (logo click), store target for after fade

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react'
 import { useParams } from 'react-router-dom';
 import videoBg from '../assets/Welcome.mp4'
 import videoBgMobile from '../assets/Welcomephone.mp4'
@@ -82,10 +82,17 @@ const Main = () => {
   };
 
   // Handle fade completion from CaseStudy
-  const handleFadeComplete = () => {
-    // console.log('🏁 handleFadeComplete - fading back in');
+  const handleFadeComplete = useCallback(() => {
     setIsCaseStudyFading(false);
-  };
+  }, []);
+
+  // Safety: if transitionend is missed (rapid clicks cause listener re-registration race),
+  // force-reset the fade after 800ms so the carousel never stays black permanently
+  useEffect(() => {
+    if (!isCaseStudyFading) return;
+    const timeout = setTimeout(() => setIsCaseStudyFading(false), 800);
+    return () => clearTimeout(timeout);
+  }, [isCaseStudyFading]);
 
   // Handle re-click on already-centered brand (reset to first slide)
   const handleClientReselect = (clientKey) => {
