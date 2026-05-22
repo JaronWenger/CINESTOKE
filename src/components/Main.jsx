@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
+import { useParams } from 'react-router-dom';
 import videoBg from '../assets/Welcome.mp4'
 import videoBgMobile from '../assets/Welcomephone.mp4'
 import posterImage from '../assets/PosterImage.webp'
@@ -9,9 +10,25 @@ import Pics from './Pics';
 import CaseStudy from './CaseStudy';
 import Social from './Social';
 import { useVideoErrorHandling } from '../hooks/useVideoErrorHandling';
+import { getClientByOrder } from '../config/caseStudyConfig';
 
 
 const Main = () => {
+  const { clientId } = useParams();
+
+  // Resolve initial client from URL param (e.g. /#/6 → 'Seadoo'), fallback to SWA
+  const getInitialClient = () => {
+    if (clientId) {
+      const num = parseInt(clientId, 10);
+      if (!isNaN(num)) {
+        const client = getClientByOrder(num);
+        if (client) return client.key;
+      }
+    }
+    return 'SWA';
+  };
+  const initialClient = getInitialClient();
+
   // Initialize isMobile correctly on first render to avoid loading wrong video
   // Use document.documentElement.clientWidth for more reliable mobile detection
   const getInitialMobile = () => {
@@ -19,16 +36,25 @@ const Main = () => {
     const width = document.documentElement.clientWidth || window.innerWidth;
     return width <= 768;
   };
-  
+
   const [isMobile, setIsMobile] = useState(getInitialMobile());
   const [videoWatched, setVideoWatched] = useState(false);
   const videoRef = useRef(null);
-  const [activeClient, setActiveClient] = useState('SWA'); // Track which client is centered, default to SWA
+  const [activeClient, setActiveClient] = useState(initialClient);
   const [videoReady, setVideoReady] = useState(false); // Track if video is ready to play
   const [mainVideoLoaded, setMainVideoLoaded] = useState(false); // Track if main video has loaded
   const [isCaseStudyFading, setIsCaseStudyFading] = useState(false); // Track fade state for CaseStudy
   const clientsRef = useRef(null); // Ref to Clients component for brand shifting
   const caseStudyRef = useRef(null); // Ref to CaseStudy component for scrolling to first slide
+
+  // Clean the URL after reading the client param — use history API directly
+  // to avoid React Router remounting Main and resetting state
+  useEffect(() => {
+    if (clientId) {
+      window.history.replaceState(null, '', window.location.pathname + '#/');
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Add stuck video detection for main video (mobile only)
   const mainVideoSrc = isMobile ? videoBgMobile : videoBg;
@@ -223,13 +249,14 @@ const Main = () => {
 
       <Bars />
       <Pics />
-      <Clients ref={clientsRef} onClientChange={handleClientWillChange} onClientReselect={handleClientReselect} />
+      <Clients ref={clientsRef} initialClient={initialClient} onClientChange={handleClientWillChange} onClientReselect={handleClientReselect} />
       {/* Only render CaseStudy after main video has loaded to avoid competing for bandwidth */}
       {/* CaseStudy now uses unified continuous carousel - all slides in sequence */}
       {/* onClientChange syncs the logo carousel when user scrolls through slides */}
       {mainVideoLoaded && (
         <CaseStudy
           ref={caseStudyRef}
+          initialClient={initialClient}
           activeClient={activeClient}
           isFading={isCaseStudyFading}
           onFadeComplete={handleFadeComplete}

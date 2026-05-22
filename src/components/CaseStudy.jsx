@@ -12,7 +12,7 @@ import { getAllSlidesFlattened, getOrderedClients, getAdjacentClientKey } from '
  *
  * Transitions between brands use fade animation which hides the reordering.
  */
-const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeComplete, isMobile }, ref) => {
+const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeComplete, isMobile, initialClient = 'SWA' }, ref) => {
   const scrollContainerRef = useRef(null);
   const [currentGlobalIndex, setCurrentGlobalIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -29,7 +29,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
   const fadeOutCompleteRef = useRef(false); // Track if fade-out has completed (for late-arriving targets)
   const DRAG_THRESHOLD = 50;
   const snapTimeoutRef = useRef(null);
-  const focusedClientRef = useRef('SWA'); // Track the currently focused client for circular ordering
+  const focusedClientRef = useRef(initialClient); // Track the currently focused client for circular ordering
 
   // Get all clients in their default order
   const orderedClients = getOrderedClients();
@@ -84,8 +84,8 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     return slides;
   }, [orderedClients, totalClients]);
 
-  // Initialize slides around SWA (or activeClient)
-  const [circularSlides, setCircularSlides] = useState(() => getCircularSlides('SWA'));
+  // Initialize slides around the initial client
+  const [circularSlides, setCircularSlides] = useState(() => getCircularSlides(initialClient));
 
   // Ref to always access current slides (for click handlers that would otherwise have stale closures)
   const circularSlidesRef = useRef(circularSlides);

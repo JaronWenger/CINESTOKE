@@ -10,7 +10,7 @@ import { getClientLogoComponents, getClientNames } from '../config/caseStudyConf
  * - When user scrolls into buffer zone → instant teleport to corresponding position in real section
  * - No dynamic DOM growth, no prepend math, no edge cases
  */
-const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
+const Clients = forwardRef(({ onClientChange, onClientReselect, initialClient = 'SWA' }, ref) => {
   const scrollContainerRef = useRef(null);
   const sectionRef = useRef(null); // Ref to the section wrapper for scroll-to-top
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
@@ -566,16 +566,17 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
         return;
       }
 
-      // Find SWA index in client array
-      const swaIndex = clients.findIndex(c => c.name === 'SWA');
+      // Find initial client index in client array
+      const targetClientIndex = clients.findIndex(c => c.name === initialClient);
+      const swaIndex = targetClientIndex !== -1 ? targetClientIndex : clients.findIndex(c => c.name === 'SWA');
       if (swaIndex === -1) {
-        console.warn('Clients: SWA not found in clients');
+        console.warn('Clients: initial client not found');
         hasInitializedRef.current = true;
         setIsReady(true);
         return;
       }
 
-      // Target: SWA in the "real" (middle) section
+      // Target: initial client in the "real" (middle) section
       const targetIndex = realStartIndex + swaIndex;
       const containerWidth = container.clientWidth;
 
@@ -588,8 +589,8 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
       // Refine centering after scroll
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          const logoWrappers = container.querySelectorAll('.client-logo-wrapper[data-client-name="SWA"]');
-          // Find the SWA in the middle set (setIndex === 5 with 11 sets)
+          const logoWrappers = container.querySelectorAll(`.client-logo-wrapper[data-client-name="${initialClient}"]`);
+          // Find the initial client in the middle set (setIndex === 5 with 11 sets)
           let swaLogo = null;
           logoWrappers.forEach((wrapper) => {
             const setIndex = parseInt(wrapper.getAttribute('data-set-index') || '0', 10);
@@ -612,13 +613,13 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
           }
 
           hasInitializedRef.current = true;
-          lastNotifiedClientRef.current = 'SWA';
+          lastNotifiedClientRef.current = initialClient;
           container.style.scrollBehavior = 'smooth';
           setIsReady(true);
 
           // Notify about initial client
           if (onClientChange) {
-            onClientChange('SWA');
+            onClientChange(initialClient);
           }
         });
       });
@@ -628,6 +629,7 @@ const Clients = forwardRef(({ onClientChange, onClientReselect }, ref) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(initializePosition);
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clients, realStartIndex, getItemWidth, onClientChange]);
 
   return (

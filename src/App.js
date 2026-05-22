@@ -12,6 +12,7 @@ function App() {
         <Route path="/" element={<Main />} />
         <Route path="/offers" element={<Offers />} />
         <Route path="/links" element={<ErrorBoundary><Links /></ErrorBoundary>} />
+        <Route path="/:clientId" element={<Main />} />
       </Routes>
     </Router>
   );
