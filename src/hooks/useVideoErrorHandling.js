@@ -156,18 +156,6 @@ export const useVideoErrorHandling = (videoRef, videoSrc, isMobile = false, maxR
       }
     };
 
-    const handleStalled = () => {
-      console.warn('Video stalled, attempting recovery');
-      if (retryCountRef.current < maxRetries) {
-        // Wait a bit then retry
-        setTimeout(() => {
-          if (video.readyState < 3) {
-            retryVideo(video);
-          }
-        }, 2000);
-      }
-    };
-
     // Don't interfere with normal playback - only handle errors and stuck detection
 
     const handlePlay = () => {
@@ -194,7 +182,6 @@ export const useVideoErrorHandling = (videoRef, videoSrc, isMobile = false, maxR
 
     // Add event listeners - only error handling, no interference with normal playback
     video.addEventListener('error', handleError);
-    video.addEventListener('stalled', handleStalled);
     video.addEventListener('play', handlePlay);
     video.addEventListener('timeupdate', handleTimeUpdate);
 
@@ -207,7 +194,6 @@ export const useVideoErrorHandling = (videoRef, videoSrc, isMobile = false, maxR
       
       if (video) {
         video.removeEventListener('error', handleError);
-        video.removeEventListener('stalled', handleStalled);
         video.removeEventListener('play', handlePlay);
         video.removeEventListener('timeupdate', handleTimeUpdate);
       }

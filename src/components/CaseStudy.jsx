@@ -711,52 +711,72 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     };
   }, [isDragging]);
 
-  // Height synchronization - find and measure SlideOne (SWA) for consistent heights
+  // Height synchronization - find and measure SlideOne for consistent slide heights
   useEffect(() => {
-    const syncHeights = () => {
-      const carousel = scrollContainerRef.current;
-      if (!carousel || slideOneHeightRef.current) return;
+    const carousel = scrollContainerRef.current;
+    if (!carousel) return;
 
-      // Find SlideOne element
-      const slideOne = carousel.querySelector('.slide-one');
-      if (!slideOne) return;
+    let video = null;
+    let onLoaded = null;
+    let onError = null;
 
-      // Wait for video to be ready
-      const video = slideOne.querySelector('video');
-      if (video && video.readyState < 2) {
-        video.addEventListener('loadeddata', syncHeights, { once: true });
-        return;
-      }
-
-      // Measure height
+    const applyHeights = (slideOne) => {
+      if (slideOneHeightRef.current) return;
       slideOne.style.height = 'auto';
       void slideOne.offsetHeight;
       const height = slideOne.scrollHeight;
 
       if (height > 100) {
         slideOneHeightRef.current = height;
-
-        // Apply to all slides
-        const allSlideWrappers = carousel.querySelectorAll('.case-study-slide-wrapper');
-        allSlideWrappers.forEach((wrapper) => {
+        carousel.querySelectorAll('.case-study-slide-wrapper').forEach(wrapper => {
           wrapper.style.height = `${height}px`;
           wrapper.style.minHeight = '0';
           wrapper.style.maxHeight = `${height}px`;
         });
-
         carousel.style.height = `${height}px`;
         carousel.style.minHeight = '0';
         carousel.style.maxHeight = `${height}px`;
-
-        // Sizing complete - allow other videos to load
-        setVideosCanLoad(true);
       }
+      // Enable other videos regardless — even if measurement was imperfect
+      setVideosCanLoad(true);
     };
 
-    // Try to sync after initial render
-    const timeoutId = setTimeout(syncHeights, 200);
+    const syncHeights = () => {
+      if (slideOneHeightRef.current) return;
 
-    return () => clearTimeout(timeoutId);
+      const slideOne = carousel.querySelector('.slide-one');
+      if (!slideOne) return;
+
+      video = slideOne.querySelector('video');
+
+      if (video && video.readyState < 2) {
+        // Wait for video to load for accurate measurement
+        onLoaded = () => applyHeights(slideOne);
+        onError = () => applyHeights(slideOne); // Video failed — measure with what we have
+
+        video.addEventListener('loadeddata', onLoaded, { once: true });
+        video.addEventListener('error', onError, { once: true });
+        return;
+      }
+
+      applyHeights(slideOne);
+    };
+
+    const initialTimeout = setTimeout(syncHeights, 200);
+
+    // Absolute fallback: if SlideOne video never loads/errors after 10s, unblock videos anyway
+    const fallbackTimeout = setTimeout(() => {
+      if (!slideOneHeightRef.current) {
+        setVideosCanLoad(true);
+      }
+    }, 10000);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      clearTimeout(fallbackTimeout);
+      if (video && onLoaded) video.removeEventListener('loadeddata', onLoaded);
+      if (video && onError) video.removeEventListener('error', onError);
+    };
   }, []);
 
   // Cleanup timeouts on unmount
@@ -795,12 +815,14 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
           // Calculate distance from current slide for preload optimization
           const distanceFromCurrent = Math.abs(index - currentGlobalIndex);
 
-          // Preload strategy (more aggressive on mobile to save bandwidth):
-          // Desktop: current=auto, adjacent=metadata, far=none
-          // Mobile: current=auto, everything else=none
+          // Preload strategy:
+          // Desktop: current=auto, ±2=metadata, far=none
+          // Mobile: current=auto, ±1=metadata (so adjacent slide is ready on swipe), far=none
           let preloadValue;
           if (distanceFromCurrent === 0) {
             preloadValue = 'auto';
+          } else if (distanceFromCurrent === 1) {
+            preloadValue = 'metadata';
           } else if (!isMobile && distanceFromCurrent <= 2) {
             preloadValue = 'metadata';
           } else {

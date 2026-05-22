@@ -17,7 +17,9 @@ const SlideColor = ({
   const sliderRef = useRef(null);
   const overlayRef = useRef(null);
   const handleRef = useRef(null);
-  const sliderPositionRef = useRef(50); // Track position without re-renders
+  const sliderPositionRef = useRef(50);
+  const colorFailedRef = useRef(false);
+  const rawFailedRef = useRef(false);
 
   // Use mobile videos if available and on mobile
   const colorSrc = (isMobile && videoColorMobile) ? videoColorMobile : videoColor;
@@ -43,7 +45,7 @@ const SlideColor = ({
     attemptPlay(rawVideoRef.current);
   }, [attemptPlay]);
 
-  // Simple video sync: play together, reset together on loop
+  // Video sync: start both together once both are ready (or one has failed)
   useEffect(() => {
     const colorVideo = colorVideoRef.current;
     const rawVideo = rawVideoRef.current;
@@ -51,53 +53,54 @@ const SlideColor = ({
 
     let hasStarted = false;
 
-    // Start both videos together once both are ready
-    const startBothVideos = () => {
+    const startVideos = () => {
       if (hasStarted) return;
-      // readyState >= 2 means metadata loaded, >= 3 means can play
-      if (colorVideo.readyState >= 2 && rawVideo.readyState >= 2) {
-        hasStarted = true;
+
+      const colorReady = colorFailedRef.current || colorVideo.readyState >= 2;
+      const rawReady = rawFailedRef.current || rawVideo.readyState >= 2;
+      if (!colorReady || !rawReady) return;
+
+      hasStarted = true;
+      if (!colorFailedRef.current) {
         colorVideo.currentTime = 0;
-        rawVideo.currentTime = 0;
         attemptPlay(colorVideo);
+      }
+      if (!rawFailedRef.current) {
+        rawVideo.currentTime = 0;
         attemptPlay(rawVideo);
       }
     };
 
-    // When colorVideo ends, reset both to start (manual loop)
+    // Loop: when color video ends, reset both (or whichever is alive)
     const handleEnded = () => {
-      colorVideo.currentTime = 0;
-      rawVideo.currentTime = 0;
-      attemptPlay(colorVideo);
-      attemptPlay(rawVideo);
+      if (!colorFailedRef.current) colorVideo.currentTime = 0;
+      if (!rawFailedRef.current) rawVideo.currentTime = 0;
+      if (!colorFailedRef.current) attemptPlay(colorVideo);
+      if (!rawFailedRef.current) attemptPlay(rawVideo);
     };
 
-    // Multiple events to catch when videos are ready
-    const handleReady = () => startBothVideos();
+    const handleColorError = () => { colorFailedRef.current = true; startVideos(); };
+    const handleRawError = () => { rawFailedRef.current = true; startVideos(); };
 
-    // Listen to multiple events for reliability
-    colorVideo.addEventListener('canplaythrough', handleReady);
-    colorVideo.addEventListener('loadeddata', handleReady);
-    colorVideo.addEventListener('canplay', handleReady);
-    rawVideo.addEventListener('canplaythrough', handleReady);
-    rawVideo.addEventListener('loadeddata', handleReady);
-    rawVideo.addEventListener('canplay', handleReady);
+    colorVideo.addEventListener('canplay', startVideos);
+    colorVideo.addEventListener('loadeddata', startVideos);
+    rawVideo.addEventListener('canplay', startVideos);
+    rawVideo.addEventListener('loadeddata', startVideos);
+    colorVideo.addEventListener('error', handleColorError);
+    rawVideo.addEventListener('error', handleRawError);
     colorVideo.addEventListener('ended', handleEnded);
 
-    // Try immediately if already ready (handles cached videos)
-    startBothVideos();
-
-    // Also try after a short delay in case events already fired
-    const checkTimeout = setTimeout(startBothVideos, 100);
+    startVideos();
+    const checkTimeout = setTimeout(startVideos, 100);
 
     return () => {
       clearTimeout(checkTimeout);
-      colorVideo.removeEventListener('canplaythrough', handleReady);
-      colorVideo.removeEventListener('loadeddata', handleReady);
-      colorVideo.removeEventListener('canplay', handleReady);
-      rawVideo.removeEventListener('canplaythrough', handleReady);
-      rawVideo.removeEventListener('loadeddata', handleReady);
-      rawVideo.removeEventListener('canplay', handleReady);
+      colorVideo.removeEventListener('canplay', startVideos);
+      colorVideo.removeEventListener('loadeddata', startVideos);
+      rawVideo.removeEventListener('canplay', startVideos);
+      rawVideo.removeEventListener('loadeddata', startVideos);
+      colorVideo.removeEventListener('error', handleColorError);
+      rawVideo.removeEventListener('error', handleRawError);
       colorVideo.removeEventListener('ended', handleEnded);
     };
   }, [attemptPlay]);

@@ -56,6 +56,13 @@ const Main = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Fallback: if welcome video never fires canplay (e.g. network stall), unblock CaseStudy after 8s
+  useEffect(() => {
+    const fallback = setTimeout(() => setMainVideoLoaded(true), 8000);
+    return () => clearTimeout(fallback);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Add stuck video detection for main video (mobile only)
   const mainVideoSrc = isMobile ? videoBgMobile : videoBg;
   useVideoErrorHandling(videoRef, mainVideoSrc, isMobile);
