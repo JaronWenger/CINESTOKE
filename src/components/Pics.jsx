@@ -27,7 +27,7 @@ import mtnbike from '../assets/cinestoke-mtn-bike.webp';
 
 const IMAGES = [
   { src: mtnbike, alt: "Mountain Bike Cinematic Production", label: "Mtn Biking", youtubeId: '9aTVsDySZAg' },
-  { src: kayak, alt: "Kayak Cinematic Production", label: "Kayaking", youtubeId: 'd8NxG3CAvOY' },
+  { src: kayak, alt: "Kayak Cinematic Production", label: "Kayaking", youtubeId: 'sEhpFnuSe5o' },
   { src: redwoods, alt: "Redwoods Cinematic Production", label: "Nature" },
   { src: rollers, alt: "Rollers Cinematic Production", label: "Rollers" },
   { src: drone, alt: "Drone Cinematic Production", label: "Drone" },

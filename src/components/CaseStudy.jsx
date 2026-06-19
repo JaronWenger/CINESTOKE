@@ -787,20 +787,15 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
 
   // On mobile, autoPlay doesn't re-trigger when src changes on an existing element.
   // Explicitly play the active slide's videos whenever the slide changes or videos become available.
+  // No videosCanLoad guard — gated videos have src=undefined so tryPlay skips them naturally.
   useEffect(() => {
-    if (!videosCanLoad) return;
     const container = scrollContainerRef.current;
     if (!container) return;
 
     const tryPlay = (video) => {
       if (!video.src || !video.paused) return;
-      if (video.readyState >= 2) {
-        video.play().catch(() => {});
-      } else {
-        video.addEventListener('canplay', () => {
-          video.play().catch(() => {});
-        }, { once: true });
-      }
+      // play() works at any readyState — triggers loading for preload="none" videos too
+      video.play().catch(() => {});
     };
 
     const playActiveSlide = () => {
