@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.831dea62.css",
-    "main.js": "/static/js/main.0f911d0b.js",
+    "main.css": "/static/css/main.8a10a547.css",
+    "main.js": "/static/js/main.cfd0e4d9.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
     "static/media/SmallWorldMain.mp4": "/static/media/SmallWorldMain.f6e2112b9160ba964e35.mp4",
     "static/media/BGGeo.mp4": "/static/media/BGGeo.e95e6a2dba335a5563a3.mp4",
@@ -105,11 +105,11 @@
     "static/media/rightwing.svg": "/static/media/rightwing.908005ec7d6786ebd3ed3957a88a799c.svg",
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
-    "main.831dea62.css.map": "/static/css/main.831dea62.css.map",
-    "main.0f911d0b.js.map": "/static/js/main.0f911d0b.js.map"
+    "main.8a10a547.css.map": "/static/css/main.8a10a547.css.map",
+    "main.cfd0e4d9.js.map": "/static/js/main.cfd0e4d9.js.map"
   },
   "entrypoints": [
-    "static/css/main.831dea62.css",
-    "static/js/main.0f911d0b.js"
+    "static/css/main.8a10a547.css",
+    "static/js/main.cfd0e4d9.js"
   ]
 }
