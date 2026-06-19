@@ -39,6 +39,7 @@ const Main = () => {
 
   const [isMobile, setIsMobile] = useState(getInitialMobile());
   const [videoWatched, setVideoWatched] = useState(false);
+  const [isReelOpen, setIsReelOpen] = useState(false);
   const videoRef = useRef(null);
   const [activeClient, setActiveClient] = useState(initialClient);
   const [videoReady, setVideoReady] = useState(false); // Track if video is ready to play
@@ -239,7 +240,7 @@ const Main = () => {
 
   return (
     <div className='main'>
-      <div className='overlay'></div>
+      <div className='overlay' onClick={() => setIsReelOpen(true)} style={{ cursor: 'pointer', pointerEvents: 'auto' }} />
       {/* Render appropriate video based on screen size */}
       <video
         ref={videoRef}
@@ -257,7 +258,7 @@ const Main = () => {
         // Disable picture-in-picture for better performance
         disablePictureInPicture
       />
-      <div className='cinestoke'>
+      <div className='cinestoke' onClick={() => setIsReelOpen(true)} style={{ cursor: 'pointer' }}>
         <h1>C I N E S T O K E</h1>
       </div>
 
@@ -287,6 +288,52 @@ const Main = () => {
         />
       )}
       <Social />
+
+      {isReelOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.88)',
+            zIndex: 2000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          onClick={() => setIsReelOpen(false)}
+        >
+          <div
+            style={{ position: 'relative', width: '90vw', maxWidth: '960px', aspectRatio: '16/9' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setIsReelOpen(false)}
+              style={{
+                position: 'absolute',
+                top: '-40px',
+                right: 0,
+                background: 'none',
+                border: 'none',
+                color: '#fff',
+                fontSize: '2rem',
+                lineHeight: 1,
+                cursor: 'pointer',
+                padding: '4px 8px'
+              }}
+              aria-label="Close reel"
+            >
+              ×
+            </button>
+            <iframe
+              src="https://www.youtube.com/embed/oyrgLEsmGIo?autoplay=1&rel=0"
+              title="Cinestoke Reel"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ width: '100%', height: '100%', border: 'none' }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }
