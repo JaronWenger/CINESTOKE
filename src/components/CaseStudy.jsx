@@ -750,7 +750,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     const syncHeights = () => {
       if (slideOneHeightRef.current) return;
 
-      const slideOne = carousel.querySelector('.slide-one');
+      const slideOne = carousel.querySelector('.case-study-slide-wrapper[data-is-focused="true"] .slide-one');
       if (!slideOne) return;
 
       video = slideOne.querySelector('video');
@@ -881,6 +881,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
                 preload={preloadValue}
                 isMobile={isMobile}
                 videosCanLoad={videosCanLoad}
+                isActiveSlide={slideData.isFocused && slideData.isFirstSlideOfClient}
               />
             </div>
           );
