@@ -5,7 +5,7 @@ import { ReactComponent as FilmIcon } from '../assets/Film.svg';
 import { ReactComponent as ShutterIcon } from '../assets/Shutter.svg';
 import { ReactComponent as WingsIcon } from '../assets/Wings.svg';
 
-const Bars = () => {
+const Bars = ({ onOpenReel, onScrollToStudies }) => {
   return (
     <div className="cinestoke-section">
       {/* First Layer */}
@@ -26,7 +26,7 @@ const Bars = () => {
         {/* Vertical Line */}
         <div className="vertical-line short" />
 
-        <p className="cinestoke-text">CINESTOKE</p>
+        <p className="cinestoke-text" onClick={onOpenReel} style={{ cursor: 'pointer' }}>CINESTOKE</p>
 
         {/* Vertical Line */}
         <div className="vertical-line short" />
@@ -54,13 +54,17 @@ const Bars = () => {
                    {/* Vertical Line */}
                    <div className="vertical-line2black remove" />
         <div className='twotext'>
-        <p className="concept-text">Concept to Creation</p>
+        <p
+          className="concept-text"
+          style={{ cursor: 'pointer' }}
+          onClick={onScrollToStudies}
+        >Case Studies</p>
         </div>
 
                 {/* Vertical Line */}
                 <div className="vertical-line2 remove" />
 
-        <WingsIcon width="400" height="100" className="wings-icon"/>
+        <WingsIcon width="400" height="100" className="wings-icon" onClick={onOpenReel} style={{ cursor: 'pointer' }} />
 
                 {/* Vertical Line */}
                 <div className="vertical-line2 remove" />

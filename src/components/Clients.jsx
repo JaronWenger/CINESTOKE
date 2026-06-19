@@ -505,8 +505,9 @@ const Clients = forwardRef(({ onClientChange, onClientReselect, initialClient = 
   // Expose methods via ref
   useImperativeHandle(ref, () => ({
     shiftToAdjacentBrand,
-    scrollToClient
-  }), [shiftToAdjacentBrand, scrollToClient]);
+    scrollToClient,
+    scrollSectionToTop
+  }), [shiftToAdjacentBrand, scrollToClient, scrollSectionToTop]);
 
   // Window resize handler
   useEffect(() => {

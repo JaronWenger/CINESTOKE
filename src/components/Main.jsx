@@ -262,7 +262,7 @@ const Main = () => {
         <h1>C I N E S T O K E</h1>
       </div>
 
-      <Bars />
+      <Bars onOpenReel={() => setIsReelOpen(true)} onScrollToStudies={() => clientsRef.current?.scrollSectionToTop()} />
       <Pics />
       <Clients ref={clientsRef} initialClient={initialClient} onClientChange={handleClientWillChange} onClientReselect={handleClientReselect} />
       {/* Only render CaseStudy after main video has loaded to avoid competing for bandwidth */}
