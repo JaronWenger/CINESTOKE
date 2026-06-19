@@ -26,18 +26,18 @@ import kayak from '../assets/cinestoke-kayak.webp';
 import mtnbike from '../assets/cinestoke-mtn-bike.webp';
 
 const IMAGES = [
-  { src: mtnbike, alt: "Mountain Bike Cinematic Production", label: "Mtn Biking" },
-  { src: kayak, alt: "Kayak Cinematic Production", label: "Kayaking" },
+  { src: mtnbike, alt: "Mountain Bike Cinematic Production", label: "Mtn Biking", youtubeId: '9aTVsDySZAg' },
+  { src: kayak, alt: "Kayak Cinematic Production", label: "Kayaking", youtubeId: 'd8NxG3CAvOY' },
   { src: redwoods, alt: "Redwoods Cinematic Production", label: "Nature" },
   { src: rollers, alt: "Rollers Cinematic Production", label: "Rollers" },
   { src: drone, alt: "Drone Cinematic Production", label: "Drone" },
   { src: FPV, alt: "FPV Cinematic Production", label: "FPV" },
   { src: automotive, alt: "Automotive Cinematic Production", label: "Automotive" },
   { src: dirtbike, alt: "Dirtbike Cinematic Production", label: "Dirt Bikes" },
-  { src: nature, alt: "Nature Cinematic Production", label: "Outdoors" },
-  { src: snowboard, alt: "Snowboarding Cinematic Production", label: "Snow" },
-  { src: jetski, alt: "Jet Ski Cinematic Production", label: "Jet Ski" },
-  { src: moto, alt: "Motorcycle Cinematic Production", label: "Motorcycles" },
+  { src: nature, alt: "Nature Cinematic Production", label: "Outdoors", youtubeId: '4fiAeCwZKcI' },
+  { src: snowboard, alt: "Snowboarding Cinematic Production", label: "Snow", youtubeId: 'H7DYKGW9oYc' },
+  { src: jetski, alt: "Jet Ski Cinematic Production", label: "Jet Ski", youtubeId: 'Q7v0qqDOEL8' },
+  { src: moto, alt: "Motorcycle Cinematic Production", label: "Motorcycles", youtubeId: 'YZC-6pU0dvM' },
 ];
 
 // 21 sets = 252 fixed DOM nodes. Middle set (index 10) is the "home" zone.
@@ -53,6 +53,8 @@ const Pics = () => {
   const [isReady, setIsReady] = useState(false);
   const hasInitializedRef = useRef(false);
   const hasScrolledRef = useRef(false);
+  const [activeYoutubeId, setActiveYoutubeId] = useState(null);
+  const hasDraggedRef = useRef(false);
 
   // Scroll state tracking for deferred wrap
   const isScrollingRef = useRef(false);
@@ -153,6 +155,7 @@ const Pics = () => {
       cancelAnimationFrame(momentumAnimationRef.current);
       momentumAnimationRef.current = null;
     }
+    hasDraggedRef.current = false;
     const now = Date.now();
     setIsDragging(true);
     dragStartRef.current = { x: e.clientX, scrollLeft: container.scrollLeft };
@@ -188,6 +191,7 @@ const Pics = () => {
       const container = scrollContainerRef.current;
       if (!container) return;
       const deltaX = e.clientX - dragStartRef.current.x;
+      if (Math.abs(deltaX) > 5) hasDraggedRef.current = true;
       container.style.scrollBehavior = 'auto';
       container.scrollLeft = dragStartRef.current.scrollLeft - deltaX;
       checkAndWrap();
@@ -306,7 +310,13 @@ const Pics = () => {
                 flex: '0 0 auto',
                 width: 'calc(100vw / 8)',
                 minWidth: '80px',
-                maxWidth: '200px'
+                maxWidth: '200px',
+                cursor: image.youtubeId ? 'pointer' : 'default'
+              }}
+              onClick={() => {
+                if (!hasDraggedRef.current && image.youtubeId) {
+                  setActiveYoutubeId(image.youtubeId);
+                }
               }}
             >
               <p>{image.label}</p>
@@ -442,6 +452,52 @@ const Pics = () => {
           }
         }
       `}</style>
+
+      {activeYoutubeId && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.88)',
+            zIndex: 2000,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+          onClick={() => setActiveYoutubeId(null)}
+        >
+          <div
+            style={{ position: 'relative', width: '90vw', maxWidth: '960px', aspectRatio: '16/9' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setActiveYoutubeId(null)}
+              style={{
+                position: 'absolute',
+                top: '-40px',
+                right: 0,
+                background: 'none',
+                border: 'none',
+                color: '#fff',
+                fontSize: '2rem',
+                lineHeight: 1,
+                cursor: 'pointer',
+                padding: '4px 8px'
+              }}
+              aria-label="Close video"
+            >
+              ×
+            </button>
+            <iframe
+              src={`https://www.youtube.com/embed/${activeYoutubeId}?autoplay=1&rel=0`}
+              title="Cinestoke Video"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{ width: '100%', height: '100%', border: 'none' }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
