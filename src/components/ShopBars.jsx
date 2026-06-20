@@ -216,6 +216,10 @@ const ShopBars = ({ onToggleLightMode }) => {
   }, []);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
     if (location.state?.openGrades) {
       setSelected('grades');
       setSelectedGrade(GRADE_PACK);
@@ -354,7 +358,7 @@ const ShopBars = ({ onToggleLightMode }) => {
             }}
           />
           {/* Drawer panel */}
-          <div style={{
+          <div className="shop-mobile-drawer" style={{
             position: 'fixed', top: 0, left: 0, bottom: 0, zIndex: 2100,
             width: '72vw', maxWidth: '280px',
             background: '#111',
