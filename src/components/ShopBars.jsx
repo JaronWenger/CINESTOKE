@@ -442,7 +442,10 @@ const ShopBars = ({ onToggleLightMode }) => {
           gridTemplateColumns: '1fr auto 1fr',
           alignItems: 'center',
           borderBottom: '2px solid white',
-          padding: isMobile ? '16px 8px' : '24px 8px',
+          paddingTop: isMobile ? 'max(16px, calc(env(safe-area-inset-top, 0px) + 8px))' : '24px',
+          paddingBottom: isMobile ? '16px' : '24px',
+          paddingLeft: '8px',
+          paddingRight: '8px',
         }}>
           {/* Left */}
           <div>
