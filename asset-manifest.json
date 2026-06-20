@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.8a10a547.css",
-    "main.js": "/static/js/main.8aaf9534.js",
+    "main.css": "/static/css/main.b52bdb3f.css",
+    "main.js": "/static/js/main.064706fb.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
     "static/media/SmallWorldMain.mp4": "/static/media/SmallWorldMain.f6e2112b9160ba964e35.mp4",
     "static/media/BGGeo.mp4": "/static/media/BGGeo.e95e6a2dba335a5563a3.mp4",
@@ -42,6 +42,7 @@
     "static/media/BGcolor.mp4": "/static/media/BGcolor.6b928baf72e153e9e4bd.mp4",
     "static/media/SmallWorldraw.mp4": "/static/media/SmallWorldraw.6e73d90a693001322148.mp4",
     "static/media/insta.webp": "/static/media/insta.be834b67581026174459.webp",
+    "static/media/Surf.webp": "/static/media/Surf.c1e10ee5c52af1aab45c.webp",
     "static/media/tiktok.webp": "/static/media/tiktok.0b17e3b5d4cc790b5316.webp",
     "static/media/youtube.webp": "/static/media/youtube.ddb244c83c9089617e44.webp",
     "static/media/BGraw.mp4": "/static/media/BGraw.c222abcddcbe03c09eef.mp4",
@@ -53,6 +54,8 @@
     "static/media/SlateLogo.mp4": "/static/media/SlateLogo.50e8eb2d922d1ab5f6bf.mp4",
     "static/media/cinestoke-real-estate.webp": "/static/media/cinestoke-real-estate.9e3eaa09fca57b9ed2c3.webp",
     "static/media/SlateLogoPhone.mp4": "/static/media/SlateLogoPhone.fb6e8746ebd59730bb51.mp4",
+    "static/media/iphonecinestoke.webp": "/static/media/iphonecinestoke.199808ccc7a4f5811e5c.webp",
+    "static/media/cinestokesite.webp": "/static/media/cinestokesite.f42f8703e5317f60ae02.webp",
     "static/media/BG.svg": "/static/media/BG.e5d282ea1130d534d01b250dcd5a1811.svg",
     "static/media/cinestoke-kayak.webp": "/static/media/cinestoke-kayak.3986b094dca79a23e55b.webp",
     "static/media/SWAsplits.webp": "/static/media/SWAsplits.27e80b0b6b5158de70fa.webp",
@@ -87,6 +90,7 @@
     "static/media/SWA.svg": "/static/media/SWA.1a1b0cf2765f3db44c7ce148483b0487.svg",
     "static/media/TCOpp.webp": "/static/media/TCOpp.b9f962a4065be5f1e0d4.webp",
     "static/media/IR.svg": "/static/media/IR.f3aca9fed078cb9a1bcfea64022c8bb9.svg",
+    "static/media/POWERGRADE.webp": "/static/media/POWERGRADE.c9a8b8ec9145e7b76426.webp",
     "static/media/BGsplits.webp": "/static/media/BGsplits.e898ea291f2fd09b668c.webp",
     "static/media/GFF.svg": "/static/media/GFF.3263872cb4a590d38faf9e7b4e657a30.svg",
     "static/media/Seadoo.svg": "/static/media/Seadoo.c65c2e6461112c4ec08603755056738f.svg",
@@ -105,11 +109,11 @@
     "static/media/rightwing.svg": "/static/media/rightwing.908005ec7d6786ebd3ed3957a88a799c.svg",
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
-    "main.8a10a547.css.map": "/static/css/main.8a10a547.css.map",
-    "main.8aaf9534.js.map": "/static/js/main.8aaf9534.js.map"
+    "main.b52bdb3f.css.map": "/static/css/main.b52bdb3f.css.map",
+    "main.064706fb.js.map": "/static/js/main.064706fb.js.map"
   },
   "entrypoints": [
-    "static/css/main.8a10a547.css",
-    "static/js/main.8aaf9534.js"
+    "static/css/main.b52bdb3f.css",
+    "static/js/main.064706fb.js"
   ]
 }
