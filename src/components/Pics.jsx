@@ -36,6 +36,8 @@ const IMAGES = [
 // On the smallest phones each set is ~960px wide (80px slide × 12), giving
 // 10 sets (~9600px) of buffer on each side — enough for even the longest iOS fling.
 // Desktop sets are ~2160px wide, giving ~21600px of buffer per side.
+const VIDEOS = IMAGES.filter(img => img.youtubeId);
+
 const SET_COUNT = 21;
 const CENTER_SET = 10;
 
@@ -45,7 +47,7 @@ const Pics = () => {
   const [isReady, setIsReady] = useState(false);
   const hasInitializedRef = useRef(false);
   const hasScrolledRef = useRef(false);
-  const [activeYoutubeId, setActiveYoutubeId] = useState(null);
+  const [activeVideoIndex, setActiveVideoIndex] = useState(null);
   const hasDraggedRef = useRef(false);
 
   // Scroll state tracking for deferred wrap
@@ -307,7 +309,7 @@ const Pics = () => {
               }}
               onClick={() => {
                 if (!hasDraggedRef.current && image.youtubeId) {
-                  setActiveYoutubeId(image.youtubeId);
+                  setActiveVideoIndex(VIDEOS.findIndex(v => v.youtubeId === image.youtubeId));
                 }
               }}
             >
@@ -445,7 +447,7 @@ const Pics = () => {
         }
       `}</style>
 
-      {activeYoutubeId && (
+      {activeVideoIndex !== null && (
         <div
           style={{
             position: 'fixed',
@@ -456,32 +458,42 @@ const Pics = () => {
             alignItems: 'center',
             justifyContent: 'center'
           }}
-          onClick={() => setActiveYoutubeId(null)}
+          onClick={() => setActiveVideoIndex(null)}
         >
           <div
             style={{ position: 'relative', width: '90vw', maxWidth: '960px', aspectRatio: '16/9' }}
             onClick={e => e.stopPropagation()}
           >
             <button
-              onClick={() => setActiveYoutubeId(null)}
-              style={{
-                position: 'absolute',
-                top: '-40px',
-                right: 0,
-                background: 'none',
-                border: 'none',
-                color: '#fff',
-                fontSize: '2rem',
-                lineHeight: 1,
-                cursor: 'pointer',
-                padding: '4px 8px'
-              }}
+              onClick={() => setActiveVideoIndex(null)}
+              style={{ position: 'absolute', top: '-40px', right: 0, background: 'none', border: 'none', color: '#fff', fontSize: '2rem', lineHeight: 1, cursor: 'pointer', padding: '4px 8px' }}
               aria-label="Close video"
             >
               ×
             </button>
+            <div style={{ position: 'absolute', bottom: '-64px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '16px' }}>
+              <button
+                onClick={() => setActiveVideoIndex(i => (i - 1 + VIDEOS.length) % VIDEOS.length)}
+                style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)', borderRadius: '50%', color: '#fff', cursor: 'pointer', width: '52px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(6px)' }}
+                aria-label="Previous video"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="15 18 9 12 15 6" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setActiveVideoIndex(i => (i + 1) % VIDEOS.length)}
+                style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.4)', borderRadius: '50%', color: '#fff', cursor: 'pointer', width: '52px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(6px)' }}
+                aria-label="Next video"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="9 18 15 12 9 6" />
+                </svg>
+              </button>
+            </div>
             <iframe
-              src={`https://www.youtube.com/embed/${activeYoutubeId}?autoplay=1&rel=0`}
+              key={VIDEOS[activeVideoIndex].youtubeId}
+              src={`https://www.youtube.com/embed/${VIDEOS[activeVideoIndex].youtubeId}?autoplay=1&rel=0`}
               title="Cinestoke Video"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen

@@ -445,7 +445,7 @@ const ShopBars = ({ onToggleLightMode }) => {
               cursor: 'pointer',
             }}
           >
-            {isMobile ? 'CINESTOKE' : 'C I N E S T O K E'}
+            CINESTOKE
           </h1>
 
           {/* Right */}
