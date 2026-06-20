@@ -398,13 +398,14 @@ const ShopBars = ({ onToggleLightMode }) => {
             transform: isMobileMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
             transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
             display: 'flex', flexDirection: 'column',
-            padding: '48px 0 40px',
+            paddingTop: 'max(48px, calc(env(safe-area-inset-top, 0px) + 16px))',
+            paddingBottom: '40px',
           }}>
             {/* Close */}
             <button
               onClick={() => setIsMobileMenuOpen(false)}
               style={{
-                position: 'absolute', top: '16px', right: '16px',
+                position: 'absolute', top: 'max(16px, calc(env(safe-area-inset-top, 0px) + 8px))', right: '16px',
                 background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)',
                 fontSize: '22px', cursor: 'pointer', lineHeight: 1,
               }}
