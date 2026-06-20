@@ -10,7 +10,6 @@ import FPV from '../assets/cinestoke-FPV.webp';
 import nature from '../assets/cinestoke-nature.webp';
 import surf from '../assets/Surf.webp';
 
-import realestate from '../assets/cinestoke-real-estate.webp';
 import snowboard from '../assets/cinestoke-snowboard.webp';
 
 import jetski from '../assets/cinestoke-jet-ski.webp';
