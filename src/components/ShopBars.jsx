@@ -81,7 +81,7 @@ const ReviewsSection = ({ currentProductId, onProductClick }) => {
       <p style={{ fontFamily: inter, fontSize: '14px', color: 'rgba(255,255,255,0.55)', letterSpacing: 0, margin: '0 0 24px' }}>{ALL_REVIEWS.length} store reviews</p>
 
       {visible.map((review, i) => (
-        <div key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.08)', padding: '24px 0', display: 'grid', gridTemplateColumns: '160px 1fr', gap: '32px' }}>
+        <div key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.08)', padding: '24px 0', display: 'grid', gridTemplateColumns: window.innerWidth <= 768 ? '90px 1fr' : '160px 1fr', gap: window.innerWidth <= 768 ? '16px' : '32px' }}>
           <div>
             <p style={{ fontFamily: inter, fontSize: '13px', fontWeight: 600, color: '#fff', margin: '0 0 4px', letterSpacing: 0 }}>{review.name}</p>
             <p style={{ fontFamily: inter, fontSize: '12px', color: 'rgba(255,255,255,0.35)', margin: 0, letterSpacing: 0 }}>{review.date}</p>
