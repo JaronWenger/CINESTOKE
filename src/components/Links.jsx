@@ -1,10 +1,11 @@
 import React from 'react';
-import profileImage from '../assets/logo.jpg';
 import offersImage from '../assets/offers.webp';
 import instaImage from '../assets/insta.webp';
 import tiktokImage from '../assets/tiktok.webp';
 import youtubeImage from '../assets/youtube.webp';
 import websiteImage from '../assets/website.webp';
+
+const profileImage = '/Mid.jpg';
 
 // Social media logo components
 const InstagramLogo = () => (
