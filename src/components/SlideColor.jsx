@@ -8,7 +8,8 @@ const SlideColor = ({
   videoRawMobile,
   preload = 'auto',
   isMobile = false,
-  videosCanLoad = true
+  videosCanLoad = true,
+  onTitleClick,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
@@ -176,7 +177,11 @@ const SlideColor = ({
 
   return (
     <div className="slide-color">
-      <h2 className="case-study-title">{title}</h2>
+      <h2
+        className={`case-study-title${onTitleClick ? ' slide-color-title-link' : ''}`}
+        onClick={onTitleClick}
+        style={onTitleClick ? { cursor: 'pointer' } : undefined}
+      >{title}</h2>
 
       <div
         ref={containerRef}

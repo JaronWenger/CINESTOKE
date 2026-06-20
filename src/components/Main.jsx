@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react'
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import videoBg from '../assets/Welcome.mp4'
 import videoBgMobile from '../assets/Welcomephone.mp4'
 import posterImage from '../assets/PosterImage.webp'
@@ -15,6 +15,7 @@ import { getClientByOrder } from '../config/caseStudyConfig';
 
 const Main = () => {
   const { clientId } = useParams();
+  const navigate = useNavigate();
 
   // Resolve initial client from URL param (e.g. /#/6 → 'Seadoo'), fallback to SWA
   const getInitialClient = () => {
@@ -276,6 +277,7 @@ const Main = () => {
           isFading={isCaseStudyFading}
           onFadeComplete={handleFadeComplete}
           isMobile={isMobile}
+          onColorTitleClick={() => navigate('/shop', { state: { openGrades: true } })}
           onClientChange={(clientKey) => {
             // Update active client state (from CaseStudy scroll - no fade needed)
             setActiveClient(clientKey);

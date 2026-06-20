@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import emailjs from 'emailjs-com';
 import './Contact.css';
 
-const ContactV2 = ({ isOpen, onClose }) => {
+const ContactV2 = ({ isOpen, onClose, subtitle }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -62,6 +62,18 @@ const ContactV2 = ({ isOpen, onClose }) => {
         </button>
         <section className="contact-section">
           <h2>CONTACT</h2>
+          {subtitle && (
+            <p style={{
+              marginBottom: '1.5rem',
+              color: 'rgba(255,255,255,0.6)',
+              fontSize: '1rem',
+              lineHeight: 1.7,
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+              letterSpacing: 0,
+            }}>
+              {subtitle}
+            </p>
+          )}
           <form className="contact-form" onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="name">Name</label>

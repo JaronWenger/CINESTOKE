@@ -173,21 +173,24 @@ video {
 
 .cinestoke-section .cinestoke-text,
 .cinestoke-section .concept-text,
-.cinestoke-section .wings-icon {
+.cinestoke-section .wings-icon,
+.cinestoke-section .moments-text {
   transform: translateZ(0);
 }
 
 @media (hover: hover) {
   .cinestoke-section .cinestoke-text,
   .cinestoke-section .concept-text,
-  .cinestoke-section .wings-icon {
+  .cinestoke-section .wings-icon,
+  .cinestoke-section .moments-text {
     will-change: filter;
     transition: filter 0.3s ease;
   }
 
   .cinestoke-section .cinestoke-text:hover,
   .cinestoke-section .concept-text:hover,
-  .cinestoke-section .wings-icon:hover {
+  .cinestoke-section .wings-icon:hover,
+  .cinestoke-section .moments-text:hover {
     filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7))
             drop-shadow(0 0 18px rgba(255, 255, 255, 0.35));
   }
@@ -206,7 +209,7 @@ video {
 }
 /* Styling for 'Create Moments, Capture Feelings' text */
 .cinestoke-section .moments-text {
-  font-size: 25px;
+  font-size: 30px;
   text-align: center;
   color: white;
   margin: 0;
@@ -529,7 +532,7 @@ video {
     font-size: .9rem; /* Adjust text size for smaller screens */
   }
   .cinestoke-section .moments-text {
-    font-size: .8rem; /* Adjust text size for smaller screens */
+    font-size: .9rem;
   }
 
   .cinestoke-section .vertical-line,
@@ -936,6 +939,24 @@ video {
   margin-bottom: 1rem;
   font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
   flex-shrink: 0;
+}
+
+.slide-color-title-link {
+  transition: text-shadow 0.2s ease;
+}
+.slide-color-title-link:hover {
+  text-shadow: 0 0 18px rgba(255,255,255,0.8);
+}
+
+.shop-grade-slider .slide-color .case-study-title {
+  font-size: 32px;
+  letter-spacing: 3px;
+  margin-bottom: 20px;
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  text-align: left;
+  justify-content: flex-start;
+  width: 100%;
+  align-self: flex-start;
 }
 
 .slide-color-container {
@@ -1668,4 +1689,140 @@ video {
     margin-top: 0;
     padding-top: 1.25rem;
   }
+}
+
+/* Shop tab hover — desktop only, GPU-composited */
+@media (hover: hover) {
+  .shop-tab:hover {
+    opacity: 1 !important;
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7))
+            drop-shadow(0 0 18px rgba(255, 255, 255, 0.35));
+  }
+}
+
+/* Shop nav icons */
+@media (hover: hover) {
+  .shop-nav-icon:hover {
+    color: #fff !important;
+  }
+}
+
+/* Shop home button */
+.shop-home-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #fff;
+  cursor: pointer;
+  font-family: 'Bebas Neue', Impact, sans-serif;
+  font-size: 15px;
+  letter-spacing: 3px;
+  padding: 10px 22px;
+  transform: translateZ(0);
+  transition: border-color 0.25s ease, filter 0.25s ease;
+}
+
+@media (hover: hover) {
+  .shop-home-btn:hover {
+    border-color: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.45));
+  }
+}
+
+/* MacBook display mockup */
+.macbook-display {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  transition: transform 0.3s ease;
+}
+
+.macbook-base {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.macbook-screen-mask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  mask-size: contain;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.macbook-screen-content {
+  width: 100%;
+  height: 100%;
+  background-size: 66% 54%;
+  background-position: 49.5% 30%;
+  background-repeat: no-repeat;
+  transform: perspective(400px) rotateX(4deg);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  image-rendering: -webkit-optimize-contrast;
+  filter: contrast(1.05) brightness(1.02);
+  -webkit-filter: contrast(1.05) brightness(1.02);
+}
+
+/* iPhone display mockup */
+.iphone-wrapper {
+  width: 100%;
+  padding-bottom: 72.5%;
+  position: relative;
+}
+
+.iphone-wrapper-inner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iphone-display {
+  position: relative;
+  display: block;
+  width: auto;
+  height: 80%;
+  transition: transform 0.3s ease;
+  transform-origin: center center;
+  will-change: transform;
+}
+
+.iphone-frame {
+  position: relative;
+  width: auto;
+  height: 100%;
+  display: block;
+  margin: 0 auto;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.iphone-screen-content {
+  position: absolute;
+  top: 3.5%;
+  left: 5.5%;
+  width: 89%;
+  height: 93%;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 8%;
+  overflow: hidden;
+  z-index: 1;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }

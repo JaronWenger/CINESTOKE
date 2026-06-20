@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ReactComponent as EditIcon } from '../assets/Edit.svg';
 import { ReactComponent as DroneIcon } from '../assets/Drone.svg';
 import { ReactComponent as FilmIcon } from '../assets/Film.svg';
@@ -6,6 +7,7 @@ import { ReactComponent as ShutterIcon } from '../assets/Shutter.svg';
 import { ReactComponent as WingsIcon } from '../assets/Wings.svg';
 
 const Bars = ({ onOpenReel, onScrollToStudies }) => {
+  const navigate = useNavigate();
   return (
     <div className="cinestoke-section">
       {/* First Layer */}
@@ -70,7 +72,7 @@ const Bars = ({ onOpenReel, onScrollToStudies }) => {
                 <div className="vertical-line2 remove" />
 
         <div className='twotext'>
-        <p className="moments-text">Create Moments, <br />Capture Feelings</p>
+        <p className="moments-text" onClick={() => navigate('/shop')} style={{ cursor: 'pointer' }}>Shop</p>
         </div>
                    {/* Vertical Line */}
                    <div className="vertical-line2black remove" />

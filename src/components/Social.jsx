@@ -86,7 +86,7 @@ const Clients = () => {
         {/* Vertical Line */}
         <div className="lineb" />
       </div>
-      <ContactV2 isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} />
+      <ContactV2 isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} subtitle="Ready to create something? Let's work together." />
     </div>
   );
 };

@@ -12,6 +12,7 @@ import FPV from '../assets/cinestoke-FPV.webp';
 import weddings from '../assets/cinestoke-weddings.webp'; //
 import portraits from '../assets/cinestoke-portraits.webp'; //
 import nature from '../assets/cinestoke-nature.webp';
+import surf from '../assets/Surf.webp';
 
 import boxing from '../assets/cinestoke-boxing.webp'; //
 import smallbusiness from '../assets/cinestoke-small-business.webp'; //
@@ -27,8 +28,8 @@ import mtnbike from '../assets/cinestoke-mtn-bike.webp';
 
 const IMAGES = [
   { src: mtnbike, alt: "Mountain Bike Cinematic Production", label: "Mtn Biking", youtubeId: '9aTVsDySZAg' },
+  { src: surf, alt: "Surf Cinematic Production", label: "Surf", youtubeId: 'mtsroKGlRy0' },
   { src: kayak, alt: "Kayak Cinematic Production", label: "Kayaking", youtubeId: 'sEhpFnuSe5o' },
-  { src: redwoods, alt: "Redwoods Cinematic Production", label: "Nature" },
   { src: rollers, alt: "Rollers Cinematic Production", label: "Rollers" },
   { src: drone, alt: "Drone Cinematic Production", label: "Drone" },
   { src: FPV, alt: "FPV Cinematic Production", label: "FPV" },

@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useLayoutEffect, useCallback, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { flushSync } from 'react-dom';
 import { getAllSlidesFlattened, getOrderedClients, getAdjacentClientKey } from '../config/caseStudyConfig';
+import SlideColor from './SlideColor';
 
 /**
  * CaseStudy - Dynamic Circular Carousel
@@ -12,7 +13,7 @@ import { getAllSlidesFlattened, getOrderedClients, getAdjacentClientKey } from '
  *
  * Transitions between brands use fade animation which hides the reordering.
  */
-const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeComplete, isMobile, initialClient = 'SWA' }, ref) => {
+const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeComplete, isMobile, initialClient = 'SWA', onColorTitleClick }, ref) => {
   const scrollContainerRef = useRef(null);
   const [currentGlobalIndex, setCurrentGlobalIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
@@ -883,6 +884,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
                 isMobile={isMobile}
                 videosCanLoad={videosCanLoad}
                 isActiveSlide={slideData.isFocused && slideData.isFirstSlideOfClient}
+                {...(SlideComponent === SlideColor && onColorTitleClick ? { onTitleClick: onColorTitleClick } : {})}
               />
             </div>
           );
