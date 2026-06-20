@@ -16,8 +16,9 @@
 }
 
 body {
-  background-color: black; /* Set the background color of the body to black */
-  color: white; /* Optional: set the txt color to white to contrast with the black background */
+  background-color: black;
+  color: white;
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 .main {
@@ -103,6 +104,44 @@ video {
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: -1;
+  transition: background 0.5s ease;
+}
+
+.main-video-bottom-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background-color: #000;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,0,0,0.05) 20%,
+    rgba(0,0,0,0.18) 40%,
+    rgba(0,0,0,0.42) 60%,
+    rgba(0,0,0,0.73) 80%,
+    black 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,0,0,0.05) 20%,
+    rgba(0,0,0,0.18) 40%,
+    rgba(0,0,0,0.42) 60%,
+    rgba(0,0,0,0.73) 80%,
+    black 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+  transition: background-color 0.5s ease;
+}
+
+@media (max-width: 768px) {
+  .main-video-bottom-fade {
+    bottom: auto;
+    top: calc(67vh - 60px);
+  }
 }
 
 .background-image {
@@ -236,12 +275,12 @@ video {
 }
 .cinestoke-section .vertical-lineblack {
   width: 2px;
-  background-color: black;
+  background-color: transparent;
   height: 100px; /* Adjust height as needed */
 }
 .cinestoke-section .vertical-line2black {
   width: 2px;
-  background-color: black;
+  background-color: transparent;
   height: 120px; /* Adjust height as needed */
 }
 
@@ -264,7 +303,7 @@ video {
 }
 .cinestoke-section .lineb {
   width: 2px;
-  background-color: black;
+  background-color: transparent;
   height: 100px; /* Adjust height as needed */
 }
 
@@ -355,7 +394,7 @@ video {
 
 .social-section .vertical-lineblack {
   width: 2px;
-  background-color: black;
+  background-color: transparent;
   height: 70px;
 }
 
@@ -368,7 +407,7 @@ video {
 
 .social-section .lineb {
   width: 2px;
-  background-color: black;
+  background-color: transparent;
   height: 60px;
 }
 
@@ -584,6 +623,9 @@ video {
     width: 2px;
     background-color: black;
     height: 60px; /* Adjust height as needed */
+  }
+  .social-section .lineb {
+    background-color: transparent;
   }
 
 }
@@ -1825,4 +1867,201 @@ video {
   z-index: 1;
   backface-visibility: hidden;
   transform: translateZ(0);
+}
+
+/* Covers the gap to the left of the 80% carousel container */
+.clients-edge-cover {
+  background-color: #000;
+  transition: background-color 0.5s ease;
+}
+/* Client carousel edge fades */
+.clients-fade-left {
+  background-color: #000;
+  -webkit-mask-image: linear-gradient(to right, black, transparent);
+  mask-image: linear-gradient(to right, black, transparent);
+  transition: background-color 0.5s ease;
+}
+.clients-fade-right {
+  background-color: #000;
+  -webkit-mask-image: linear-gradient(to left, black, transparent);
+  mask-image: linear-gradient(to left, black, transparent);
+  transition: background-color 0.5s ease;
+}
+
+/* L I G H T   M O D E — must be last to beat all media queries /////*/
+body.light-mode {
+  background-color: #CDD6D5 !important;
+  color: #111 !important;
+}
+body.light-mode .overlay {
+  background: rgba(205, 214, 213, 0.82) !important;
+}
+body.light-mode .cinestoke {
+  color: #111 !important;
+  text-shadow: none !important;
+}
+body.light-mode .cinestoke h1 {
+  color: #111 !important;
+}
+body.light-mode .cinestoke-section .mui-box1 {
+  border-top-color: #111 !important;
+  border-bottom-color: #111 !important;
+}
+body.light-mode .cinestoke-section .mui-box2 {
+  border-bottom-color: #111 !important;
+}
+body.light-mode .cinestoke-section .vertical-line,
+body.light-mode .cinestoke-section .vertical-line2,
+body.light-mode .cinestoke-section .line,
+body.light-mode .social-section .vertical-line,
+body.light-mode .social-section .line {
+  background-color: #111 !important;
+}
+body.light-mode .cinestoke-section .cinestoke-text,
+body.light-mode .cinestoke-section .concept-text,
+body.light-mode .cinestoke-section .moments-text {
+  color: #111 !important;
+}
+/* SVG icons in bars + clients — invert white to black */
+body.light-mode .cinestoke-section svg {
+  filter: invert(1) !important;
+}
+/* Social section: undo invert, use color instead */
+body.light-mode .social-section svg {
+  filter: none !important;
+  color: #111 !important;
+}
+/* Pics slide labels */
+body.light-mode .carousel-container .swiper-slide p {
+  color: #111 !important;
+}
+/* Case study text */
+body.light-mode .case-study-title {
+  color: #111 !important;
+}
+body.light-mode .case-study-description {
+  color: #111 !important;
+}
+body.light-mode .case-study-link {
+  color: #111 !important;
+}
+/* Hover glows — flip white glow to dark in light mode */
+body.light-mode .cinestoke h1:hover {
+  filter: drop-shadow(0 0 6px rgba(0,0,0,0.5))
+          drop-shadow(0 0 18px rgba(0,0,0,0.25)) !important;
+}
+body.light-mode .cinestoke-section .cinestoke-text:hover,
+body.light-mode .cinestoke-section .concept-text:hover,
+body.light-mode .cinestoke-section .moments-text:hover {
+  filter: drop-shadow(0 0 6px rgba(0,0,0,0.5))
+          drop-shadow(0 0 18px rgba(0,0,0,0.25)) !important;
+}
+body.light-mode .cinestoke-section .wings-icon:hover {
+  filter: invert(1) drop-shadow(0 0 6px rgba(0,0,0,0.5))
+          drop-shadow(0 0 18px rgba(0,0,0,0.25)) !important;
+}
+body.light-mode .slide-color-title-link:hover {
+  text-shadow: 0 0 18px rgba(0,0,0,0.6) !important;
+}
+body.light-mode .shop-tab:hover {
+  filter: drop-shadow(0 0 6px rgba(0,0,0,0.4))
+          drop-shadow(0 0 18px rgba(0,0,0,0.2)) !important;
+}
+body.light-mode .shop-home-btn:hover {
+  border-color: rgba(0,0,0,0.6) !important;
+  filter: drop-shadow(0 0 6px rgba(0,0,0,0.3)) !important;
+}
+/* BTS captions */
+body.light-mode .slide-bts-caption {
+  color: #111 !important;
+}
+/* Nav dots */
+body.light-mode .case-study-dot {
+  background-color: #111 !important;
+}
+body.light-mode .case-study-dot.active {
+  background-color: #111 !important;
+}
+
+body.light-mode .clients-edge-cover {
+  background-color: #CDD6D5 !important;
+}
+body.light-mode .main-video-bottom-fade {
+  background-color: #CDD6D5 !important;
+}
+/* Client carousel edge fades */
+body.light-mode .clients-fade-left {
+  background-color: #CDD6D5 !important;
+}
+body.light-mode .clients-fade-right {
+  background-color: #CDD6D5 !important;
+}
+/* Shop page base transitions */
+.shop-page {
+  transition: background-color 0.5s ease;
+}
+.shop-page * {
+  transition: color 0.5s ease, border-color 0.5s ease, background-color 0.5s ease;
+}
+/* Shop page */
+body.light-mode .shop-page {
+  background-color: #CDD6D5 !important;
+}
+body.light-mode .shop-page * {
+  color: #111 !important;
+  text-shadow: none !important;
+  border-color: rgba(17,17,17,0.35) !important;
+  outline-color: rgba(17,17,17,0.35) !important;
+}
+body.light-mode .shop-tab-divider {
+  background-color: rgba(17,17,17,0.35) !important;
+}
+body.light-mode .shop-add-to-cart {
+  background: #111 !important;
+  color: #fff !important;
+}
+body.light-mode .shop-get-in-touch {
+  background: #111 !important;
+  color: #fff !important;
+}
+body.light-mode .shop-write-review {
+  background-color: #111 !important;
+  color: #fff !important;
+}
+body.light-mode .shop-callout-bar {
+  background-color: #111 !important;
+}
+/* Contact modal stays dark — after shop-page * so higher cascade order wins */
+body.light-mode .contact-modal-overlay {
+  background-color: rgba(0,0,0,0.7) !important;
+}
+body.light-mode .contact-modal-content {
+  background-color: #000 !important;
+  border-color: #fff !important;
+}
+body.light-mode .contact-modal-content * {
+  color: #fff !important;
+  text-shadow: none !important;
+  border-color: #444 !important;
+}
+body.light-mode .contact-modal-content input,
+body.light-mode .contact-modal-content textarea {
+  background-color: #1a1a1a !important;
+  border-color: #444 !important;
+}
+body.light-mode .contact-modal-content .submit-btn {
+  background: gray !important;
+}
+body.light-mode .contact-modal-content .status-message {
+  color: #4ade80 !important;
+}
+/* Color grade before/after slider */
+body.light-mode .slide-color-line {
+  background-color: #111 !important;
+}
+body.light-mode .slide-color-handle-line {
+  background-color: #111 !important;
+}
+body.light-mode .slide-color-handle-circle {
+  background-color: #111 !important;
 }

@@ -6,7 +6,7 @@ import { ReactComponent as FilmIcon } from '../assets/Film.svg';
 import { ReactComponent as ShutterIcon } from '../assets/Shutter.svg';
 import { ReactComponent as WingsIcon } from '../assets/Wings.svg';
 
-const Bars = ({ onOpenReel, onScrollToStudies }) => {
+const Bars = ({ onOpenReel, onScrollToStudies, onToggleLightMode }) => {
   const navigate = useNavigate();
   return (
     <div className="cinestoke-section">
@@ -66,7 +66,7 @@ const Bars = ({ onOpenReel, onScrollToStudies }) => {
                 {/* Vertical Line */}
                 <div className="vertical-line2 remove" />
 
-        <WingsIcon width="400" height="100" className="wings-icon" onClick={onOpenReel} style={{ cursor: 'pointer' }} />
+        <WingsIcon width="400" height="100" className="wings-icon" onClick={onToggleLightMode} style={{ cursor: 'pointer' }} />
 
                 {/* Vertical Line */}
                 <div className="vertical-line2 remove" />

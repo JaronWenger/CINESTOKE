@@ -774,46 +774,13 @@ const Clients = forwardRef(({ onClientChange, onClientReselect, initialClient = 
         </div>
 
         {/* Left black overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            left: '-40px',
-            top: '2px',
-            bottom: '2px',
-            width: '40px',
-            backgroundColor: '#000000',
-            pointerEvents: 'none',
-            zIndex: 1
-          }}
-        />
+        <div className="clients-edge-cover" style={{ position: 'absolute', left: '-40px', top: '2px', bottom: '2px', width: '40px', pointerEvents: 'none', zIndex: 1 }} />
 
         {/* Left fade overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: '2px',
-            bottom: '2px',
-            width: '60px',
-            background: 'linear-gradient(to right, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0))',
-            pointerEvents: 'none',
-            zIndex: 1
-          }}
-        />
+        <div className="clients-fade-left" style={{ position: 'absolute', left: 0, top: '2px', bottom: '2px', width: '60px', pointerEvents: 'none', zIndex: 1 }} />
 
         {/* Right fade overlay */}
-        <div
-          style={{
-            position: 'absolute',
-            right: 0,
-            top: '2px',
-            bottom: '2px',
-            width: '60px',
-            background: 'linear-gradient(to left, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0))',
-            pointerEvents: 'none',
-            zIndex: 1
-          }}
-        />
+        <div className="clients-fade-right" style={{ position: 'absolute', right: 0, top: '2px', bottom: '2px', width: '60px', pointerEvents: 'none', zIndex: 1 }} />
       </div>
 
       <style>{`

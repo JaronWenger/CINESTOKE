@@ -67,6 +67,7 @@ const ReviewsSection = ({ currentProductId, onProductClick }) => {
         <h3 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '40px', letterSpacing: '3px', color: '#fff', margin: 0 }}>Reviews</h3>
         <a
           href={`mailto:jarongwenger@gmail.com?subject=Review&body=Product: \nMy review:`}
+          className="shop-write-review"
           style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '14px', letterSpacing: '3px', color: '#000', backgroundColor: '#fff', padding: '12px 24px', textDecoration: 'none', transition: 'opacity 0.2s ease', whiteSpace: 'nowrap', marginTop: '6px' }}
           onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
           onMouseLeave={e => e.currentTarget.style.opacity = '1'}
@@ -102,7 +103,7 @@ const ReviewsSection = ({ currentProductId, onProductClick }) => {
       ))}
 
       {sorted.length > 5 && !showAll && (
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '24px', textAlign: 'center' }}>
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '24px', paddingBottom: '24px', textAlign: 'center' }}>
           <button
             onClick={() => setShowAll(true)}
             style={{ background: 'none', border: '1px solid rgba(255,255,255,0.3)', color: '#fff', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '14px', letterSpacing: '3px', padding: '12px 28px', transition: 'border-color 0.2s ease' }}
@@ -233,7 +234,7 @@ const badgeStyle = {
   borderRadius: '2px',
 };
 
-const ShopBars = () => {
+const ShopBars = ({ onToggleLightMode }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [selected, setSelected] = useState('assets');
@@ -275,7 +276,7 @@ const ShopBars = () => {
     : [];
 
   return (
-    <div style={{ backgroundColor: '#000', minHeight: '100vh', color: '#fff' }}>
+    <div className="shop-page" style={{ backgroundColor: '#000', minHeight: '100vh', color: '#fff' }}>
 
       {/* Search overlay */}
       {isSearchOpen && (
@@ -458,21 +459,25 @@ const ShopBars = () => {
                 </svg>
               </button>
             ) : (
-              <button onClick={() => navigate('/')} className="shop-home-btn">← HOME</button>
+              <button onClick={() => navigate('/')} className="shop-home-btn">HOME</button>
             )}
           </div>
 
           {/* Center: CINESTOKE */}
-          <h1 style={{
-            fontFamily: "'Bebas Neue', Impact, sans-serif",
-            fontSize: isMobile ? '26px' : '60px',
-            letterSpacing: isMobile ? '3px' : '5px',
-            color: '#fff',
-            margin: 0,
-            textShadow: '0 0 20px rgba(255,255,255,0.15)',
-            flexShrink: 0,
-            whiteSpace: 'nowrap',
-          }}>
+          <h1
+            onClick={onToggleLightMode}
+            style={{
+              fontFamily: "'Bebas Neue', Impact, sans-serif",
+              fontSize: isMobile ? '26px' : '60px',
+              letterSpacing: isMobile ? '3px' : '5px',
+              color: '#fff',
+              margin: 0,
+              textShadow: '0 0 20px rgba(255,255,255,0.15)',
+              flexShrink: 0,
+              whiteSpace: 'nowrap',
+              cursor: 'pointer',
+            }}
+          >
             {isMobile ? 'CINESTOKE' : 'C I N E S T O K E'}
           </h1>
 
@@ -535,7 +540,7 @@ const ShopBars = () => {
           {TABS.map((tab, i) => (
             <React.Fragment key={tab.id}>
               {i > 0 && (
-                <div style={{ width: '2px', height: '100px', backgroundColor: 'white', flexShrink: 0 }} />
+                <div className="shop-tab-divider" style={{ width: '2px', height: '100px', backgroundColor: 'white', flexShrink: 0 }} />
               )}
               <button
                 onClick={() => { setSelected(tab.id); setSelectedProduct(null); setSelectedGrade(null); window.scrollTo(0, 0); }}
@@ -646,6 +651,7 @@ const ShopBars = () => {
 
               {/* Add to Cart */}
               <button
+                className="shop-add-to-cart"
                 style={{
                   display: 'block', width: '100%', padding: '16px',
                   background: '#fff', color: '#000', border: 'none', cursor: 'pointer',
@@ -742,31 +748,30 @@ const ShopBars = () => {
               fontSize: '22px', letterSpacing: '4px',
               color: '#fff', margin: '0 0 24px',
             }}>More like this</p>
-            <div style={{ display: 'flex', gap: '16px' }}>
+            <div style={{ display: 'flex', gap: '12px', maxWidth: '280px' }}>
               {ASSETS.filter(a => a.id !== selectedProduct.id).map(a => (
                 <div
                   key={a.id}
                   onClick={() => { setSelectedProduct(a); window.scrollTo(0, 0); }}
-                  style={{
-                    flex: 1, padding: '20px',
-                    background: 'rgba(255,255,255,0.03)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    cursor: 'pointer', transition: 'border-color 0.2s ease',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)'}
-                  onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'}
+                  style={{ flex: 1, cursor: 'pointer' }}
                 >
-                  <div style={{ fontSize: '32px', marginBottom: '12px' }}>{a.icon}</div>
+                  <div style={{
+                    aspectRatio: '3/4',
+                    background: 'rgba(255,255,255,0.06)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginBottom: '8px',
+                    fontSize: '32px',
+                  }}>{a.icon}</div>
                   <p style={{
-                    fontFamily: "'Bebas Neue', Impact, sans-serif",
-                    fontSize: '18px', letterSpacing: '2px',
-                    color: '#fff', margin: '0 0 6px',
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                    fontSize: '12px', letterSpacing: 0, fontWeight: 500,
+                    color: '#fff', margin: '0 0 2px', textAlign: 'center',
                   }}>{a.title}</p>
                   <p style={{
                     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-                    fontSize: '13px', letterSpacing: 0,
-                    color: 'rgba(255,255,255,0.45)', margin: 0,
-                  }}>{a.tagline}</p>
+                    fontSize: '12px', letterSpacing: 0,
+                    color: 'rgba(255,255,255,0.6)', margin: 0, textAlign: 'center',
+                  }}>{a.price}</p>
                 </div>
               ))}
             </div>
@@ -842,6 +847,7 @@ const ShopBars = () => {
               <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '22px', letterSpacing: '1px', color: '#fff', margin: '0 0 28px' }}>{selectedGrade.price}</p>
 
               <button
+                className="shop-add-to-cart"
                 style={{ display: 'block', width: '100%', padding: '16px', background: '#fff', color: '#000', border: 'none', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', marginBottom: '12px', transition: 'opacity 0.2s ease' }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
@@ -1024,7 +1030,7 @@ const ShopBars = () => {
               alignItems: 'center',
               gap: '20px',
             }}>
-              <div style={{ width: '5px', minHeight: '52px', backgroundColor: '#fff', flexShrink: 0 }} />
+              <div className="shop-callout-bar" style={{ width: '5px', minHeight: '52px', backgroundColor: '#fff', flexShrink: 0 }} />
               <p style={{
                 fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                 fontSize: '16px',
@@ -1133,6 +1139,7 @@ const ShopBars = () => {
             }}>REACH OUT AND WE'LL TALK THROUGH YOUR PROJECT</p>
             <button
               onClick={() => setIsContactOpen(true)}
+              className="shop-get-in-touch"
               style={{
                 fontFamily: "'Bebas Neue', Impact, sans-serif",
                 fontSize: '18px',

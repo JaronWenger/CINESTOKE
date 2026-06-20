@@ -13,7 +13,7 @@ import { useVideoErrorHandling } from '../hooks/useVideoErrorHandling';
 import { getClientByOrder } from '../config/caseStudyConfig';
 
 
-const Main = () => {
+const Main = ({ onToggleLightMode }) => {
   const { clientId } = useParams();
   const navigate = useNavigate();
 
@@ -41,6 +41,7 @@ const Main = () => {
   const [isMobile, setIsMobile] = useState(getInitialMobile());
   const [videoWatched, setVideoWatched] = useState(false);
   const [isReelOpen, setIsReelOpen] = useState(false);
+
   const videoRef = useRef(null);
   const [activeClient, setActiveClient] = useState(initialClient);
   const [videoReady, setVideoReady] = useState(false); // Track if video is ready to play
@@ -262,8 +263,9 @@ const Main = () => {
       <div className='cinestoke' onClick={() => setIsReelOpen(true)} style={{ cursor: 'pointer' }}>
         <h1>C I N E S T O K E</h1>
       </div>
+      <div className="main-video-bottom-fade" />
 
-      <Bars onOpenReel={() => setIsReelOpen(true)} onScrollToStudies={() => clientsRef.current?.scrollSectionToTop()} />
+      <Bars onOpenReel={() => setIsReelOpen(true)} onScrollToStudies={() => clientsRef.current?.scrollSectionToTop()} onToggleLightMode={onToggleLightMode} />
       <Pics />
       <Clients ref={clientsRef} initialClient={initialClient} onClientChange={handleClientWillChange} onClientReselect={handleClientReselect} />
       {/* Only render CaseStudy after main video has loaded to avoid competing for bandwidth */}
