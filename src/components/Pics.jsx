@@ -3,24 +3,16 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 //////PHOTOS ARE 6.6 X 16 aspect ration, 2367 X 5738 resolution, and around 100KBs.////////
 import moto from '../assets/cinestoke-moto.webp';
 import dirtbike from '../assets/cinestoke-dirt-bike.webp';
-import fishing from '../assets/cinestoke-fishing.webp'; //
-import redwoods from '../assets/cinestoke-redwoods.webp';
 import automotive from '../assets/cinestoke-auto.webp';
 
 import drone from '../assets/cinestoke-drone-shot.webp';
 import FPV from '../assets/cinestoke-FPV.webp';
-import weddings from '../assets/cinestoke-weddings.webp'; //
-import portraits from '../assets/cinestoke-portraits.webp'; //
 import nature from '../assets/cinestoke-nature.webp';
 import surf from '../assets/Surf.webp';
 
-import boxing from '../assets/cinestoke-boxing.webp'; //
-import smallbusiness from '../assets/cinestoke-small-business.webp'; //
-import sports from '../assets/cinestoke-sports.webp'; //
-import realestate from '../assets/cinestoke-real-estate.webp'; //
+import realestate from '../assets/cinestoke-real-estate.webp';
 import snowboard from '../assets/cinestoke-snowboard.webp';
 
-import landscape from '../assets/cinestoke-landscape.webp'; //
 import jetski from '../assets/cinestoke-jet-ski.webp';
 import rollers from '../assets/cinestoke-rollers.webp';
 import kayak from '../assets/cinestoke-kayak.webp';

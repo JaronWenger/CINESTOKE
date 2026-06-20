@@ -385,7 +385,6 @@ const Links = () => {
               fontSize: '1.1rem',
               fontWeight: '500',
               cursor: 'default',
-              transition: 'all 0.3s ease',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',

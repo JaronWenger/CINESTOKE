@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 // Import the SVG as a React component
-import { ReactComponent as SSBC } from '../assets/SSBC.svg';
 import ContactV2 from './ContactV2';
 
 const Clients = () => {

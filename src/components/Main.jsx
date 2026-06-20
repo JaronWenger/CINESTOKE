@@ -39,12 +39,10 @@ const Main = ({ onToggleLightMode }) => {
   };
 
   const [isMobile, setIsMobile] = useState(getInitialMobile());
-  const [videoWatched, setVideoWatched] = useState(false);
   const [isReelOpen, setIsReelOpen] = useState(false);
 
   const videoRef = useRef(null);
   const [activeClient, setActiveClient] = useState(initialClient);
-  const [videoReady, setVideoReady] = useState(false); // Track if video is ready to play
   const [mainVideoLoaded, setMainVideoLoaded] = useState(false); // Track if main video has loaded
   const [isCaseStudyFading, setIsCaseStudyFading] = useState(false); // Track fade state for CaseStudy
   const clientsRef = useRef(null); // Ref to Clients component for brand shifting
@@ -157,24 +155,17 @@ const Main = ({ onToggleLightMode }) => {
     let isPlaying = false;
 
     const handleCanPlay = () => {
-      // Video has enough data to start playing
-      setVideoReady(true);
-      setMainVideoLoaded(true); // Mark main video as loaded - case studies can now load
-      // Try to play immediately on mobile
+      setMainVideoLoaded(true);
       if (isMobile) {
         const playPromise = video.play();
         if (playPromise !== undefined) {
-          playPromise.catch(() => {
-            // Auto-play was prevented, but video is ready
-          });
+          playPromise.catch(() => {});
         }
       }
     };
 
     const handleLoadedData = () => {
-      // Video data is loaded, try to play
-      setVideoReady(true);
-      setMainVideoLoaded(true); // Mark main video as loaded - case studies can now load
+      setMainVideoLoaded(true);
       if (isMobile) {
         const playPromise = video.play();
         if (playPromise !== undefined) {
@@ -225,9 +216,8 @@ const Main = ({ onToggleLightMode }) => {
     video.addEventListener('pause', handlePause);
     video.addEventListener('ended', handleEnded);
 
-    // Check if video is already ready
     if (video.readyState >= 3) {
-      setVideoReady(true);
+      setMainVideoLoaded(true);
     }
 
     return () => {

@@ -196,44 +196,6 @@ const iconBtnStyle = {
   transition: 'color 0.2s ease',
 };
 
-const cardStyle = {
-  background: 'rgba(255,255,255,0.04)',
-  border: '1px solid rgba(255,255,255,0.15)',
-  borderRadius: '4px',
-  padding: '32px 28px',
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '10px',
-};
-
-const cardTitleStyle = {
-  fontFamily: "'Bebas Neue', Impact, sans-serif",
-  fontSize: '26px',
-  color: '#fff',
-  letterSpacing: '2px',
-  margin: 0,
-};
-
-const cardSubStyle = {
-  fontSize: '13px',
-  color: 'rgba(255,255,255,0.5)',
-  fontFamily: 'Impact, sans-serif',
-  letterSpacing: '1px',
-  margin: 0,
-};
-
-const badgeStyle = {
-  marginTop: '16px',
-  alignSelf: 'flex-start',
-  fontSize: '11px',
-  color: 'rgba(255,255,255,0.35)',
-  fontFamily: 'Impact, sans-serif',
-  letterSpacing: '2px',
-  border: '1px solid rgba(255,255,255,0.15)',
-  padding: '4px 10px',
-  borderRadius: '2px',
-};
-
 const ShopBars = ({ onToggleLightMode }) => {
   const navigate = useNavigate();
   const location = useLocation();

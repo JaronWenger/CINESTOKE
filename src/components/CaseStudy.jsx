@@ -241,17 +241,13 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
         }, 50);
       }
     }, 150);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [circularSlides, activeClient, onClientChange, isFading, snapToNearestSlide, silentReorderAroundBrand]);
 
 
   // Track current client for nav dots
   const currentNavClientRef = useRef(null);
   const dotsTransitioningRef = useRef(false);
-
-  // Helper to find slide index in circular array by client and slide index
-  const findSlideInCircular = useCallback((clientKey, slideIdx) => {
-    return circularSlides.findIndex(s => s.clientKey === clientKey && s.slideIndex === slideIdx);
-  }, [circularSlides]);
 
   // Update nav dots to show position within current client
   const updateNavDots = useCallback((slideIndex, totalClientSlides, clientKey) => {
@@ -586,6 +582,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     // Initialize with current client's dots
     const slideInfo = circularSlides[currentGlobalIndex];
     updateNavDots(slideInfo?.slideIndex || 0, slideInfo?.totalClientSlides || 1, slideInfo?.clientKey);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Mouse drag handlers for desktop
@@ -716,6 +713,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
       window.removeEventListener('mousemove', handleGlobalMouseMove);
       window.removeEventListener('mouseup', handleGlobalMouseUp);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDragging]);
 
   // Height synchronization - find and measure SlideOne for consistent slide heights
