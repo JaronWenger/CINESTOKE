@@ -23,6 +23,7 @@ function App() {
         <Route path="/offers" element={<Offers />} />
         <Route path="/links" element={<ErrorBoundary><Links /></ErrorBoundary>} />
         <Route path="/shop" element={<Shop onToggleLightMode={handleToggleLightMode} />} />
+        <Route path="/shop/:productId" element={<Shop onToggleLightMode={handleToggleLightMode} />} />
         <Route path="/:clientId" element={<Main onToggleLightMode={handleToggleLightMode} />} />
       </Routes>
     </Router>

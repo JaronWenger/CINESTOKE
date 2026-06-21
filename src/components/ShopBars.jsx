@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import SlideColor from './SlideColor';
 import ContactV2 from './ContactV2';
 import IPhoneDisplay from './IPhoneDisplay';
@@ -36,8 +36,8 @@ const ALL_REVIEWS = [
   { name: 'Sophia L.',  rating: 5, date: 'Jun 5, 2026',  text: 'Light leaks are gorgeous. Dropped them onto a snowboard edit and it completely changed the vibe. Highly recommend.',                                         productId: 'overlays',         productTitle: 'Cinematic Overlays' },
   { name: 'Jordan K.',  rating: 5, date: 'Jun 18, 2026', text: 'Lower thirds match the Cinestoke aesthetic perfectly. Clean, minimal, and easy to customize. Saved me hours.',                                               productId: 'graphics',         productTitle: 'Motion Graphics Pack' },
   { name: 'Alex P.',    rating: 5, date: 'Jun 12, 2026', text: "Finally motion graphics that don't look like they came from a template site. These feel intentional and premium.",                                            productId: 'graphics',         productTitle: 'Motion Graphics Pack' },
-  { name: 'Ryan S.',    rating: 5, date: 'Jun 16, 2026', text: 'These are the real deal. One click and my footage went from flat to cinematic. The Powergrades especially — I use them on every project now.',               productId: 'luts-powergrades', productTitle: 'Ultimate LUTs + Powergrade Pack' },
-  { name: 'Mia T.',     rating: 5, date: 'Jun 8, 2026',  text: "I've tried a lot of LUT packs and most feel generic. These actually have a personality to them. Highly recommend for anyone shooting on Sony.",               productId: 'luts-powergrades', productTitle: 'Ultimate LUTs + Powergrade Pack' },
+  { name: 'Ryan S.',    rating: 5, date: 'Jun 16, 2026', text: 'These are the real deal. One click and my footage went from flat to cinematic. The Powergrades especially — I use them on every project now.',               productId: 'luts-powergrades', productTitle: 'Cinestoke LUTs + Powergrades' },
+  { name: 'Mia T.',     rating: 5, date: 'Jun 8, 2026',  text: "I've tried a lot of LUT packs and most feel generic. These actually have a personality to them. Highly recommend for anyone shooting on Sony.",               productId: 'luts-powergrades', productTitle: 'Cinestoke LUTs + Powergrades' },
 ];
 
 const Stars = ({ count = 5 }) => (
@@ -119,8 +119,10 @@ const ReviewsSection = ({ currentProductId, onProductClick }) => {
 const ASSETS = [
   {
     id: 'sound-fx',
-    title: 'Sound FX Pack',
+    slug: 'sfxv2',
+    title: 'Cinestoke SFX Vol. 2',
     price: '$25.00',
+    checkoutUrl: 'https://buy.polar.sh/polar_cl_Em1ji718nKqtFulUylD5nm6SGRKHitNLKmxyE4RaT7r',
     tagline: 'Cinematic sound effects for your edits',
     paragraphs: [
       'Everything I use to make my edits hit. 200+ cinematic sound effects pulled from real productions — whooshes, impacts, atmospheres, risers, and transitions. Every single one has been used in a real client project.',
@@ -133,7 +135,8 @@ const ASSETS = [
   },
   {
     id: 'overlays',
-    title: 'Cinematic Overlays',
+    slug: 'ovrly',
+    title: 'Cinestoke Overlays Pack',
     price: '$20.00',
     tagline: 'Film grain, light leaks & texture overlays',
     paragraphs: [
@@ -147,6 +150,7 @@ const ASSETS = [
   },
   {
     id: 'graphics',
+    slug: 'mgrfx',
     title: 'Motion Graphics Pack',
     price: '$30.00',
     tagline: 'Titles, transitions & animated graphics',
@@ -159,6 +163,21 @@ const ASSETS = [
     ],
     icon: '✦',
   },
+  {
+    id: 'sound-fx-1',
+    slug: 'sfxv1',
+    title: 'Cinestoke SFX Vol. 1',
+    price: '$15.00',
+    tagline: 'Cinematic sound effects for your edits',
+    paragraphs: [
+      'Everything I use to make my edits hit. 200+ cinematic sound effects pulled from real productions — whooshes, impacts, atmospheres, risers, and transitions. Every single one has been used in a real client project.',
+      'This pack will instantly elevate the feel of your videos. Lay these under your cuts and your edits will feel 10x more cinematic with almost no extra effort.',
+    ],
+    includes: [
+      'ZIP (340MB)',
+    ],
+    icon: '🎧',
+  },
 ];
 
 const GRADES = [
@@ -169,7 +188,8 @@ const GRADES = [
 
 const GRADE_PACK = {
   id: 'luts-powergrades',
-  title: 'Ultimate LUTs + Powergrade Pack',
+  slug: 'lutpg',
+  title: 'Cinestoke LUTs + Powergrades',
   price: '$35.00',
   icon: '🎨',
   paragraphs: [
@@ -181,7 +201,7 @@ const GRADE_PACK = {
 
 const ALL_PRODUCTS = [
   ...ASSETS,
-  { id: 'luts-powergrades', title: 'Ultimate LUTs + Powergrade Pack', icon: '🎨' },
+  { id: 'luts-powergrades', title: 'Cinestoke LUTs + Powergrades', icon: '🎨' },
 ];
 
 const iconBtnStyle = {
@@ -199,12 +219,23 @@ const iconBtnStyle = {
 const ShopBars = ({ onToggleLightMode }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selected, setSelected] = useState('assets');
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const { productId } = useParams();
+
+  const getInitialState = () => {
+    if (productId === 'tmplt') return { tab: 'template', product: null, grade: null };
+    if (productId === GRADE_PACK.slug) return { tab: 'grades', product: null, grade: GRADE_PACK };
+    const asset = ASSETS.find(a => a.slug === productId);
+    if (asset) return { tab: 'assets', product: asset, grade: null };
+    return { tab: 'assets', product: null, grade: null };
+  };
+
+  const init = getInitialState();
+  const [selected, setSelected] = useState(init.tab);
+  const [selectedProduct, setSelectedProduct] = useState(init.product);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isContactOpen, setIsContactOpen] = useState(false);
-  const [selectedGrade, setSelectedGrade] = useState(null);
+  const [selectedGrade, setSelectedGrade] = useState(init.grade);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const searchInputRef = useRef(null);
@@ -218,6 +249,25 @@ const ShopBars = ({ onToggleLightMode }) => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  useEffect(() => {
+    if (selected === 'assets' && ASSETS.length === 1 && !selectedProduct) {
+      setSelectedProduct(ASSETS[0]);
+    }
+    if (selected === 'grades' && !selectedGrade) {
+      setSelectedGrade(GRADE_PACK);
+      window.scrollTo(0, 0);
+    }
+  }, [selected, selectedProduct, selectedGrade]);
+
+  useEffect(() => {
+    let slug = null;
+    if (selectedProduct) slug = selectedProduct.slug;
+    else if (selectedGrade) slug = selectedGrade.slug;
+    else if (selected === 'template') slug = 'tmplt';
+    const url = slug ? `/shop/${slug}` : '/shop';
+    window.history.replaceState(null, '', url);
+  }, [selected, selectedProduct, selectedGrade]);
 
   useEffect(() => {
     if (location.state?.openGrades) {
@@ -382,7 +432,7 @@ const ShopBars = ({ onToggleLightMode }) => {
               { label: 'Home', action: () => { navigate('/'); setIsMobileMenuOpen(false); } },
               { label: 'Shop', action: () => { setSelectedProduct(null); setIsMobileMenuOpen(false); window.scrollTo(0, 0); } },
               { label: 'Contact', action: () => { setIsContactOpen(true); setIsMobileMenuOpen(false); } },
-              { label: 'Login', action: () => setIsMobileMenuOpen(false) },
+              { label: 'Login', action: () => { setIsMobileMenuOpen(false); window.open('https://polar.sh/purchases', '_blank'); } },
             ].map(item => (
               <button
                 key={item.label}
@@ -477,7 +527,7 @@ const ShopBars = ({ onToggleLightMode }) => {
                   onMouseEnter={e => { if (!isContactOpen) e.currentTarget.style.color = '#fff'; }}
                   onMouseLeave={e => { if (!isContactOpen) e.currentTarget.style.color = 'rgba(255,255,255,0.55)'; }}
                 >Contact</button>
-                <button className="shop-nav-icon" style={iconBtnStyle} aria-label="Login">
+                <button className="shop-nav-icon" style={iconBtnStyle} aria-label="Login" onClick={() => window.open('https://polar.sh/purchases', '_blank')}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="8" r="4" />
                     <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
@@ -491,7 +541,7 @@ const ShopBars = ({ onToggleLightMode }) => {
                 <line x1="16.5" y1="16.5" x2="22" y2="22" />
               </svg>
             </button>
-            <button className="shop-nav-icon" style={iconBtnStyle} aria-label="Cart">
+            <button className="shop-nav-icon" style={iconBtnStyle} aria-label="Cart" onClick={() => window.open('https://polar.sh/purchases', '_blank')}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                 <line x1="3" y1="6" x2="21" y2="6" />
@@ -632,6 +682,7 @@ const ShopBars = ({ onToggleLightMode }) => {
                 }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                onClick={() => selectedProduct.checkoutUrl && window.open(selectedProduct.checkoutUrl, '_blank')}
               >Add to Cart</button>
 
               {/* Buy Now */}
@@ -646,6 +697,7 @@ const ShopBars = ({ onToggleLightMode }) => {
                 }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = '#fff'}
                 onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'}
+                onClick={() => selectedProduct.checkoutUrl && window.open(selectedProduct.checkoutUrl, '_blank')}
               >Buy Now</button>
 
               {/* Wishlist */}
