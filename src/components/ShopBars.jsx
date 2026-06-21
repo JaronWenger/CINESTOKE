@@ -1062,12 +1062,12 @@ const ShopBars = ({ onToggleLightMode }) => {
                 margin: 0,
                 lineHeight: 1.75,
               }}>
-                This isn't a template download. I work 1-on-1 with you to build your site — you send me your videos, logos, and client case studies, and I handle everything else from setup to ongoing management.
+                You didn't spend years learning this craft to close clients on a drag-and-drop page. Your footage deserves a site that was built with the same intention.
               </p>
             </div>
           </div>
 
-          {/* ── 4. HOW IT WORKS ── */}
+          {/* ── 4. HOW IT WORKS + INCLUDED ── */}
           <div style={{ maxWidth: '860px', margin: '0 auto 72px', padding: '0 40px' }}>
             <p style={{
               fontFamily: 'Impact, sans-serif',
@@ -1079,10 +1079,10 @@ const ShopBars = ({ onToggleLightMode }) => {
             }}>HOW IT WORKS</p>
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px', marginBottom: '40px' }}>
               {[
-                ['01 — YOU SEND YOUR ASSETS', 'Your reels, client videos, logos, and anything else that represents your work.'],
+                ['01 — SEND YOUR ASSETS', 'Your reels, client videos, logos, and anything else that represents your work.'],
                 ['02 — I BUILD YOUR SITE', 'Customized with your brand, your clients, and your case studies — on this exact stack.'],
-                ['03 — YOUR SITE GOES LIVE', 'On your own domain, fully tested on mobile and desktop, ready to book clients.'],
-                ['04 — I MANAGE EVERYTHING', 'New videos, updated copy, hosting — just send it over and I take care of the rest.'],
+                ['03 — YOUR SITE GOES LIVE', 'On your own domain, fully tested on mobile and desktop, ready to close clients.'],
+                ['04 — I MANAGE EVERYTHING', 'New reel, new client, new copy — just send it over and it\'s handled.'],
               ].map(([step, detail]) => (
                 <div key={step} style={{
                   padding: '22px 24px',
@@ -1109,11 +1109,11 @@ const ShopBars = ({ onToggleLightMode }) => {
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px' }}>
               {[
-                ['Cinematic video carousels', 'Auto-playing, mobile-optimized'],
-                ['Case study system', 'Up to 7 clients, fully configurable'],
-                ['Color grade sliders', 'Before/after comparison built in'],
+                ['Cinematic video carousel', 'Infinite scroll, auto-playing'],
+                ['Client case study system', 'Up to 7 clients, fully configurable'],
+                ['Color grade slider', 'Before/after comparison, 60fps drag'],
                 ['YouTube reel integration', 'One-click modal, no embed lag'],
-                ['Custom domain ready', 'Connect your own URL instantly'],
+                ['Image gallery', 'Infinite scroll photo strip'],
                 ['Mobile responsive', 'Tested on iOS & Android'],
               ].map(([feature, detail]) => (
                 <div key={feature} style={{
