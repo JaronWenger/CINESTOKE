@@ -18,7 +18,8 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
   const [currentGlobalIndex, setCurrentGlobalIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isPositioned, setIsPositioned] = useState(false); // Track if initial positioning is complete
-  const [videosCanLoad, setVideosCanLoad] = useState(false); // Track if sizing is done, other videos can load
+  const [videosCanLoad, setVideosCanLoad] = useState(false); // Unlocked after active SlideOne loads + height settles
+  const [casesUnlocked, setCasesUnlocked] = useState(false); // Dots visible + drag enabled after all SlideOne videos ready
   const dragStartRef = useRef({ x: 0, scrollLeft: 0 });
   const dragDistanceRef = useRef(0);
   const isScrollingRef = useRef(false);
@@ -576,6 +577,8 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
     if (!navDotsOutside) {
       navDotsOutside = document.createElement('div');
       navDotsOutside.className = 'case-study-nav-dots case-study-nav-dots-outside';
+      navDotsOutside.style.opacity = '0';
+      navDotsOutside.style.transition = 'opacity 0.5s ease';
       parentElement.appendChild(navDotsOutside);
     }
 
@@ -587,6 +590,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
 
   // Mouse drag handlers for desktop
   const handleMouseDown = (e) => {
+    if (!casesUnlocked) return;
     const container = scrollContainerRef.current;
     if (!container) return;
 
@@ -742,7 +746,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
         carousel.style.minHeight = '0';
         carousel.style.maxHeight = `${height}px`;
       }
-      // Enable other videos regardless — even if measurement was imperfect
+      // Height is settled — unlock the rest of the case study assets
       setVideosCanLoad(true);
     };
 
@@ -769,20 +773,66 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
 
     const initialTimeout = setTimeout(syncHeights, 200);
 
-    // Absolute fallback: if SlideOne video never loads/errors after 10s, unblock videos anyway
+    // Show fallback: reveal the section after 3s even if the video is slow — text + logo are ready
+    const showFallback = setTimeout(() => setVideosCanLoad(true), 3000);
+
+    // Height fallback: measure with whatever we have after 10s
     const fallbackTimeout = setTimeout(() => {
       if (!slideOneHeightRef.current) {
-        setVideosCanLoad(true);
+        const slideOne = carousel.querySelector('.case-study-slide-wrapper[data-is-focused="true"] .slide-one');
+        if (slideOne) applyHeights(slideOne);
+        else setVideosCanLoad(true);
       }
     }, 10000);
 
     return () => {
       clearTimeout(initialTimeout);
+      clearTimeout(showFallback);
       clearTimeout(fallbackTimeout);
       if (video && onLoaded) video.removeEventListener('loadeddata', onLoaded);
       if (video && onError) video.removeEventListener('error', onError);
     };
   }, []);
+
+  // Phase 3b: fade in dots and enable scroll once casesUnlocked
+  useEffect(() => {
+    if (!casesUnlocked) return;
+    const carousel = scrollContainerRef.current;
+    if (!carousel) return;
+    const navDots = carousel.parentElement?.querySelector('.case-study-nav-dots-outside');
+    if (navDots) navDots.style.opacity = '1';
+  }, [casesUnlocked]);
+
+  // Phase 2 (dots + drag): watch for all SlideOne videos ready → unlock
+  useEffect(() => {
+    if (!videosCanLoad) return;
+    const carousel = scrollContainerRef.current;
+    if (!carousel) return;
+
+    const slideOneVideos = Array.from(carousel.querySelectorAll('.slide-one video'));
+    if (slideOneVideos.length === 0) { setCasesUnlocked(true); return; }
+
+    let loaded = 0;
+    const total = slideOneVideos.length;
+    const onReady = () => { loaded++; if (loaded >= total) setCasesUnlocked(true); };
+    const fallback = setTimeout(() => setCasesUnlocked(true), 8000);
+
+    slideOneVideos.forEach(v => {
+      if (v.readyState >= 2) { onReady(); }
+      else {
+        v.addEventListener('loadeddata', onReady, { once: true });
+        v.addEventListener('error', onReady, { once: true });
+      }
+    });
+
+    return () => {
+      clearTimeout(fallback);
+      slideOneVideos.forEach(v => {
+        v.removeEventListener('loadeddata', onReady);
+        v.removeEventListener('error', onReady);
+      });
+    };
+  }, [videosCanLoad]);
 
   // On mobile, autoPlay doesn't re-trigger when src changes on an existing element.
   // On mobile, autoPlay doesn't re-trigger when src changes on an existing element.
@@ -843,7 +893,7 @@ const CaseStudy = forwardRef(({ activeClient, onClientChange, isFading, onFadeCo
         onMouseDown={handleMouseDown}
         onMouseLeave={handleMouseLeave}
         style={{
-          opacity: (!isPositioned || isFading) ? 0 : 1,
+          opacity: (!isPositioned || isFading || !videosCanLoad) ? 0 : 1,
           transition: isPositioned ? 'opacity 0.3s ease-in-out' : 'none'
         }}
       >

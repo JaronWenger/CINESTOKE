@@ -44,6 +44,7 @@ const Main = ({ onToggleLightMode }) => {
   const videoRef = useRef(null);
   const [activeClient, setActiveClient] = useState(initialClient);
   const [mainVideoLoaded, setMainVideoLoaded] = useState(false); // Track if main video has loaded
+  const [pageReady, setPageReady] = useState(false);
   const [isCaseStudyFading, setIsCaseStudyFading] = useState(false); // Track fade state for CaseStudy
   const clientsRef = useRef(null); // Ref to Clients component for brand shifting
   const caseStudyRef = useRef(null); // Ref to CaseStudy component for scrolling to first slide
@@ -63,6 +64,22 @@ const Main = ({ onToggleLightMode }) => {
     return () => clearTimeout(fallback);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // pageReady: fires once main video is loaded AND page resources have settled
+  useEffect(() => {
+    if (!mainVideoLoaded) return;
+    if (document.readyState === 'complete') {
+      setPageReady(true);
+    } else {
+      const onLoad = () => setPageReady(true);
+      window.addEventListener('load', onLoad, { once: true });
+      const fallback = setTimeout(() => setPageReady(true), 5000);
+      return () => {
+        window.removeEventListener('load', onLoad);
+        clearTimeout(fallback);
+      };
+    }
+  }, [mainVideoLoaded]);
 
   // Add stuck video detection for main video (mobile only)
   const mainVideoSrc = isMobile ? videoBgMobile : videoBg;
@@ -261,7 +278,7 @@ const Main = ({ onToggleLightMode }) => {
       {/* Only render CaseStudy after main video has loaded to avoid competing for bandwidth */}
       {/* CaseStudy now uses unified continuous carousel - all slides in sequence */}
       {/* onClientChange syncs the logo carousel when user scrolls through slides */}
-      {mainVideoLoaded && (
+      {pageReady && (
         <CaseStudy
           ref={caseStudyRef}
           initialClient={initialClient}

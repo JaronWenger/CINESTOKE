@@ -210,19 +210,12 @@ video {
   margin: 0;
 }
 
-.cinestoke-section .cinestoke-text,
-.cinestoke-section .concept-text,
-.cinestoke-section .wings-icon,
-.cinestoke-section .moments-text {
-  transform: translateZ(0);
-}
 
 @media (hover: hover) {
   .cinestoke-section .cinestoke-text,
   .cinestoke-section .concept-text,
   .cinestoke-section .wings-icon,
   .cinestoke-section .moments-text {
-    will-change: filter;
     transition: filter 0.3s ease;
   }
 

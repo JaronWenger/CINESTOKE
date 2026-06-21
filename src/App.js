@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Main from './components/Main';
-import Offers from './components/Offers';
-import Links from './components/Links';
-import Shop from './components/Shop';
 import ErrorBoundary from './components/ErrorBoundary';
+
+const Offers = lazy(() => import('./components/Offers'));
+const Links = lazy(() => import('./components/Links'));
+const Shop = lazy(() => import('./components/Shop'));
 
 function App() {
   const [isLightMode, setIsLightMode] = useState(() => localStorage.getItem('cinestoke-light') === 'true');
@@ -20,10 +21,10 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Main onToggleLightMode={handleToggleLightMode} />} />
-        <Route path="/offers" element={<Offers />} />
-        <Route path="/links" element={<ErrorBoundary><Links /></ErrorBoundary>} />
-        <Route path="/shop" element={<Shop onToggleLightMode={handleToggleLightMode} />} />
-        <Route path="/shop/:productId" element={<Shop onToggleLightMode={handleToggleLightMode} />} />
+        <Route path="/offers" element={<Suspense fallback={null}><Offers /></Suspense>} />
+        <Route path="/links" element={<Suspense fallback={null}><ErrorBoundary><Links /></ErrorBoundary></Suspense>} />
+        <Route path="/shop" element={<Suspense fallback={null}><Shop onToggleLightMode={handleToggleLightMode} /></Suspense>} />
+        <Route path="/shop/:productId" element={<Suspense fallback={null}><Shop onToggleLightMode={handleToggleLightMode} /></Suspense>} />
         <Route path="/:clientId" element={<Main onToggleLightMode={handleToggleLightMode} />} />
       </Routes>
     </Router>
