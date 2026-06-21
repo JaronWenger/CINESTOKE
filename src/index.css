@@ -229,7 +229,7 @@ video {
 }
 /* Styling for 'Concept to Creation' text */
 .cinestoke-section .concept-text {
-  font-size: 30px;
+  font-size: 42px;
   text-align: center;
   color: white;
   margin: 0;
@@ -241,7 +241,7 @@ video {
 }
 /* Styling for 'Create Moments, Capture Feelings' text */
 .cinestoke-section .moments-text {
-  font-size: 30px;
+  font-size: 42px;
   text-align: center;
   color: white;
   margin: 0;
@@ -561,10 +561,10 @@ video {
   }
 
   .cinestoke-section .concept-text {
-    font-size: .9rem; /* Adjust text size for smaller screens */
+    font-size: 1.2rem;
   }
   .cinestoke-section .moments-text {
-    font-size: .9rem;
+    font-size: 1.2rem;
   }
 
   .cinestoke-section .vertical-line,

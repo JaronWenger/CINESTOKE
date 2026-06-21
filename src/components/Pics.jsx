@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import useScrollReveal from '../hooks/useScrollReveal';
 
 //////PHOTOS ARE 6.6 X 16 aspect ration, 2367 X 5738 resolution, and around 100KBs.////////
@@ -450,7 +451,7 @@ const Pics = () => {
         }
       `}</style>
 
-      {activeVideoIndex !== null && (
+      {activeVideoIndex !== null && createPortal(
         <div
           style={{
             position: 'fixed',
@@ -503,7 +504,8 @@ const Pics = () => {
               style={{ width: '100%', height: '100%', border: 'none' }}
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

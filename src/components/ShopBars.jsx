@@ -5,7 +5,11 @@ import SlideColor from './SlideColor';
 import ContactV2 from './ContactV2';
 import IPhoneDisplay from './IPhoneDisplay';
 import cinestokesite from '../assets/cinestokesite.webp';
-import powergradePng from '../assets/POWERGRADE.webp';
+import powergradePng from '../assets/SHOP/POWERGRADE.webp';
+import sfxV1Cover from '../assets/SHOP/SFXv1.webp';
+import sfxV2Cover from '../assets/SHOP/SFXv2.webp';
+import lutsCover from '../assets/SHOP/LUTS.webp';
+import overlayCover from '../assets/SHOP/OVERLAYS.webp';
 import iphoneCinestokeScreenshot from '../assets/iphonecinestoke.webp';
 import smallWorldColorVideo from '../assets/CASESTUDIES/SmallWorldcolor.mp4';
 import smallWorldRawVideo from '../assets/CASESTUDIES/SmallWorldraw.mp4';
@@ -35,9 +39,7 @@ const ALL_REVIEWS = [
   { name: 'Kayla R.',   rating: 5, date: 'Jun 2, 2026',  text: 'Clean, organized, and actually useful. Most SFX packs are bloated — this one is curated. Every sound has a place.',                                         productId: 'sound-fx',         productTitle: 'Sound FX Pack' },
   { name: 'Marcus D.',  rating: 5, date: 'Jun 15, 2026', text: 'The film grain alone is worth it. Subtle and real — not the fake digital grain you get from plugins. My footage looks 10x more cinematic.',                  productId: 'overlays',         productTitle: 'Cinematic Overlays' },
   { name: 'Sophia L.',  rating: 5, date: 'Jun 5, 2026',  text: 'Light leaks are gorgeous. Dropped them onto a snowboard edit and it completely changed the vibe. Highly recommend.',                                         productId: 'overlays',         productTitle: 'Cinematic Overlays' },
-  { name: 'Jordan K.',  rating: 5, date: 'Jun 18, 2026', text: 'Lower thirds match the Cinestoke aesthetic perfectly. Clean, minimal, and easy to customize. Saved me hours.',                                               productId: 'graphics',         productTitle: 'Motion Graphics Pack' },
-  { name: 'Alex P.',    rating: 5, date: 'Jun 12, 2026', text: "Finally motion graphics that don't look like they came from a template site. These feel intentional and premium.",                                            productId: 'graphics',         productTitle: 'Motion Graphics Pack' },
-  { name: 'Ryan S.',    rating: 5, date: 'Jun 16, 2026', text: 'These are the real deal. One click and my footage went from flat to cinematic. The Powergrades especially — I use them on every project now.',               productId: 'luts-powergrades', productTitle: 'Cinestoke LUTs + Powergrades' },
+{ name: 'Ryan S.',    rating: 5, date: 'Jun 16, 2026', text: 'These are the real deal. One click and my footage went from flat to cinematic. The Powergrades especially — I use them on every project now.',               productId: 'luts-powergrades', productTitle: 'Cinestoke LUTs + Powergrades' },
   { name: 'Mia T.',     rating: 5, date: 'Jun 8, 2026',  text: "I've tried a lot of LUT packs and most feel generic. These actually have a personality to them. Highly recommend for anyone shooting on Sony.",               productId: 'luts-powergrades', productTitle: 'Cinestoke LUTs + Powergrades' },
 ];
 
@@ -94,8 +96,8 @@ const ReviewsSection = ({ currentProductId, onProductClick }) => {
               onClick={() => onProductClick(review.productId)}
               style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              <div style={{ width: '28px', aspectRatio: '3/4', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', flexShrink: 0 }}>
-                {ALL_PRODUCTS.find(p => p.id === review.productId)?.icon}
+              <div style={{ width: '28px', aspectRatio: '3/4', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '10px', flexShrink: 0, overflow: 'hidden' }}>
+                {(() => { const p = ALL_PRODUCTS.find(p => p.id === review.productId); return p?.cover ? <img src={p.cover} alt={p.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} /> : p?.icon; })()}
               </div>
               <span style={{ fontFamily: inter, fontSize: '13px', color: 'rgba(255,255,255,0.6)', letterSpacing: 0, textDecoration: 'underline', textUnderlineOffset: '3px' }}>{review.productTitle}</span>
             </button>
@@ -133,6 +135,7 @@ const ASSETS = [
       'ZIP (340MB)',
     ],
     icon: '🎧',
+    cover: sfxV2Cover,
   },
   {
     id: 'overlays',
@@ -148,21 +151,7 @@ const ASSETS = [
       'ZIP (1.2GB)',
     ],
     icon: '🎞️',
-  },
-  {
-    id: 'graphics',
-    slug: 'mgrfx',
-    title: 'Motion Graphics Pack',
-    price: '$30.00',
-    tagline: 'Titles, transitions & animated graphics',
-    paragraphs: [
-      'Clean, cinematic motion graphics built for video creators. Lower thirds, transitions, title cards, and animated elements — all matching the Cinestoke aesthetic. Fully customizable colors and text.',
-      'Some templates require After Effects. Font files are included. Everything else works in Premiere Pro.',
-    ],
-    includes: [
-      'ZIP (780MB)',
-    ],
-    icon: '✦',
+    cover: overlayCover,
   },
   {
     id: 'sound-fx-1',
@@ -178,6 +167,7 @@ const ASSETS = [
       'ZIP (340MB)',
     ],
     icon: '🎧',
+    cover: sfxV1Cover,
   },
 ];
 
@@ -198,11 +188,12 @@ const GRADE_PACK = {
     'Includes 4 Powergrades: a clean Base grade with no exposure adjustments, plus De Drago, Glass, and Champagne Pow. These LUTs and Powergrades work best in DaVinci Resolve, but can be used in other software as well.',
   ],
   includes: ['ZIP (94MB)', 'ZIP (82MB)'],
+  cover: lutsCover,
 };
 
 const ALL_PRODUCTS = [
   ...ASSETS,
-  { id: 'luts-powergrades', title: 'Cinestoke LUTs + Powergrades', icon: '🎨' },
+  { id: 'luts-powergrades', title: 'Cinestoke LUTs + Powergrades', icon: '🎨', cover: lutsCover },
 ];
 
 const iconBtnStyle = {
@@ -607,10 +598,19 @@ const ShopBars = ({ onToggleLightMode }) => {
           gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
           gap: '32px',
         }}>
-          {ASSETS.map(item => (
+          {[...ASSETS, { ...GRADE_PACK, _redirectToGrades: true }].map(item => (
             <div
               key={item.id}
-              onClick={() => { setSelectedProduct(item); window.scrollTo(0, 0); }}
+              onClick={() => {
+                if (item._redirectToGrades) {
+                  setSelected('grades');
+                  setSelectedGrade(GRADE_PACK);
+                  window.scrollTo(0, 0);
+                } else {
+                  setSelectedProduct(item);
+                  window.scrollTo(0, 0);
+                }
+              }}
               style={{ cursor: 'pointer' }}
             >
               {/* Cover */}
@@ -620,8 +620,11 @@ const ShopBars = ({ onToggleLightMode }) => {
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 marginBottom: '12px',
                 fontSize: '48px',
+                overflow: 'hidden',
               }}>
-                {item.icon}
+                {item.cover
+                  ? <img src={item.cover} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                  : item.icon}
               </div>
               {/* Title */}
               <p style={{
@@ -653,12 +656,19 @@ const ShopBars = ({ onToggleLightMode }) => {
               aspectRatio: '3/4',
               display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center', gap: '16px',
+              overflow: 'hidden',
             }}>
-              <div style={{ fontSize: '72px' }}>{selectedProduct.icon}</div>
-              <p style={{
-                fontFamily: 'Impact, sans-serif', fontSize: '13px',
-                letterSpacing: '3px', color: 'rgba(255,255,255,0.3)', margin: 0,
-              }}>PREVIEW COMING SOON</p>
+              {selectedProduct.cover ? (
+                <img src={selectedProduct.cover} alt={selectedProduct.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              ) : (
+                <>
+                  <div style={{ fontSize: '72px' }}>{selectedProduct.icon}</div>
+                  <p style={{
+                    fontFamily: 'Impact, sans-serif', fontSize: '13px',
+                    letterSpacing: '3px', color: 'rgba(255,255,255,0.3)', margin: 0,
+                  }}>PREVIEW COMING SOON</p>
+                </>
+              )}
             </div>
 
             {/* Info */}
@@ -788,7 +798,12 @@ const ShopBars = ({ onToggleLightMode }) => {
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     marginBottom: '8px',
                     fontSize: '32px',
-                  }}>{a.icon}</div>
+                    overflow: 'hidden',
+                  }}>
+                    {a.cover
+                      ? <img src={a.cover} alt={a.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      : a.icon}
+                  </div>
                   <p style={{
                     fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
                     fontSize: '12px', letterSpacing: 0, fontWeight: 500,
@@ -858,9 +873,16 @@ const ShopBars = ({ onToggleLightMode }) => {
               border: '1px solid rgba(255,255,255,0.1)',
               display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center', gap: '16px',
+              overflow: 'hidden',
             }}>
-              <div style={{ fontSize: '72px' }}>{selectedGrade.icon}</div>
-              <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '13px', letterSpacing: '3px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>PREVIEW COMING SOON</p>
+              {selectedGrade.cover ? (
+                <img src={selectedGrade.cover} alt={selectedGrade.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+              ) : (
+                <>
+                  <div style={{ fontSize: '72px' }}>{selectedGrade.icon}</div>
+                  <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '13px', letterSpacing: '3px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>PREVIEW COMING SOON</p>
+                </>
+              )}
             </div>
 
             {/* Info */}
