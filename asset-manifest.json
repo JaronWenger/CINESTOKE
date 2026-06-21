@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.b52bdb3f.css",
-    "main.js": "/static/js/main.4fc0ab2f.js",
+    "main.css": "/static/css/main.7d223cb6.css",
+    "main.js": "/static/js/main.0db9a39a.js",
     "static/media/Welcome.mp4": "/static/media/Welcome.527140ae9f561438ff88.mp4",
     "static/media/SmallWorldMain.mp4": "/static/media/SmallWorldMain.f6e2112b9160ba964e35.mp4",
     "static/media/BGGeo.mp4": "/static/media/BGGeo.e95e6a2dba335a5563a3.mp4",
@@ -47,12 +47,10 @@
     "static/media/youtube.webp": "/static/media/youtube.ddb244c83c9089617e44.webp",
     "static/media/BGraw.mp4": "/static/media/BGraw.c222abcddcbe03c09eef.mp4",
     "static/media/IRLogo.mp4": "/static/media/IRLogo.4fb85d6c1ce2d4e59f2f.mp4",
-    "static/media/profile.webp": "/static/media/profile.328f681c8cbed8cf359e.webp",
     "static/media/IRLogoPhone.mp4": "/static/media/IRLogoPhone.0c5fc802d899a78494ef.mp4",
     "static/media/TCO.svg": "/static/media/TCO.5d5a5329313e781d7670795f49a28b8d.svg",
     "static/media/website.webp": "/static/media/website.a3bb583ed868c858994b.webp",
     "static/media/SlateLogo.mp4": "/static/media/SlateLogo.50e8eb2d922d1ab5f6bf.mp4",
-    "static/media/cinestoke-real-estate.webp": "/static/media/cinestoke-real-estate.9e3eaa09fca57b9ed2c3.webp",
     "static/media/SlateLogoPhone.mp4": "/static/media/SlateLogoPhone.fb6e8746ebd59730bb51.mp4",
     "static/media/iphonecinestoke.webp": "/static/media/iphonecinestoke.199808ccc7a4f5811e5c.webp",
     "static/media/cinestokesite.webp": "/static/media/cinestokesite.f42f8703e5317f60ae02.webp",
@@ -61,24 +59,16 @@
     "static/media/SWAsplits.webp": "/static/media/SWAsplits.27e80b0b6b5158de70fa.webp",
     "static/media/cinestoke-drone-shot.webp": "/static/media/cinestoke-drone-shot.25be9dfdaba92fb126ca.webp",
     "static/media/SWAsplits2.webp": "/static/media/SWAsplits2.c641ecc57fa6d16ca9e8.webp",
-    "static/media/cinestoke-portraits.webp": "/static/media/cinestoke-portraits.af3c37d351ca27c0d66c.webp",
-    "static/media/cinestoke-boxing.webp": "/static/media/cinestoke-boxing.8bf0474a233b213401c7.webp",
     "static/media/cinestoke-auto.webp": "/static/media/cinestoke-auto.7613ccce8885d923227e.webp",
-    "static/media/cinestoke-small-business.webp": "/static/media/cinestoke-small-business.3ec64ba99ed8ed3221d8.webp",
-    "static/media/cinestoke-weddings.webp": "/static/media/cinestoke-weddings.08c85009a25f635a39c1.webp",
     "static/media/cinestoke-mtn-bike.webp": "/static/media/cinestoke-mtn-bike.ac5d3c7b216fbe9e63f3.webp",
-    "static/media/cinestoke-redwoods.webp": "/static/media/cinestoke-redwoods.4c96eae95795afd9af73.webp",
     "static/media/cinestoke-nature.webp": "/static/media/cinestoke-nature.1db382d96ec43e7d3b25.webp",
     "static/media/cinestoke-dirt-bike.webp": "/static/media/cinestoke-dirt-bike.d584cd667e9ba4fccc06.webp",
     "static/media/cinestoke-snowboard.webp": "/static/media/cinestoke-snowboard.e7369ebcd845e349a379.webp",
     "static/media/cinestoke-jet-ski.webp": "/static/media/cinestoke-jet-ski.8cd55384616930df2903.webp",
     "static/media/cinestoke-moto.webp": "/static/media/cinestoke-moto.adf1377d26b67f5b989e.webp",
-    "static/media/cinestoke-fishing.webp": "/static/media/cinestoke-fishing.af25b4b2801fd24d0f5a.webp",
     "static/media/cinestoke-rollers.webp": "/static/media/cinestoke-rollers.340fec8aba8c55f4f566.webp",
     "static/media/cinestoke-FPV.webp": "/static/media/cinestoke-FPV.5a413ce313e451bc0f9e.webp",
-    "static/media/cinestoke-sports.webp": "/static/media/cinestoke-sports.3a1e84614c5a30a3b9a2.webp",
     "static/media/Slate.svg": "/static/media/Slate.4e4ebdc093e3682623da1cdd91317cdb.svg",
-    "static/media/cinestoke-landscape.webp": "/static/media/cinestoke-landscape.4da4c4a3ff1bc3bb8103.webp",
     "static/media/Seadoosplits2.webp": "/static/media/Seadoosplits2.7590ae6c9345f3de5d52.webp",
     "static/media/GFFsplits.webp": "/static/media/GFFsplits.e010cbe8c903a22cfed7.webp",
     "static/media/BGpp.webp": "/static/media/BGpp.249d2deb3b67d117c357.webp",
@@ -96,7 +86,6 @@
     "static/media/Seadoo.svg": "/static/media/Seadoo.c65c2e6461112c4ec08603755056738f.svg",
     "static/media/SWApp.webp": "/static/media/SWApp.f61f907659488c7fd199.webp",
     "static/media/IRpp.webp": "/static/media/IRpp.6adc8455141b240442be.webp",
-    "static/media/SSBC.svg": "/static/media/SSBC.503bc30f34da116710649fdd8c016fb1.svg",
     "static/media/iPhone.webp": "/static/media/iPhone.4c356ca37f027c15d6e9.webp",
     "static/media/BGsplits2.webp": "/static/media/BGsplits2.e798f68690b35496e948.webp",
     "static/media/Slatepp.webp": "/static/media/Slatepp.322df457dcaf34d7aa4f.webp",
@@ -109,11 +98,11 @@
     "static/media/rightwing.svg": "/static/media/rightwing.908005ec7d6786ebd3ed3957a88a799c.svg",
     "static/media/Shutter.svg": "/static/media/Shutter.06ada3f769783169b3c67a357120590b.svg",
     "static/media/Edit.svg": "/static/media/Edit.5fe1f60e5943103345757e1162cec216.svg",
-    "main.b52bdb3f.css.map": "/static/css/main.b52bdb3f.css.map",
-    "main.4fc0ab2f.js.map": "/static/js/main.4fc0ab2f.js.map"
+    "main.7d223cb6.css.map": "/static/css/main.7d223cb6.css.map",
+    "main.0db9a39a.js.map": "/static/js/main.0db9a39a.js.map"
   },
   "entrypoints": [
-    "static/css/main.b52bdb3f.css",
-    "static/js/main.4fc0ab2f.js"
+    "static/css/main.7d223cb6.css",
+    "static/js/main.0db9a39a.js"
   ]
 }
