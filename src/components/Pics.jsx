@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 //////PHOTOS ARE 6.6 X 16 aspect ration, 2367 X 5738 resolution, and around 100KBs.////////
 import moto from '../assets/cinestoke-moto.webp';
@@ -42,6 +43,8 @@ const SET_COUNT = 21;
 const CENTER_SET = 10;
 
 const Pics = () => {
+  const picsRef = useRef(null);
+  useScrollReveal(picsRef);
   const scrollContainerRef = useRef(null);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [isReady, setIsReady] = useState(false);
@@ -270,7 +273,7 @@ const Pics = () => {
   };
 
   return (
-    <div className="carousel-container">
+    <div className="carousel-container reveal-on-scroll" ref={picsRef}>
       <div
         ref={setScrollContainerRef}
         className="carousel-scroll-container"

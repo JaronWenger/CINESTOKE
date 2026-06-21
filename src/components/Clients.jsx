@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, forwardRef, useImperativeHandle, useMemo, useLayoutEffect, useCallback } from 'react';
-// Import client logos and names from centralized config
 import { getClientLogoComponents, getClientNames } from '../config/caseStudyConfig';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 /**
  * Clients - Apple-style infinite carousel with fixed buffer approach
@@ -12,7 +12,8 @@ import { getClientLogoComponents, getClientNames } from '../config/caseStudyConf
  */
 const Clients = forwardRef(({ onClientChange, onClientReselect, initialClient = 'SWA' }, ref) => {
   const scrollContainerRef = useRef(null);
-  const sectionRef = useRef(null); // Ref to the section wrapper for scroll-to-top
+  const sectionRef = useRef(null);
+  useScrollReveal(sectionRef);
   const [screenWidth, setScreenWidth] = useState(window.innerWidth);
   const [isReady, setIsReady] = useState(false);
 
@@ -59,6 +60,7 @@ const Clients = forwardRef(({ onClientChange, onClientReselect, initialClient = 
         result.push({
           ...client,
           setIndex,
+          clientIndex,
           globalIndex: setIndex * clients.length + clientIndex,
           // Sets 0-4 are start buffers, set 5 is real, sets 6-10 are end buffers
           isBuffer: setIndex < 5 ? 'start' : setIndex > 5 ? 'end' : false
@@ -67,6 +69,10 @@ const Clients = forwardRef(({ onClientChange, onClientReselect, initialClient = 
     }
     return result;
   }, [clients]);
+
+  const centerClientIndex = useMemo(() => {
+    return clients.findIndex(c => c.name === initialClient);
+  }, [clients, initialClient]);
 
   // Calculate dynamic padding
   const getLogoPadding = useCallback(() => {
@@ -634,8 +640,10 @@ const Clients = forwardRef(({ onClientChange, onClientReselect, initialClient = 
   }, [clients, realStartIndex, getItemWidth, onClientChange]);
 
   return (
-    <div className="cinestoke-section" ref={sectionRef}>
+    <div className="cinestoke-section clients-section-reveal" ref={sectionRef}>
       <div style={{ position: 'relative', width: '100%' }}>
+        {/* Top line — animates scaleX(0→1) from center */}
+        <div className="clients-hline" />
         <div
           ref={scrollContainerRef}
           className="mui-box1 carousel-scroll-container"
@@ -666,8 +674,12 @@ const Clients = forwardRef(({ onClientChange, onClientReselect, initialClient = 
           <div className="lineb" style={{ flex: '0 0 auto' }} />
 
           {allClients.map((client, index) => {
-            const { Component, name, setIndex, globalIndex } = client;
+            const { Component, name, setIndex, clientIndex, globalIndex } = client;
             const key = `client-${globalIndex}-${name}`;
+            // Distance in logo units from the carousel center (set 5, centerClientIndex)
+            const carouselOffset = (setIndex - 5) * clients.length + (clientIndex - centerClientIndex);
+            const revealDistance = Math.abs(carouselOffset);
+            const revealDelay = revealDistance <= 5 ? `${revealDistance * 80}ms` : undefined;
 
             return (
               <React.Fragment key={key}>
@@ -687,7 +699,8 @@ const Clients = forwardRef(({ onClientChange, onClientReselect, initialClient = 
                     cursor: 'default',
                     WebkitTapHighlightColor: 'transparent',
                     overflow: 'hidden',
-                    boxSizing: 'border-box'
+                    boxSizing: 'border-box',
+                    ...(revealDelay !== undefined && { transitionDelay: revealDelay })
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -764,7 +777,14 @@ const Clients = forwardRef(({ onClientChange, onClientReselect, initialClient = 
                     }}
                   />
                 </div>
-                <div className="line" style={{ flex: '0 0 auto' }} />
+                <div
+                  className="line"
+                  data-set-index={setIndex}
+                  style={{
+                    flex: '0 0 auto',
+                    ...(revealDelay !== undefined && { transitionDelay: revealDelay })
+                  }}
+                />
               </React.Fragment>
             );
           })}
@@ -772,6 +792,9 @@ const Clients = forwardRef(({ onClientChange, onClientReselect, initialClient = 
           {/* End with lineb */}
           <div className="lineb" style={{ flex: '0 0 auto' }} />
         </div>
+
+        {/* Bottom line — animates scaleX(0→1) from center */}
+        <div className="clients-hline" />
 
         {/* Left black overlay */}
         <div className="clients-edge-cover" style={{ position: 'absolute', left: '-40px', top: '2px', bottom: '2px', width: '40px', pointerEvents: 'none', zIndex: 1 }} />

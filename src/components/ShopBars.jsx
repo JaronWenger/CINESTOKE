@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import useScrollReveal from '../hooks/useScrollReveal';
 import SlideColor from './SlideColor';
 import ContactV2 from './ContactV2';
 import IPhoneDisplay from './IPhoneDisplay';
@@ -239,6 +240,8 @@ const ShopBars = ({ onToggleLightMode }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const searchInputRef = useRef(null);
+  const shopBarsRef = useRef(null);
+  useScrollReveal(shopBarsRef);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
@@ -452,14 +455,13 @@ const ShopBars = ({ onToggleLightMode }) => {
       )}
 
       {/* Wrap both bars at 80% width like the homepage bars */}
-      <div style={{ width: '80%', margin: '0 auto' }}>
+      <div ref={shopBarsRef} className="shop-bars-reveal" style={{ width: '80%', margin: '0 auto' }}>
 
         {/* Title bar */}
-        <div style={{
+        <div className="shop-title-bar" style={{
           display: 'grid',
           gridTemplateColumns: '1fr auto 1fr',
           alignItems: 'center',
-          borderBottom: '2px solid white',
           paddingTop: isMobile ? 'max(16px, calc(env(safe-area-inset-top, 0px) + 8px))' : '24px',
           paddingBottom: isMobile ? '16px' : '24px',
           paddingLeft: '8px',
@@ -550,52 +552,54 @@ const ShopBars = ({ onToggleLightMode }) => {
             </button>
           </div>
         </div>
-
+        <div className="shop-hline" />
 
         {/* Tab bar */}
-        <div style={{
+        <div className="shop-tab-bar" style={{
           display: 'flex',
           alignItems: 'center',
-          borderBottom: '2px solid white',
         }}>
           {TABS.map((tab, i) => (
             <React.Fragment key={tab.id}>
-              {i > 0 && (
-                <div className="shop-tab-divider" style={{ width: '2px', height: '100px', backgroundColor: 'white', flexShrink: 0 }} />
+              <div className={`shop-tab-slot shop-tab-slot-${i}`} style={{ flex: 1 }}>
+                <button
+                  onClick={() => { setSelected(tab.id); setSelectedProduct(null); setSelectedGrade(null); window.scrollTo(0, 0); }}
+                  className="shop-tab"
+                  data-active={selected === tab.id}
+                  style={{
+                    width: '100%',
+                    height: '100px',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontFamily: "'Bebas Neue', Impact, sans-serif",
+                    fontSize: isMobile ? '16px' : '28px',
+                    letterSpacing: '2px',
+                    color: '#fff',
+                    opacity: selected === tab.id ? 1 : 0.35,
+                    transition: 'opacity 0.2s ease, filter 0.2s ease',
+                    transform: 'translateZ(0)',
+                  }}
+                >
+                  {isMobile
+                    ? tab.label.split(' ').map((word, wi, arr) => (
+                        <React.Fragment key={wi}>{word}{wi < arr.length - 1 && <br />}</React.Fragment>
+                      ))
+                    : tab.label}
+                </button>
+              </div>
+              {i < TABS.length - 1 && (
+                <div className="shop-tab-divider shop-tab-divider-reveal" style={{ width: '2px', height: '100px', backgroundColor: 'white', flexShrink: 0 }} />
               )}
-              <button
-                onClick={() => { setSelected(tab.id); setSelectedProduct(null); setSelectedGrade(null); window.scrollTo(0, 0); }}
-                className="shop-tab"
-                data-active={selected === tab.id}
-                style={{
-                  flex: 1,
-                  height: '100px',
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontFamily: "'Bebas Neue', Impact, sans-serif",
-                  fontSize: isMobile ? '16px' : '28px',
-                  letterSpacing: '2px',
-                  color: '#fff',
-                  opacity: selected === tab.id ? 1 : 0.35,
-                  transition: 'opacity 0.2s ease, filter 0.2s ease',
-                  transform: 'translateZ(0)',
-                }}
-              >
-                {isMobile
-                  ? tab.label.split(' ').map((word, i, arr) => (
-                      <React.Fragment key={i}>{word}{i < arr.length - 1 && <br />}</React.Fragment>
-                    ))
-                  : tab.label}
-              </button>
             </React.Fragment>
           ))}
         </div>
+        <div className="shop-hline" />
       </div>
 
       {/* Content area */}
       {selected === 'assets' && !selectedProduct && (
-        <div style={{
+        <div className="shop-content-reveal" style={{
           padding: '40px',
           maxWidth: '1100px',
           margin: '0 auto',
@@ -637,7 +641,7 @@ const ShopBars = ({ onToggleLightMode }) => {
       )}
 
       {selected === 'assets' && selectedProduct && (
-        <div style={{ maxWidth: '960px', margin: '0 auto', padding: isMobile ? '32px 20px 80px' : '56px 40px 80px' }}>
+        <div className="shop-content-reveal" style={{ maxWidth: '960px', margin: '0 auto', padding: isMobile ? '32px 20px 80px' : '56px 40px 80px' }}>
 
           {/* 2-col on desktop, stacked on mobile */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '32px' : '64px', alignItems: 'start', marginBottom: '80px' }}>
@@ -805,7 +809,7 @@ const ShopBars = ({ onToggleLightMode }) => {
 
       {/* Grades grid */}
       {selected === 'grades' && !selectedGrade && (
-        <div style={{
+        <div className="shop-content-reveal" style={{
           padding: '40px',
           maxWidth: '1100px',
           margin: '0 auto',
@@ -842,7 +846,7 @@ const ShopBars = ({ onToggleLightMode }) => {
 
       {/* Grade drill-down */}
       {selected === 'grades' && selectedGrade && (
-        <div style={{ maxWidth: '960px', margin: '0 auto', padding: isMobile ? '32px 20px 80px' : '56px 40px 80px' }}>
+        <div className="shop-content-reveal" style={{ maxWidth: '960px', margin: '0 auto', padding: isMobile ? '32px 20px 80px' : '56px 40px 80px' }}>
 
           {/* 2-col on desktop, stacked on mobile */}
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? '32px' : '64px', alignItems: 'start', marginBottom: '80px' }}>
@@ -981,7 +985,7 @@ const ShopBars = ({ onToggleLightMode }) => {
       )}
 
       {selected === 'template' && (
-        <div>
+        <div className="shop-content-reveal">
 
           {/* ── 1. HOOK ── */}
           <div style={{ textAlign: 'center', padding: '32px 40px 24px' }}>

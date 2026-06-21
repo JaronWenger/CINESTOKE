@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-// Import the SVG as a React component
+import React, { useState, useRef } from 'react';
 import ContactV2 from './ContactV2';
+import useScrollReveal from '../hooks/useScrollReveal';
 
 const Clients = () => {
   const [isContactModalOpen, setIsContactModalOpen] = useState(false);
+  const socialRef = useRef(null);
+  useScrollReveal(socialRef);
 
   const handleInstagramClick = () => {
     window.open('https://www.instagram.com/jaronwenger', '_blank');
@@ -22,11 +24,13 @@ const Clients = () => {
   };
 
   return (
-    <div className="cinestoke-section social-section">
-      {/* First Layer */}
-      <div className="mui-box1">
-        {/* Vertical Line */}
-        <div className="lineb" />
+    <div className="cinestoke-section social-section social-section-reveal" ref={socialRef}>
+      {/* Wrapper gives hlines the same width/centering as the icon row */}
+      <div className="social-content-wrapper">
+        <div className="social-hline" />
+        {/* Icon row */}
+        <div className="mui-box1">
+          <div className="lineb" />
 
 
         {/* Instagram Button */}
@@ -82,8 +86,9 @@ const Clients = () => {
           </svg>
         </button>
 
-        {/* Vertical Line */}
-        <div className="lineb" />
+          <div className="lineb" />
+        </div>
+        <div className="social-hline" />
       </div>
       <ContactV2 isOpen={isContactModalOpen} onClose={() => setIsContactModalOpen(false)} subtitle="Ready to create something? Let's work together." />
     </div>
