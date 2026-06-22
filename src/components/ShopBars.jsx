@@ -685,7 +685,10 @@ const ShopBars = ({ onToggleLightMode }) => {
               }}>{selectedProduct.price}</p>
 
               {/* Add to Cart */}
-              <button
+              <a
+                href={selectedProduct.checkoutUrl || '#'}
+                data-polar-checkout=""
+                data-polar-checkout-theme="dark"
                 className="shop-add-to-cart"
                 style={{
                   display: 'block', width: '100%', padding: '16px',
@@ -693,14 +696,18 @@ const ShopBars = ({ onToggleLightMode }) => {
                   fontFamily: "'Bebas Neue', Impact, sans-serif",
                   fontSize: '17px', letterSpacing: '4px',
                   marginBottom: '12px', transition: 'opacity 0.2s ease',
+                  textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box',
                 }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-                onClick={() => selectedProduct.checkoutUrl && window.open(selectedProduct.checkoutUrl, '_blank')}
-              >Add to Cart</button>
+                onClick={!selectedProduct.checkoutUrl ? e => e.preventDefault() : undefined}
+              >Add to Cart</a>
 
               {/* Buy Now */}
-              <button
+              <a
+                href={selectedProduct.checkoutUrl || '#'}
+                data-polar-checkout=""
+                data-polar-checkout-theme="dark"
                 style={{
                   display: 'block', width: '100%', padding: '15px',
                   background: 'transparent', color: '#fff',
@@ -708,11 +715,12 @@ const ShopBars = ({ onToggleLightMode }) => {
                   fontFamily: "'Bebas Neue', Impact, sans-serif",
                   fontSize: '17px', letterSpacing: '4px',
                   marginBottom: '20px', transition: 'border-color 0.2s ease',
+                  textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box',
                 }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = '#fff'}
                 onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'}
-                onClick={() => selectedProduct.checkoutUrl && window.open(selectedProduct.checkoutUrl, '_blank')}
-              >Buy Now</button>
+                onClick={!selectedProduct.checkoutUrl ? e => e.preventDefault() : undefined}
+              >Buy Now</a>
 
               {/* Wishlist */}
               <p style={{
