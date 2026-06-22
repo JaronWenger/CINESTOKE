@@ -21,7 +21,7 @@ const ContactV2 = ({ isOpen, onClose, subtitle }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const serviceId = 'service_7fahjgb'; // Your service ID
+    const serviceId = 'service_cwyplsp'; // Your service ID
     const templateId = 'template_t4hvtmn'; // Your template ID
     const publicKey = 'hQlqvMQ_sMe4PTq6A'; // Your public key
 
