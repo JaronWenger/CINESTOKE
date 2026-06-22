@@ -385,7 +385,7 @@ const ShopBars = ({ onToggleLightMode }) => {
         </div>
       )}
 
-      <ContactV2 isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} subtitle="Have any questions or comments? Use this form to contact me at any time." accessKey="ba5f1fec-0276-4fe9-b2f5-2c0a060201a1" />
+      <ContactV2 isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} subtitle="Have any questions or comments? Use this form to contact me at any time." formKey="ba5f1fec-0276-4fe9-b2f5-2c0a060201a1" subject="CINESTOKE SHOP QUERY" />
 
       {/* Mobile slide-out drawer */}
       {isMobile && (

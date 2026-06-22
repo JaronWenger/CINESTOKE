@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './Contact.css';
 
-const ContactV2 = ({ isOpen, onClose, subtitle, accessKey = '152bc921-6006-46a7-a309-9c58d44bff4a' }) => {
+const ContactV2 = ({ isOpen, onClose, subtitle, formKey = '152bc921-6006-46a7-a309-9c58d44bff4a', subject = 'CINESTOKE HOMEPAGE' }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,7 +24,8 @@ const ContactV2 = ({ isOpen, onClose, subtitle, accessKey = '152bc921-6006-46a7-
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
-        access_key: accessKey,
+        access_key: formKey,
+        subject,
         name: formData.name,
         email: formData.email,
         message: formData.message,
@@ -124,4 +125,3 @@ const ContactV2 = ({ isOpen, onClose, subtitle, accessKey = '152bc921-6006-46a7-
 };
 
 export default ContactV2;
-
