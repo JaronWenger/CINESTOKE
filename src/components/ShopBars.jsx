@@ -35,12 +35,6 @@ const TABS = [
 ];
 
 const ALL_REVIEWS = [
-  { name: 'Tyler M.',   rating: 5, date: 'Jun 10, 2026', text: 'Exactly what I needed for my action edits. The whooshes and impacts are cinematic without being over the top. Been using them in every project since.', productId: 'sound-fx',         productTitle: 'Cinestoke SFX Vol. 2' },
-  { name: 'Kayla R.',   rating: 5, date: 'Jun 2, 2026',  text: 'Clean, organized, and actually useful. Most SFX packs are bloated — this one is curated. Every sound has a place.',                                         productId: 'sound-fx',         productTitle: 'Cinestoke SFX Vol. 2' },
-  { name: 'Marcus D.',  rating: 5, date: 'Jun 15, 2026', text: 'The film grain alone is worth it. Subtle and real — not the fake digital grain you get from plugins. My footage looks 10x more cinematic.',                  productId: 'overlays',         productTitle: 'Cinestoke Overlays Pack' },
-  { name: 'Sophia L.',  rating: 5, date: 'Jun 5, 2026',  text: 'Light leaks are gorgeous. Dropped them onto a snowboard edit and it completely changed the vibe. Highly recommend.',                                         productId: 'overlays',         productTitle: 'Cinestoke Overlays Pack' },
-{ name: 'Ryan S.',    rating: 5, date: 'Jun 16, 2026', text: 'These are the real deal. One click and my footage went from flat to cinematic. The Powergrades especially — I use them on every project now.',               productId: 'luts-powergrades', productTitle: 'Cinestoke LUTs + Powergrades' },
-  { name: 'Mia T.',     rating: 5, date: 'Jun 8, 2026',  text: "I've tried a lot of LUT packs and most feel generic. These actually have a personality to them. Highly recommend for anyone shooting on Sony.",               productId: 'luts-powergrades', productTitle: 'Cinestoke LUTs + Powergrades' },
 ];
 
 const Stars = ({ count = 5 }) => (
