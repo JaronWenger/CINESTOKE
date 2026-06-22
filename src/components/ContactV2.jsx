@@ -21,7 +21,7 @@ const ContactV2 = ({ isOpen, onClose, subtitle }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const serviceId = 'service_cwyplsp'; // Your service ID
+    const serviceId = 'service_7fahjgb'; // Your service ID
     const templateId = 'template_t4hvtmn'; // Your template ID
     const publicKey = 'hQlqvMQ_sMe4PTq6A'; // Your public key
 
@@ -39,7 +39,7 @@ const ContactV2 = ({ isOpen, onClose, subtitle }) => {
       })
       .catch((err) => {
         setStatusMessage('Something went wrong. Please try again later.');
-        console.error('Email sending error:', err);
+        console.error('Email sending error:', err.status, err.text, err);
       })
       .finally(() => {
         setIsSubmitting(false);
