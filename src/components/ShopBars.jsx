@@ -385,7 +385,7 @@ const ShopBars = ({ onToggleLightMode }) => {
         </div>
       )}
 
-      <ContactV2 isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} subtitle="Have any questions or comments? Use this form to contact me at any time." />
+      <ContactV2 isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} subtitle="Have any questions or comments? Use this form to contact me at any time." accessKey="ba5f1fec-0276-4fe9-b2f5-2c0a060201a1" />
 
       {/* Mobile slide-out drawer */}
       {isMobile && (
@@ -709,7 +709,11 @@ const ShopBars = ({ onToggleLightMode }) => {
                 fontSize: '15px', letterSpacing: 0, fontWeight: 400,
                 color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, margin: '16px 0 32px',
               }}>
-                Email: jarongwenger@gmail.com if you have any issues.
+                Have any issues?{' '}
+                <button
+                  onClick={() => setIsContactOpen(true)}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#fff', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'inherit', textDecoration: 'underline' }}
+                >Contact us</button>
               </p>
 
               {/* Includes */}
@@ -880,7 +884,11 @@ const ShopBars = ({ onToggleLightMode }) => {
               ))}
 
               <p style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '15px', letterSpacing: 0, fontWeight: 400, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, margin: '16px 0 32px' }}>
-                Email: jarongwenger@gmail.com if you have any problems!
+                Have any issues?{' '}
+                <button
+                  onClick={() => setIsContactOpen(true)}
+                  style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: '#fff', fontFamily: 'inherit', fontSize: 'inherit', fontWeight: 'inherit', textDecoration: 'underline' }}
+                >Contact us</button>
               </p>
 
               <p style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '15px', letterSpacing: 0, fontStyle: 'italic', color: 'rgba(255,255,255,0.7)', margin: '0 0 10px' }}>You will get the following files:</p>

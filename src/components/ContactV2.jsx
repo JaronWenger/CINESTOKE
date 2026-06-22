@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import emailjs from 'emailjs-com';
 import './Contact.css';
 
-const ContactV2 = ({ isOpen, onClose, subtitle }) => {
+const ContactV2 = ({ isOpen, onClose, subtitle, accessKey = '152bc921-6006-46a7-a309-9c58d44bff4a' }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -21,25 +20,27 @@ const ContactV2 = ({ isOpen, onClose, subtitle }) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    const serviceId = 'service_7fahjgb'; // Your service ID
-    const templateId = 'template_t4hvtmn'; // Your template ID
-    const publicKey = 'hQlqvMQ_sMe4PTq6A'; // Your public key
-
-    const messageData = {
-      name: formData.name,
-      email: formData.email,
-      message: formData.message,
-    };
-
-    emailjs
-      .send(serviceId, templateId, messageData, publicKey)
-      .then(() => {
-        setStatusMessage('Your message has been sent successfully!');
-        setFormData({ name: '', email: '', message: '' });
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: accessKey,
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+      }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setStatusMessage('Your message has been sent successfully!');
+          setFormData({ name: '', email: '', message: '' });
+        } else {
+          setStatusMessage('Something went wrong. Please try again later.');
+        }
       })
-      .catch((err) => {
+      .catch(() => {
         setStatusMessage('Something went wrong. Please try again later.');
-        console.error('Email sending error:', err.status, err.text, err);
       })
       .finally(() => {
         setIsSubmitting(false);
