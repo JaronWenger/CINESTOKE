@@ -35,10 +35,10 @@ const TABS = [
 ];
 
 const ALL_REVIEWS = [
-  { name: 'Tyler M.',   rating: 5, date: 'Jun 10, 2026', text: 'Exactly what I needed for my action edits. The whooshes and impacts are cinematic without being over the top. Been using them in every project since.', productId: 'sound-fx',         productTitle: 'Sound FX Pack' },
-  { name: 'Kayla R.',   rating: 5, date: 'Jun 2, 2026',  text: 'Clean, organized, and actually useful. Most SFX packs are bloated — this one is curated. Every sound has a place.',                                         productId: 'sound-fx',         productTitle: 'Sound FX Pack' },
-  { name: 'Marcus D.',  rating: 5, date: 'Jun 15, 2026', text: 'The film grain alone is worth it. Subtle and real — not the fake digital grain you get from plugins. My footage looks 10x more cinematic.',                  productId: 'overlays',         productTitle: 'Cinematic Overlays' },
-  { name: 'Sophia L.',  rating: 5, date: 'Jun 5, 2026',  text: 'Light leaks are gorgeous. Dropped them onto a snowboard edit and it completely changed the vibe. Highly recommend.',                                         productId: 'overlays',         productTitle: 'Cinematic Overlays' },
+  { name: 'Tyler M.',   rating: 5, date: 'Jun 10, 2026', text: 'Exactly what I needed for my action edits. The whooshes and impacts are cinematic without being over the top. Been using them in every project since.', productId: 'sound-fx',         productTitle: 'Cinestoke SFX Vol. 2' },
+  { name: 'Kayla R.',   rating: 5, date: 'Jun 2, 2026',  text: 'Clean, organized, and actually useful. Most SFX packs are bloated — this one is curated. Every sound has a place.',                                         productId: 'sound-fx',         productTitle: 'Cinestoke SFX Vol. 2' },
+  { name: 'Marcus D.',  rating: 5, date: 'Jun 15, 2026', text: 'The film grain alone is worth it. Subtle and real — not the fake digital grain you get from plugins. My footage looks 10x more cinematic.',                  productId: 'overlays',         productTitle: 'Cinestoke Overlays Pack' },
+  { name: 'Sophia L.',  rating: 5, date: 'Jun 5, 2026',  text: 'Light leaks are gorgeous. Dropped them onto a snowboard edit and it completely changed the vibe. Highly recommend.',                                         productId: 'overlays',         productTitle: 'Cinestoke Overlays Pack' },
 { name: 'Ryan S.',    rating: 5, date: 'Jun 16, 2026', text: 'These are the real deal. One click and my footage went from flat to cinematic. The Powergrades especially — I use them on every project now.',               productId: 'luts-powergrades', productTitle: 'Cinestoke LUTs + Powergrades' },
   { name: 'Mia T.',     rating: 5, date: 'Jun 8, 2026',  text: "I've tried a lot of LUT packs and most feel generic. These actually have a personality to them. Highly recommend for anyone shooting on Sony.",               productId: 'luts-powergrades', productTitle: 'Cinestoke LUTs + Powergrades' },
 ];
@@ -49,17 +49,131 @@ const Stars = ({ count = 5 }) => (
   </span>
 );
 
-const ReviewsSection = ({ currentProductId, onProductClick }) => {
+const REVIEW_PRODUCTS = [
+  { id: 'sound-fx',         title: 'Cinestoke SFX Vol. 2' },
+  { id: 'sound-fx-1',       title: 'Cinestoke SFX Vol. 1' },
+  { id: 'overlays',         title: 'Cinestoke Overlays Pack' },
+  { id: 'luts-powergrades', title: 'Cinestoke LUTs + Powergrades' },
+];
+
+const ReviewModal = ({ isOpen, onClose, onSubmitReview, productId, productTitle }) => {
+  const [name, setName] = React.useState('');
+  const [rating, setRating] = React.useState(5);
+  const [hoverRating, setHoverRating] = React.useState(0);
+  const [text, setText] = React.useState('');
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitted, setSubmitted] = React.useState(false);
+  const [error, setError] = React.useState('');
+  const inter = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
+  const reset = () => { setName(''); setRating(5); setHoverRating(0); setText(''); setError(''); setSubmitted(false); };
+
+  const handleClose = () => { reset(); onClose(); };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError('');
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({
+        access_key: '8ee0cebe-0dfe-41b5-b2db-389d7443b13f',
+        subject: 'CINESTOKE REVIEW',
+        name, rating, product: productTitle, review: text,
+      }),
+    })
+      .then(r => r.json())
+      .then(data => {
+        if (data.success) {
+          const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+          onSubmitReview({ name, rating, productId, productTitle, text, date: today });
+          setSubmitted(true);
+        } else {
+          setError('Something went wrong. Please try again.');
+        }
+      })
+      .catch(() => setError('Something went wrong. Please try again.'))
+      .finally(() => setIsSubmitting(false));
+  };
+
+  if (!isOpen) return null;
+  return (
+    <div onClick={handleClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', boxSizing: 'border-box' }}>
+      <div onClick={e => e.stopPropagation()} style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', width: '100%', maxWidth: '480px', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
+        <button onClick={handleClose} style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '24px', cursor: 'pointer', lineHeight: 1 }}>×</button>
+
+        {submitted ? (
+          <div style={{ textAlign: 'center', padding: '20px 0 10px' }}>
+            <div style={{ fontSize: '28px', margin: '0 0 16px' }}><Stars count={rating} /></div>
+            <h2 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '36px', letterSpacing: '3px', color: '#fff', margin: '0 0 12px' }}>Thanks for the review!</h2>
+            <p style={{ fontFamily: inter, fontSize: '15px', color: 'rgba(255,255,255,0.55)', margin: '0 0 32px', lineHeight: 1.7 }}>Your review has been submitted and is now visible below.</p>
+            <button onClick={handleClose} style={{ display: 'block', width: '100%', padding: '16px', background: '#fff', color: '#000', border: 'none', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px' }}>Close</button>
+          </div>
+        ) : (
+          <>
+        <h2 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '36px', letterSpacing: '3px', color: '#fff', margin: '0 0 4px' }}>Write a Review</h2>
+        <p style={{ fontFamily: inter, fontSize: '13px', color: 'rgba(255,255,255,0.4)', letterSpacing: 0, margin: '0 0 28px' }}>{productTitle}</p>
+
+        <form onSubmit={handleSubmit}>
+          {/* Star rating */}
+          <div style={{ marginBottom: '24px' }}>
+            <p style={{ fontFamily: inter, fontSize: '13px', color: 'rgba(255,255,255,0.5)', letterSpacing: '1px', textTransform: 'uppercase', margin: '0 0 10px' }}>Rating</p>
+            <div style={{ display: 'flex', gap: '6px' }}>
+              {[1,2,3,4,5].map(s => (
+                <button key={s} type="button"
+                  onClick={() => setRating(s)}
+                  onMouseEnter={() => setHoverRating(s)}
+                  onMouseLeave={() => setHoverRating(0)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, fontSize: '28px', color: s <= (hoverRating || rating) ? '#fff' : 'rgba(255,255,255,0.2)', lineHeight: 1, transition: 'color 0.15s ease' }}
+                >★</button>
+              ))}
+            </div>
+          </div>
+
+          {/* Name */}
+          <div style={{ marginBottom: '20px' }}>
+            <p style={{ fontFamily: inter, fontSize: '13px', color: 'rgba(255,255,255,0.5)', letterSpacing: '1px', textTransform: 'uppercase', margin: '0 0 10px' }}>Name</p>
+            <input required value={name} onChange={e => setName(e.target.value)} placeholder="Your name"
+              style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontFamily: inter, fontSize: '14px', boxSizing: 'border-box' }} />
+          </div>
+
+          {/* Review */}
+          <div style={{ marginBottom: '28px' }}>
+            <p style={{ fontFamily: inter, fontSize: '13px', color: 'rgba(255,255,255,0.5)', letterSpacing: '1px', textTransform: 'uppercase', margin: '0 0 10px' }}>Review</p>
+            <textarea required value={text} onChange={e => setText(e.target.value)} placeholder="Share your experience…" rows={4}
+              style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff', fontFamily: inter, fontSize: '14px', resize: 'vertical', boxSizing: 'border-box' }} />
+          </div>
+
+          {error && <p style={{ fontFamily: inter, fontSize: '13px', color: '#f87171', margin: '0 0 16px' }}>{error}</p>}
+
+          <button type="submit" disabled={isSubmitting}
+            style={{ display: 'block', width: '100%', padding: '16px', background: '#fff', color: '#000', border: 'none', cursor: isSubmitting ? 'default' : 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', opacity: isSubmitting ? 0.6 : 1, transition: 'opacity 0.2s ease' }}
+            onMouseEnter={e => { if (!isSubmitting) e.currentTarget.style.opacity = '0.85'; }}
+            onMouseLeave={e => { if (!isSubmitting) e.currentTarget.style.opacity = '1'; }}
+          >{isSubmitting ? 'Submitting…' : 'Submit Review'}</button>
+        </form>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ReviewsSection = ({ currentProductId, onProductClick, localReviews = [], onWriteReview }) => {
   const [showAll, setShowAll] = React.useState(false);
+  const currentProduct = REVIEW_PRODUCTS.find(p => p.id === currentProductId);
   const sortReviews = (reviews) =>
     [...reviews].sort((a, b) => {
       if (b.rating !== a.rating) return b.rating - a.rating;
       return new Date(b.date) - new Date(a.date);
     });
-  const sorted = [
+  const staticSorted = [
     ...sortReviews(ALL_REVIEWS.filter(r => r.productId === currentProductId)),
     ...sortReviews(ALL_REVIEWS.filter(r => r.productId !== currentProductId)),
   ];
+  const sorted = [...localReviews, ...staticSorted];
+  const totalCount = ALL_REVIEWS.length + localReviews.length;
   const visible = showAll ? sorted : sorted.slice(0, 5);
   const inter = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
   return (
@@ -68,20 +182,20 @@ const ReviewsSection = ({ currentProductId, onProductClick }) => {
       {/* Header row */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '8px' }}>
         <h3 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '40px', letterSpacing: '3px', color: '#fff', margin: 0 }}>Reviews</h3>
-        <a
-          href={`mailto:jarongwenger@gmail.com?subject=Review&body=Product: \nMy review:`}
+        <button
+          onClick={() => onWriteReview(currentProductId, currentProduct?.title)}
           className="shop-write-review"
-          style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '14px', letterSpacing: '3px', color: '#000', backgroundColor: '#fff', padding: '12px 24px', textDecoration: 'none', transition: 'opacity 0.2s ease', whiteSpace: 'nowrap', marginTop: '6px' }}
+          style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '14px', letterSpacing: '3px', color: '#000', backgroundColor: '#fff', padding: '12px 24px', border: 'none', cursor: 'pointer', transition: 'opacity 0.2s ease', whiteSpace: 'nowrap', marginTop: '6px' }}
           onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
           onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-        >WRITE A REVIEW</a>
+        >WRITE A REVIEW</button>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
         <Stars count={5} />
         <span style={{ fontFamily: inter, fontSize: '14px', color: 'rgba(255,255,255,0.55)', letterSpacing: 0 }}>5.0 Average store rating</span>
       </div>
-      <p style={{ fontFamily: inter, fontSize: '14px', color: 'rgba(255,255,255,0.55)', letterSpacing: 0, margin: '0 0 24px' }}>{ALL_REVIEWS.length} store reviews</p>
+      <p style={{ fontFamily: inter, fontSize: '14px', color: 'rgba(255,255,255,0.55)', letterSpacing: 0, margin: '0 0 24px' }}>{totalCount} store reviews</p>
 
       {visible.map((review, i) => (
         <div key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.08)', padding: '24px 0', display: 'grid', gridTemplateColumns: window.innerWidth <= 768 ? '90px 1fr' : '160px 1fr', gap: window.innerWidth <= 768 ? '16px' : '32px' }}>
@@ -227,6 +341,9 @@ const ShopBars = ({ onToggleLightMode }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [reviewProduct, setReviewProduct] = useState({ id: '', title: '' });
+  const [localReviews, setLocalReviews] = useState([]);
   const [selectedGrade, setSelectedGrade] = useState(init.grade);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -386,6 +503,13 @@ const ShopBars = ({ onToggleLightMode }) => {
       )}
 
       <ContactV2 isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} subtitle="Have any questions or comments? Use this form to contact me at any time." formKey="ba5f1fec-0276-4fe9-b2f5-2c0a060201a1" subject="CINESTOKE SHOP QUERY" />
+      <ReviewModal
+        isOpen={isReviewOpen}
+        onClose={() => setIsReviewOpen(false)}
+        onSubmitReview={(review) => setLocalReviews(prev => [review, ...prev])}
+        productId={reviewProduct.id}
+        productTitle={reviewProduct.title}
+      />
 
       {/* Mobile slide-out drawer */}
       {isMobile && (
@@ -745,6 +869,8 @@ const ShopBars = ({ onToggleLightMode }) => {
           {/* Reviews */}
           <ReviewsSection
             currentProductId={selectedProduct.id}
+            localReviews={localReviews}
+            onWriteReview={(id, title) => { setReviewProduct({ id, title }); setIsReviewOpen(true); }}
             onProductClick={(productId) => {
               if (productId === 'luts-powergrades') {
                 setSelected('grades'); setSelectedGrade(GRADE_PACK); window.scrollTo(0, 0);
@@ -966,6 +1092,8 @@ const ShopBars = ({ onToggleLightMode }) => {
           {/* Reviews */}
           <ReviewsSection
             currentProductId="luts-powergrades"
+            localReviews={localReviews}
+            onWriteReview={(id, title) => { setReviewProduct({ id, title }); setIsReviewOpen(true); }}
             onProductClick={(productId) => {
               if (productId === 'luts-powergrades') {
                 window.scrollTo(0, 0);
