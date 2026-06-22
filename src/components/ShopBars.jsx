@@ -534,13 +534,6 @@ const ShopBars = ({ onToggleLightMode }) => {
                 <line x1="16.5" y1="16.5" x2="22" y2="22" />
               </svg>
             </button>
-            <button className="shop-nav-icon" style={iconBtnStyle} aria-label="Cart" onClick={() => window.open('https://polar.sh/cinestoke/portal', '_blank')}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <path d="M16 10a4 4 0 01-8 0" />
-              </svg>
-            </button>
           </div>
         </div>
         <div className="shop-hline" />
@@ -684,7 +677,7 @@ const ShopBars = ({ onToggleLightMode }) => {
                 color: '#fff', margin: '0 0 28px',
               }}>{selectedProduct.price}</p>
 
-              {/* Add to Cart */}
+              {/* Buy Now */}
               <button
                 className="shop-add-to-cart"
                 style={{
@@ -692,33 +685,13 @@ const ShopBars = ({ onToggleLightMode }) => {
                   background: '#fff', color: '#000', border: 'none', cursor: 'pointer',
                   fontFamily: "'Bebas Neue', Impact, sans-serif",
                   fontSize: '17px', letterSpacing: '4px',
-                  marginBottom: '12px', transition: 'opacity 0.2s ease',
+                  marginBottom: '20px', transition: 'opacity 0.2s ease',
                 }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
                 onClick={() => selectedProduct.checkoutUrl && window.open(selectedProduct.checkoutUrl, '_blank')}
-              >Add to Cart</button>
-
-              {/* Buy Now */}
-              <button
-                style={{
-                  display: 'block', width: '100%', padding: '15px',
-                  background: 'transparent', color: '#fff',
-                  border: '1px solid rgba(255,255,255,0.4)', cursor: 'pointer',
-                  fontFamily: "'Bebas Neue', Impact, sans-serif",
-                  fontSize: '17px', letterSpacing: '4px',
-                  marginBottom: '20px', transition: 'border-color 0.2s ease',
-                }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = '#fff'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'}
-                onClick={() => selectedProduct.checkoutUrl && window.open(selectedProduct.checkoutUrl, '_blank')}
               >Buy Now</button>
 
-              {/* Wishlist */}
-              <p style={{
-                fontFamily: 'Impact, sans-serif', fontSize: '13px', letterSpacing: '1px',
-                color: 'rgba(255,255,255,0.4)', margin: '0 0 40px', cursor: 'pointer',
-              }}>♡ Add to wishlist</p>
 
               {/* Description */}
               {(selectedProduct.paragraphs || [selectedProduct.description]).map((p, i) => (
@@ -897,18 +870,10 @@ const ShopBars = ({ onToggleLightMode }) => {
 
               <button
                 className="shop-add-to-cart"
-                style={{ display: 'block', width: '100%', padding: '16px', background: '#fff', color: '#000', border: 'none', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', marginBottom: '12px', transition: 'opacity 0.2s ease' }}
+                style={{ display: 'block', width: '100%', padding: '16px', background: '#fff', color: '#000', border: 'none', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', marginBottom: '20px', transition: 'opacity 0.2s ease' }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-              >Add to Cart</button>
-
-              <button
-                style={{ display: 'block', width: '100%', padding: '15px', background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', marginBottom: '20px', transition: 'border-color 0.2s ease' }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = '#fff'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'}
               >Buy Now</button>
-
-              <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '13px', letterSpacing: '1px', color: 'rgba(255,255,255,0.4)', margin: '0 0 40px', cursor: 'pointer' }}>♡ Add to wishlist</p>
 
               {selectedGrade.paragraphs.map((p, i) => (
                 <p key={i} style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '15px', letterSpacing: 0, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, margin: '0 0 16px', fontWeight: 400 }}>{p}</p>
