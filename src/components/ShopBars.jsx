@@ -426,7 +426,7 @@ const ShopBars = ({ onToggleLightMode }) => {
               { label: 'Home', action: () => { navigate('/'); setIsMobileMenuOpen(false); } },
               { label: 'Shop', action: () => { setSelectedProduct(null); setIsMobileMenuOpen(false); window.scrollTo(0, 0); } },
               { label: 'Contact', action: () => { setIsContactOpen(true); setIsMobileMenuOpen(false); } },
-              { label: 'Login', action: () => { setIsMobileMenuOpen(false); window.open('https://polar.sh/purchases', '_blank'); } },
+              { label: 'Login', action: () => { setIsMobileMenuOpen(false); window.open('https://polar.sh/cinestoke/portal', '_blank'); } },
             ].map(item => (
               <button
                 key={item.label}
@@ -520,7 +520,7 @@ const ShopBars = ({ onToggleLightMode }) => {
                   onMouseEnter={e => { if (!isContactOpen) e.currentTarget.style.color = '#fff'; }}
                   onMouseLeave={e => { if (!isContactOpen) e.currentTarget.style.color = 'rgba(255,255,255,0.55)'; }}
                 >Contact</button>
-                <button className="shop-nav-icon" style={iconBtnStyle} aria-label="Login" onClick={() => window.open('https://polar.sh/purchases', '_blank')}>
+                <button className="shop-nav-icon" style={iconBtnStyle} aria-label="Login" onClick={() => window.open('https://polar.sh/cinestoke/portal', '_blank')}>
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="8" r="4" />
                     <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
@@ -534,7 +534,7 @@ const ShopBars = ({ onToggleLightMode }) => {
                 <line x1="16.5" y1="16.5" x2="22" y2="22" />
               </svg>
             </button>
-            <button className="shop-nav-icon" style={iconBtnStyle} aria-label="Cart" onClick={() => window.open('https://polar.sh/purchases', '_blank')}>
+            <button className="shop-nav-icon" style={iconBtnStyle} aria-label="Cart" onClick={() => window.open('https://polar.sh/cinestoke/portal', '_blank')}>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" />
                 <line x1="3" y1="6" x2="21" y2="6" />
@@ -685,10 +685,7 @@ const ShopBars = ({ onToggleLightMode }) => {
               }}>{selectedProduct.price}</p>
 
               {/* Add to Cart */}
-              <a
-                href={selectedProduct.checkoutUrl || '#'}
-                data-polar-checkout=""
-                data-polar-checkout-theme="dark"
+              <button
                 className="shop-add-to-cart"
                 style={{
                   display: 'block', width: '100%', padding: '16px',
@@ -696,18 +693,14 @@ const ShopBars = ({ onToggleLightMode }) => {
                   fontFamily: "'Bebas Neue', Impact, sans-serif",
                   fontSize: '17px', letterSpacing: '4px',
                   marginBottom: '12px', transition: 'opacity 0.2s ease',
-                  textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box',
                 }}
                 onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
                 onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-                onClick={!selectedProduct.checkoutUrl ? e => e.preventDefault() : undefined}
-              >Add to Cart</a>
+                onClick={() => selectedProduct.checkoutUrl && window.open(selectedProduct.checkoutUrl, '_blank')}
+              >Add to Cart</button>
 
               {/* Buy Now */}
-              <a
-                href={selectedProduct.checkoutUrl || '#'}
-                data-polar-checkout=""
-                data-polar-checkout-theme="dark"
+              <button
                 style={{
                   display: 'block', width: '100%', padding: '15px',
                   background: 'transparent', color: '#fff',
@@ -715,12 +708,11 @@ const ShopBars = ({ onToggleLightMode }) => {
                   fontFamily: "'Bebas Neue', Impact, sans-serif",
                   fontSize: '17px', letterSpacing: '4px',
                   marginBottom: '20px', transition: 'border-color 0.2s ease',
-                  textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box',
                 }}
                 onMouseEnter={e => e.currentTarget.style.borderColor = '#fff'}
                 onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'}
-                onClick={!selectedProduct.checkoutUrl ? e => e.preventDefault() : undefined}
-              >Buy Now</a>
+                onClick={() => selectedProduct.checkoutUrl && window.open(selectedProduct.checkoutUrl, '_blank')}
+              >Buy Now</button>
 
               {/* Wishlist */}
               <p style={{
