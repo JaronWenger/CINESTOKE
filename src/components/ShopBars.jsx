@@ -236,11 +236,16 @@ const ASSETS = [
     checkoutUrl: 'https://buy.polar.sh/polar_cl_Em1ji718nKqtFulUylD5nm6SGRKHitNLKmxyE4RaT7r',
     tagline: 'Cinematic sound effects for your edits',
     paragraphs: [
-      'Everything I use to make my edits hit. 200+ cinematic sound effects pulled from real productions — whooshes, impacts, atmospheres, risers, and transitions. Every single one has been used in a real client project.',
-      'This pack will instantly elevate the feel of your videos. Lay these under your cuts and your edits will feel 10x more cinematic with almost no extra effort.',
+      'The ultimate SFX Pack behind all Cinestoke videos. Everything you\'ll ever need for your edits/videos. 600+ sounds shaped to push the story forward.',
+      'Everything from Vol. 1 is included, plus more. Inside you\'ll find everything from aggressive impacts, bass hits, whooshes, and car sounds to organic textures, nature sounds, and experimental ambiances that glue your edits together.',
     ],
     includes: [
-      'ZIP (340MB)',
+      'ZIP (1.2GB) — 691 WAV files, 19 categories',
+    ],
+    perks: [
+      'Compatible with any editing software',
+      'Download right after your purchase',
+      'Use in any project, for any client',
     ],
     icon: '🎧',
     cover: sfxV2Cover,
@@ -252,11 +257,16 @@ const ASSETS = [
     price: '$20.00',
     tagline: 'Film grain, light leaks & texture overlays',
     paragraphs: [
-      'Add instant cinematic texture to any footage. Film grain, lens flares, light leaks, and dust overlays — sourced from real analog equipment and film stock. These are the exact overlays I drop on top of client work.',
+      'Add instant cinematic texture to any footage. Film grain, lens flares, light leaks, and dust overlays. These are the exact overlays baked into every Cinestoke production.',
       'Works in any NLE on any OS. Just drag, drop, and set the blend mode to Screen or Overlay.',
     ],
     includes: [
       'ZIP (1.2GB)',
+    ],
+    perks: [
+      'Compatible with any editing software',
+      'Download right after your purchase',
+      'Use in any project, for any client',
     ],
     icon: '🎞️',
     cover: overlayCover,
@@ -269,11 +279,16 @@ const ASSETS = [
     checkoutUrl: 'https://buy.polar.sh/polar_cl_xF7gE8CslFeGKkPSnn6Vtubh1ixHGp9QEzBaE13UwT4',
     tagline: 'Cinematic sound effects for your edits',
     paragraphs: [
-      'Everything I use to make my edits hit. 200+ cinematic sound effects pulled from real productions — whooshes, impacts, atmospheres, risers, and transitions. Every single one has been used in a real client project.',
-      'This pack will instantly elevate the feel of your videos. Lay these under your cuts and your edits will feel 10x more cinematic with almost no extra effort.',
+      'The essential SFX pack. These are the sounds I reach for in every single edit, pulled straight from real client productions. If your videos feel flat, this is what\'s missing.',
+      'Inside you\'ll find car sounds, impacts, bass hits, whooshes, braams, risers, nature sounds, punch sounds, and filmic textures that make every cut land harder.',
     ],
     includes: [
-      'ZIP (340MB)',
+      'ZIP (872.4MB) — 517 WAV files, 12 categories',
+    ],
+    perks: [
+      'Compatible with any editing software',
+      'Download right after your purchase',
+      'Use in any project, for any client',
     ],
     icon: '🎧',
     cover: sfxV1Cover,
@@ -823,6 +838,23 @@ const ShopBars = ({ onToggleLightMode }) => {
                   margin: '0 0 16px', fontWeight: 400,
                 }}>{p}</p>
               ))}
+
+              {/* Perks */}
+              {selectedProduct.perks && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: '8px 0 28px' }}>
+                  {selectedProduct.perks.map(perk => (
+                    <li key={perk} style={{
+                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                      fontSize: '14px', letterSpacing: 0, fontWeight: 400,
+                      color: 'rgba(255,255,255,0.65)', padding: '5px 0',
+                      display: 'flex', alignItems: 'center', gap: '10px',
+                    }}>
+                      <span style={{ color: '#fff', fontSize: '12px' }}>✓</span>
+                      {perk}
+                    </li>
+                  ))}
+                </ul>
+              )}
 
               {/* Email support */}
               <p style={{
