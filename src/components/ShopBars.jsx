@@ -93,8 +93,8 @@ const ReviewModal = ({ isOpen, onClose, onSubmitReview, productId, productTitle 
 
   if (!isOpen) return null;
   return (
-    <div onClick={handleClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', boxSizing: 'border-box', animation: 'shopOverlayIn 0.25s ease' }}>
-      <div onClick={e => e.stopPropagation()} style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', width: '100%', maxWidth: '480px', position: 'relative', maxHeight: '90vh', overflowY: 'auto', animation: 'shopFadeUp 0.3s ease forwards' }}>
+    <div className="review-modal-overlay" onClick={handleClose} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', boxSizing: 'border-box', animation: 'shopOverlayIn 0.25s ease' }}>
+      <div className="review-modal-content" onClick={e => e.stopPropagation()} style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', padding: '40px', width: '100%', maxWidth: '480px', position: 'relative', maxHeight: '90vh', overflowY: 'auto', animation: 'shopFadeUp 0.3s ease forwards' }}>
         <button onClick={handleClose} style={{ position: 'absolute', top: '16px', right: '20px', background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '24px', cursor: 'pointer', lineHeight: 1 }}>×</button>
 
         {submitted ? (

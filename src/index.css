@@ -2248,6 +2248,29 @@ body.light-mode .contact-modal-content .submit-btn {
 body.light-mode .contact-modal-content .status-message {
   color: #4ade80 !important;
 }
+/* Review modal stays dark */
+body.light-mode .review-modal-overlay {
+  background-color: rgba(0,0,0,0.75) !important;
+}
+body.light-mode .review-modal-content {
+  background-color: #111 !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+body.light-mode .review-modal-content * {
+  color: #fff !important;
+  text-shadow: none !important;
+  border-color: rgba(255,255,255,0.15) !important;
+}
+body.light-mode .review-modal-content input,
+body.light-mode .review-modal-content textarea {
+  background-color: rgba(255,255,255,0.06) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+  color: #fff !important;
+}
+body.light-mode .review-modal-content button[type="submit"] {
+  background: #fff !important;
+  color: #000 !important;
+}
 /* Color grade before/after slider */
 body.light-mode .slide-color-line {
   background-color: #111 !important;
