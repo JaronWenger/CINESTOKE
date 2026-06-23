@@ -15,6 +15,27 @@ function App() {
     localStorage.setItem('cinestoke-light', isLightMode);
   }, [isLightMode]);
 
+  useEffect(() => {
+    const splash = document.getElementById('cinestoke-splash');
+    if (!splash) return;
+    const isHome = /^\/(\d+)?$/.test(window.location.pathname);
+    const exit = () => {
+      document.body.classList.remove('splash-active');
+      splash.classList.add('splash-exit');
+      setTimeout(() => splash.remove(), 700);
+    };
+    if (!isHome) { document.body.classList.remove('splash-active'); splash.remove(); return; }
+    let loadDone = false;
+    let minDone = false;
+    const tryExit = () => { if (loadDone && minDone) exit(); };
+    const onLoad = () => { loadDone = true; tryExit(); };
+    if (document.readyState === 'complete') { loadDone = true; }
+    else { window.addEventListener('load', onLoad, { once: true }); }
+    const timer = setTimeout(() => { minDone = true; tryExit(); }, 2000);
+    return () => { clearTimeout(timer); window.removeEventListener('load', onLoad); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleToggleLightMode = () => setIsLightMode(m => !m);
 
   return (
