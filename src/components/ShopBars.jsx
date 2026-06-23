@@ -266,6 +266,7 @@ const ASSETS = [
     slug: 'sfxv1',
     title: 'Cinestoke SFX Vol. 1',
     price: '$15.00',
+    checkoutUrl: 'https://buy.polar.sh/polar_cl_xF7gE8CslFeGKkPSnn6Vtubh1ixHGp9QEzBaE13UwT4',
     tagline: 'Cinematic sound effects for your edits',
     paragraphs: [
       'Everything I use to make my edits hit. 200+ cinematic sound effects pulled from real productions — whooshes, impacts, atmospheres, risers, and transitions. Every single one has been used in a real client project.',
@@ -706,7 +707,7 @@ const ShopBars = ({ onToggleLightMode }) => {
           maxWidth: '1100px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+          gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill, minmax(220px, 1fr))',
           gap: '32px',
         }}>
           {[...ASSETS, { ...GRADE_PACK, _redirectToGrades: true }].map(item => (
@@ -800,15 +801,17 @@ const ShopBars = ({ onToggleLightMode }) => {
                 className="shop-add-to-cart"
                 style={{
                   display: 'block', width: '100%', padding: '16px',
-                  background: '#fff', color: '#000', border: 'none', cursor: 'pointer',
+                  background: selectedProduct.checkoutUrl ? '#fff' : 'rgba(255,255,255,0.08)',
+                  color: selectedProduct.checkoutUrl ? '#000' : 'rgba(255,255,255,0.35)',
+                  border: 'none', cursor: selectedProduct.checkoutUrl ? 'pointer' : 'default',
                   fontFamily: "'Bebas Neue', Impact, sans-serif",
                   fontSize: '17px', letterSpacing: '4px',
                   marginBottom: '20px', transition: 'opacity 0.2s ease',
                 }}
-                onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
+                onMouseEnter={e => { if (selectedProduct.checkoutUrl) e.currentTarget.style.opacity = '0.85'; }}
+                onMouseLeave={e => { if (selectedProduct.checkoutUrl) e.currentTarget.style.opacity = '1'; }}
                 onClick={() => selectedProduct.checkoutUrl && window.open(selectedProduct.checkoutUrl, '_blank')}
-              >Buy Now</button>
+              >{selectedProduct.checkoutUrl ? 'Buy Now' : 'Coming Soon'}</button>
 
 
               {/* Description */}
@@ -882,11 +885,19 @@ const ShopBars = ({ onToggleLightMode }) => {
               fontSize: '22px', letterSpacing: '4px',
               color: '#fff', margin: '0 0 24px',
             }}>More like this</p>
-            <div style={{ display: 'flex', gap: '12px', maxWidth: '280px' }}>
-              {ASSETS.filter(a => a.id !== selectedProduct.id).map(a => (
+            <div style={{ display: 'flex', gap: '12px', maxWidth: '426px' }}>
+              {[...ASSETS, GRADE_PACK].filter(a => a.id !== selectedProduct.id).map(a => (
                 <div
                   key={a.id}
-                  onClick={() => { setSelectedProduct(a); window.scrollTo(0, 0); }}
+                  onClick={() => {
+                    if (a.id === GRADE_PACK.id) {
+                      setSelected('grades');
+                      setSelectedGrade(GRADE_PACK);
+                    } else {
+                      setSelectedProduct(a);
+                    }
+                    window.scrollTo(0, 0);
+                  }}
                   style={{ flex: 1, cursor: 'pointer' }}
                 >
                   <div style={{
@@ -926,7 +937,7 @@ const ShopBars = ({ onToggleLightMode }) => {
           maxWidth: '1100px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+          gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(auto-fill, minmax(220px, 1fr))',
           gap: '32px',
         }}>
           <div
@@ -994,10 +1005,8 @@ const ShopBars = ({ onToggleLightMode }) => {
 
               <button
                 className="shop-add-to-cart"
-                style={{ display: 'block', width: '100%', padding: '16px', background: '#fff', color: '#000', border: 'none', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', marginBottom: '20px', transition: 'opacity 0.2s ease' }}
-                onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-                onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-              >Buy Now</button>
+                style={{ display: 'block', width: '100%', padding: '16px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)', border: 'none', cursor: 'default', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', marginBottom: '20px', transition: 'opacity 0.2s ease' }}
+              >Coming Soon</button>
 
               {selectedGrade.paragraphs.map((p, i) => (
                 <p key={i} style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '15px', letterSpacing: 0, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, margin: '0 0 16px', fontWeight: 400 }}>{p}</p>
@@ -1076,10 +1085,8 @@ const ShopBars = ({ onToggleLightMode }) => {
               </p>
 
               <button
-                style={{ display: 'block', width: '100%', padding: '15px', background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', transition: 'border-color 0.2s ease' }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = '#fff'}
-                onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'}
-              >Buy Now</button>
+                style={{ display: 'block', width: '100%', padding: '15px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.12)', cursor: 'default', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px' }}
+              >Coming Soon</button>
             </div>
           </div>
 
@@ -1097,6 +1104,47 @@ const ShopBars = ({ onToggleLightMode }) => {
               }
             }}
           />
+
+          {/* More like this */}
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '48px' }}>
+            <p style={{
+              fontFamily: "'Bebas Neue', Impact, sans-serif",
+              fontSize: '22px', letterSpacing: '4px',
+              color: '#fff', margin: '0 0 24px',
+            }}>More like this</p>
+            <div style={{ display: 'flex', gap: '12px', maxWidth: '426px' }}>
+              {ASSETS.map(a => (
+                <div
+                  key={a.id}
+                  onClick={() => { setSelected('assets'); setSelectedGrade(null); setSelectedProduct(a); window.scrollTo(0, 0); }}
+                  style={{ flex: 1, cursor: 'pointer' }}
+                >
+                  <div style={{
+                    aspectRatio: '3/4',
+                    background: 'rgba(255,255,255,0.06)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    marginBottom: '8px',
+                    fontSize: '32px',
+                    overflow: 'hidden',
+                  }}>
+                    {a.cover
+                      ? <img src={a.cover} alt={a.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                      : a.icon}
+                  </div>
+                  <p style={{
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                    fontSize: '12px', letterSpacing: 0, fontWeight: 500,
+                    color: '#fff', margin: '0 0 2px', textAlign: 'center',
+                  }}>{a.title}</p>
+                  <p style={{
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                    fontSize: '12px', letterSpacing: 0,
+                    color: 'rgba(255,255,255,0.6)', margin: 0, textAlign: 'center',
+                  }}>{a.price}</p>
+                </div>
+              ))}
+            </div>
+          </div>
 
         </div>
       )}
