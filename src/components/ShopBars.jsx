@@ -255,13 +255,13 @@ const ASSETS = [
     slug: 'ovrly',
     title: 'Cinestoke Overlays Pack',
     price: '$20.00',
-    tagline: 'Film grain, light leaks & texture overlays',
+    tagline: 'Film grain, light leaks & cinematic texture overlays',
     paragraphs: [
-      'Add instant cinematic texture to any footage. Film grain, lens flares, light leaks, and dust overlays. These are the exact overlays baked into every Cinestoke production.',
-      'Works in any NLE on any OS. Just drag, drop, and set the blend mode to Screen or Overlay.',
+      'The exact overlays baked into every Cinestoke production. 185+ assets across 9 categories. Everything you need to add instant cinematic texture to any footage.',
+      "Inside you'll find film grain, dust and noise, film burns, lens flares, fire elements, vintage VHS and Super 8 textures, whip transitions, and a full library of texture stills. Drag, drop, set the blend mode to Screen or Overlay, and you're done.",
     ],
     includes: [
-      'ZIP (1.2GB)',
+      'ZIP (3.03GB) — 185 files, 9 categories',
     ],
     perks: [
       'Compatible with any editing software',
