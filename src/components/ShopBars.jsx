@@ -240,7 +240,7 @@ const ASSETS = [
       'Everything from Vol. 1 is included, plus more. Inside you\'ll find everything from aggressive impacts, bass hits, whooshes, and car sounds to organic textures, nature sounds, and experimental ambiances that glue your edits together.',
     ],
     includes: [
-      'ZIP (1.2GB) — 691 WAV files, 19 categories',
+      'ZIP (1.2GB), 691 WAV files, 19 categories',
     ],
     perks: [
       'Compatible with any editing software',
@@ -255,13 +255,15 @@ const ASSETS = [
     slug: 'ovrly',
     title: 'Cinestoke Overlays Pack',
     price: '$20.00',
+    checkoutUrl: 'https://buy.polar.sh/polar_cl_XxUBo1FdsIkNGW1yxyiqyk3azHGZUT2e8d1MZ30ra3L',
     tagline: 'Film grain, light leaks & cinematic texture overlays',
     paragraphs: [
       'The exact overlays baked into every Cinestoke production. 185+ assets across 9 categories. Everything you need to add instant cinematic texture to any footage.',
       "Inside you'll find film grain, dust and noise, film burns, lens flares, fire elements, vintage VHS and Super 8 textures, whip transitions, and a full library of texture stills. Drag, drop, set the blend mode to Screen or Overlay, and you're done.",
     ],
     includes: [
-      'ZIP (3.03GB) — 185 files, 9 categories',
+      'ZIP (1.83GB), Main pack',
+      'ZIP (1.2GB), Vintage pack',
     ],
     perks: [
       'Compatible with any editing software',
@@ -283,7 +285,7 @@ const ASSETS = [
       'Inside you\'ll find car sounds, impacts, bass hits, whooshes, braams, risers, nature sounds, punch sounds, and filmic textures that make every cut land harder.',
     ],
     includes: [
-      'ZIP (872.4MB) — 517 WAV files, 12 categories',
+      'ZIP (872.4MB), 517 WAV files, 12 categories',
     ],
     perks: [
       'Compatible with any editing software',
@@ -306,12 +308,18 @@ const GRADE_PACK = {
   slug: 'lutpg',
   title: 'Cinestoke LUTs + Powergrades',
   price: '$35.00',
+  checkoutUrl: 'https://buy.polar.sh/polar_cl_jh480rUCVqaieESyP9kCnhcGnZEe9ffImmwRh2UA9wc',
   icon: '🎨',
   paragraphs: [
-    'In this pack you will receive all my specially designed LUTs and my easy "One Click" Powergrades to enhance your videos to look straight out of a movie! Color grading can be hard for many, but these assets are simple and highly effective on your raw footage!',
-    'Includes 4 Powergrades: a clean Base grade with no exposure adjustments, plus De Drago, Glass, and Champagne Pow. These LUTs and Powergrades work best in DaVinci Resolve, but can be used in other software as well.',
+    'The exact LUTs and Powergrades behind every Cinestoke color grade. 4 Powergrades built for DaVinci Resolve and 3 matching .cube LUTs compatible with any software that accepts .cube files.',
+    'This is not a filter. It\'s the professional way to treat footage without 10,000 hours of learning time. Each Powergrade is a full node tree: exposure, white balance, saturation, skin, halation, grain, sharpen, and more. The CINESTOKE base grade ships with every node at neutral so you can build your own look from scratch. De Drago, Glass, and Champagne Pow are finished looks built on top of that same structure.',
   ],
-  includes: ['ZIP (94MB)', 'ZIP (82MB)'],
+  includes: ['ZIP (6.5MB), 4 Powergrades (.drx) + 3 LUTs (.cube)'],
+  perks: [
+    'Powergrades built for DaVinci Resolve',
+    'Download right after your purchase',
+    'Use in any project, for any client',
+  ],
   cover: lutsCover,
 };
 
@@ -1037,12 +1045,39 @@ const ShopBars = ({ onToggleLightMode }) => {
 
               <button
                 className="shop-add-to-cart"
-                style={{ display: 'block', width: '100%', padding: '16px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)', border: 'none', cursor: 'default', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', marginBottom: '20px', transition: 'opacity 0.2s ease' }}
-              >Coming Soon</button>
+                style={{
+                  display: 'block', width: '100%', padding: '16px',
+                  background: selectedGrade.checkoutUrl ? '#fff' : 'rgba(255,255,255,0.08)',
+                  color: selectedGrade.checkoutUrl ? '#000' : 'rgba(255,255,255,0.35)',
+                  border: 'none', cursor: selectedGrade.checkoutUrl ? 'pointer' : 'default',
+                  fontFamily: "'Bebas Neue', Impact, sans-serif",
+                  fontSize: '17px', letterSpacing: '4px',
+                  marginBottom: '20px', transition: 'opacity 0.2s ease',
+                }}
+                onMouseEnter={e => { if (selectedGrade.checkoutUrl) e.currentTarget.style.opacity = '0.85'; }}
+                onMouseLeave={e => { if (selectedGrade.checkoutUrl) e.currentTarget.style.opacity = '1'; }}
+                onClick={() => selectedGrade.checkoutUrl && window.open(selectedGrade.checkoutUrl, '_blank')}
+              >{selectedGrade.checkoutUrl ? 'Buy Now' : 'Coming Soon'}</button>
 
               {selectedGrade.paragraphs.map((p, i) => (
                 <p key={i} style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '15px', letterSpacing: 0, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, margin: '0 0 16px', fontWeight: 400 }}>{p}</p>
               ))}
+
+              {selectedGrade.perks && (
+                <ul style={{ listStyle: 'none', padding: 0, margin: '8px 0 28px' }}>
+                  {selectedGrade.perks.map(perk => (
+                    <li key={perk} style={{
+                      fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+                      fontSize: '14px', letterSpacing: 0, fontWeight: 400,
+                      color: 'rgba(255,255,255,0.65)', padding: '5px 0',
+                      display: 'flex', alignItems: 'center', gap: '10px',
+                    }}>
+                      <span style={{ color: '#fff', fontSize: '12px' }}>✓</span>
+                      {perk}
+                    </li>
+                  ))}
+                </ul>
+              )}
 
               <p style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '15px', letterSpacing: 0, fontWeight: 400, color: 'rgba(255,255,255,0.7)', lineHeight: 1.8, margin: '16px 0 32px' }}>
                 Have any issues?{' '}
@@ -1089,19 +1124,22 @@ const ShopBars = ({ onToggleLightMode }) => {
                 style={{ width: '100%', height: 'auto', display: 'block', marginBottom: '20px', border: '1px solid rgba(255,255,255,0.08)' }}
               />
               <p style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '15px', letterSpacing: 0, color: 'rgba(255,255,255,0.65)', lineHeight: 1.8, margin: '0 0 48px', fontWeight: 400 }}>
-                Simple. Clean. Apply the Powergrade, add contrast, turn on the effects, and maybe dial in some extra color — you're ready to go.
+                Apply the grade, set your exposure, add color, toggle on the effects. Same workflow every time. It's faster, and it keeps your work consistent.
               </p>
 
               {/* Tutorial */}
               <h3 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '32px', letterSpacing: '3px', color: '#fff', margin: '0 0 20px' }}>THE TUTORIAL</h3>
-              <div style={{ aspectRatio: '16/9', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.4)"><polygon points="5,3 19,12 5,21" /></svg>
-                </div>
-                <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '13px', letterSpacing: '3px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>COMING SOON</p>
+              <div style={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden' }}>
+                <iframe
+                  src="https://www.youtube.com/embed/tRQBeyuJCr0?cc_load_policy=0"
+                  title="Cinestoke LUTs + Powergrades Tutorial"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                />
               </div>
               <p style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '13px', letterSpacing: 0, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '12px 0 48px' }}>
-                A full walkthrough of how to install and apply the Powergrades in DaVinci Resolve — from importing the pack to applying your first grade.
+                A full walkthrough of how to install and apply the Powergrades in DaVinci Resolve. From importing the pack to applying your first grade.
               </p>
 
               {/* Examples */}
@@ -1113,12 +1151,16 @@ const ShopBars = ({ onToggleLightMode }) => {
                 <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '13px', letterSpacing: '3px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>COMING SOON</p>
               </div>
               <p style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '13px', letterSpacing: 0, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '12px 0 40px' }}>
-                Real client footage graded with this pack — showing what's possible straight out of the box with no extra adjustments.
+                Real client footage graded with this pack.
               </p>
 
               <button
-                style={{ display: 'block', width: '100%', padding: '15px', background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.35)', border: '1px solid rgba(255,255,255,0.12)', cursor: 'default', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px' }}
-              >Coming Soon</button>
+                className="shop-add-to-cart"
+                style={{ display: 'block', width: '100%', padding: '15px', background: '#fff', color: '#000', border: 'none', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', transition: 'opacity 0.2s ease' }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
+                onClick={() => window.open('https://buy.polar.sh/polar_cl_jh480rUCVqaieESyP9kCnhcGnZEe9ffImmwRh2UA9wc', '_blank')}
+              >Buy Now $35</button>
             </div>
           </div>
 
@@ -1210,7 +1252,7 @@ const ShopBars = ({ onToggleLightMode }) => {
               margin: '0 auto',
               lineHeight: 1.7,
             }}>
-              The exact site you're on — yours, with your brand, your clients, your reel.
+              The exact site you're on. Yours, with your brand, your clients, your reel.
             </p>
           </div>
 
@@ -1280,10 +1322,10 @@ const ShopBars = ({ onToggleLightMode }) => {
             }}>HOW IT WORKS</p>
             <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px', marginBottom: '40px' }}>
               {[
-                ['01 — SEND YOUR ASSETS', 'Your reels, client videos, logos, and anything else that represents your work.'],
-                ['02 — I BUILD YOUR SITE', 'Customized with your brand, your clients, and your case studies — on this exact stack.'],
-                ['03 — YOUR SITE GOES LIVE', 'On your own domain, fully tested on mobile and desktop, ready to close clients.'],
-                ['04 — I MANAGE EVERYTHING', 'New reel, new client, new copy — just send it over and it\'s handled.'],
+                ['01 SEND YOUR ASSETS', 'Your reels, client videos, logos, and anything else that represents your work.'],
+                ['02 I BUILD YOUR SITE', 'Customized with your brand, your clients, and your case studies on this exact stack.'],
+                ['03 YOUR SITE GOES LIVE', 'On your own domain, fully tested on mobile and desktop, ready to close clients.'],
+                ['04 I MANAGE EVERYTHING', 'New reel, new client, new copy. Just send it over and it\'s handled.'],
               ].map(([step, detail]) => (
                 <div key={step} style={{
                   padding: '22px 24px',
