@@ -33,6 +33,7 @@ const TABS = [
 ];
 
 const ALL_REVIEWS = [
+  { name: 'Jaron Wenger', rating: 5, productId: 'luts-powergrades', productTitle: 'Cinestoke LUTs + Powergrades', text: 'Using this Powergrade has defined my color grading workflow. Wouldn\'t change a thing 🔥', date: 'Jun 28, 2026' },
 ];
 
 const Stars = ({ count = 5 }) => (
@@ -99,7 +100,7 @@ const ReviewModal = ({ isOpen, onClose, onSubmitReview, productId, productTitle 
           <div style={{ textAlign: 'center', padding: '20px 0 10px' }}>
             <div style={{ fontSize: '28px', margin: '0 0 16px' }}><Stars count={rating} /></div>
             <h2 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '36px', letterSpacing: '3px', color: '#fff', margin: '0 0 12px' }}>Thanks for the review!</h2>
-            <p style={{ fontFamily: inter, fontSize: '15px', color: 'rgba(255,255,255,0.55)', margin: '0 0 32px', lineHeight: 1.7 }}>Your review has been submitted and is now visible below.</p>
+            <p style={{ fontFamily: inter, fontSize: '15px', color: 'rgba(255,255,255,0.55)', margin: '0 0 32px', lineHeight: 1.7 }}>Your review has been submitted.</p>
             <button onClick={handleClose} style={{ display: 'block', width: '100%', padding: '16px', background: '#fff', color: '#000', border: 'none', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px' }}>Close</button>
           </div>
         ) : (
@@ -152,6 +153,13 @@ const ReviewModal = ({ isOpen, onClose, onSubmitReview, productId, productTitle 
   );
 };
 
+const renderReviewText = (text) =>
+  text.split(/([\p{Emoji_Presentation}\p{Extended_Pictographic}]+)/gu).map((part, i) =>
+    /[\p{Emoji_Presentation}\p{Extended_Pictographic}]/u.test(part)
+      ? <span key={i} style={{ color: 'initial' }}>{part}</span>
+      : part
+  );
+
 const ReviewsSection = ({ currentProductId, onProductClick, localReviews = [], onWriteReview }) => {
   const [showAll, setShowAll] = React.useState(false);
   const currentProduct = REVIEW_PRODUCTS.find(p => p.id === currentProductId);
@@ -183,11 +191,15 @@ const ReviewsSection = ({ currentProductId, onProductClick, localReviews = [], o
         >WRITE A REVIEW</button>
       </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
-        <Stars count={5} />
-        <span style={{ fontFamily: inter, fontSize: '14px', color: 'rgba(255,255,255,0.55)', letterSpacing: 0 }}>5.0 Average store rating</span>
-      </div>
-      <p style={{ fontFamily: inter, fontSize: '14px', color: 'rgba(255,255,255,0.55)', letterSpacing: 0, margin: '0 0 24px' }}>{totalCount} store reviews</p>
+      {totalCount > 0 && (
+        <>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+            <Stars count={5} />
+            <span style={{ fontFamily: inter, fontSize: '14px', color: 'rgba(255,255,255,0.55)', letterSpacing: 0 }}>5.0 Average store rating</span>
+          </div>
+          <p style={{ fontFamily: inter, fontSize: '14px', color: 'rgba(255,255,255,0.55)', letterSpacing: 0, margin: '0 0 24px' }}>{totalCount} store {totalCount === 1 ? 'review' : 'reviews'}</p>
+        </>
+      )}
 
       {visible.map((review, i) => (
         <div key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.08)', padding: '24px 0', display: 'grid', gridTemplateColumns: window.innerWidth <= 768 ? '90px 1fr' : '160px 1fr', gap: window.innerWidth <= 768 ? '16px' : '32px' }}>
@@ -197,7 +209,7 @@ const ReviewsSection = ({ currentProductId, onProductClick, localReviews = [], o
           </div>
           <div>
             <Stars count={review.rating} />
-            <p style={{ fontFamily: inter, fontSize: '14px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.75, margin: '8px 0 12px', letterSpacing: 0, fontWeight: 400 }}>{review.text}</p>
+            <p style={{ fontFamily: inter, fontSize: '14px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.75, margin: '8px 0 12px', letterSpacing: 0, fontWeight: 400 }}>{renderReviewText(review.text)}</p>
             <button
               onClick={() => onProductClick(review.productId)}
               style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
