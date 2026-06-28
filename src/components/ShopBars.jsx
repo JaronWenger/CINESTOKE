@@ -19,13 +19,11 @@ import BGColorVideo from '../assets/CASESTUDIES/BGcolor.mp4';
 import BGRawVideo from '../assets/CASESTUDIES/BGraw.mp4';
 
 const SEARCH_ITEMS = [
-  { title: 'Sound FX', section: 'assets' },
-  { title: 'Overlays', section: 'assets' },
-  { title: 'Assets', section: 'assets' },
-  { title: 'De Drago Color Grade', section: 'grades' },
-  { title: 'Glass Color Grade', section: 'grades' },
-  { title: 'Champagne Pow Color Grade', section: 'grades' },
-  { title: 'Portfolio Website Template', section: 'template' },
+  { title: 'Cinestoke SFX Vol. 2',          section: 'assets',   productId: 'sound-fx',         subtitle: '$25.00',          keywords: ['sound effects', 'sfx', 'audio'] },
+  { title: 'Cinestoke SFX Vol. 1',          section: 'assets',   productId: 'sound-fx-1',       subtitle: '$15.00',          keywords: ['sound effects', 'sfx', 'audio'] },
+  { title: 'Cinestoke Overlays Pack',        section: 'assets',   productId: 'overlays',         subtitle: '$20.00',          keywords: ['transitions'] },
+  { title: 'Cinestoke LUTs + Powergrades',  section: 'grades',   productId: 'luts-powergrades', subtitle: '$35.00',          keywords: ['color grades', 'luts', 'color grading', 'davinci'] },
+  { title: 'Portfolio Website Template',     section: 'template', productId: null,               subtitle: 'Website Template', keywords: [] },
 ];
 
 const TABS = [
@@ -416,9 +414,11 @@ const ShopBars = ({ onToggleLightMode }) => {
   }, [isSearchOpen]);
 
   const searchResults = searchQuery.trim().length > 0
-    ? SEARCH_ITEMS.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    ? SEARCH_ITEMS.filter(item => {
+        const q = searchQuery.toLowerCase();
+        return item.title.toLowerCase().includes(q) ||
+          item.keywords.some(kw => kw.includes(q));
+      })
     : [];
 
   return (
@@ -480,10 +480,30 @@ const ShopBars = ({ onToggleLightMode }) => {
             {/* Results */}
             {searchResults.length > 0 && (
               <div>
-                {searchResults.map((item, i) => (
+                {searchResults.map((item, i) => {
+                  const coverImg = (() => {
+                    if (item.section === 'template') return cinestokesite;
+                    if (item.section === 'grades') return GRADE_PACK.cover;
+                    const asset = ASSETS.find(a => a.id === item.productId);
+                    return asset?.cover || null;
+                  })();
+                  return (
                   <div
                     key={item.title}
-                    onClick={() => { setSelected(item.section); setIsSearchOpen(false); }}
+                    onClick={() => {
+                      if (item.section === 'template') {
+                        setSelected('template');
+                      } else if (item.section === 'grades') {
+                        setSelected('grades');
+                        setSelectedGrade(GRADE_PACK);
+                      } else {
+                        const product = ASSETS.find(a => a.id === item.productId);
+                        if (product) setSelectedProduct(product);
+                        setSelected('assets');
+                      }
+                      setIsSearchOpen(false);
+                      window.scrollTo(0, 0);
+                    }}
                     style={{
                       display: 'flex', alignItems: 'center', gap: '16px',
                       padding: '16px 20px',
@@ -497,18 +517,23 @@ const ShopBars = ({ onToggleLightMode }) => {
                       width: '48px', height: '48px', flexShrink: 0,
                       background: '#111',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      overflow: 'hidden',
                     }}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                        <path d="M3 9h18M9 21V9" />
-                      </svg>
+                      {coverImg
+                        ? <img src={coverImg} alt={item.title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        : <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <path d="M3 9h18M9 21V9" />
+                          </svg>
+                      }
                     </div>
                     <div>
                       <p style={{ margin: 0, fontFamily: 'Arial, sans-serif', fontSize: '15px', color: '#111' }}>{item.title}</p>
-                      <p style={{ margin: '3px 0 0', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#888' }}>Coming Soon</p>
+                      <p style={{ margin: '3px 0 0', fontFamily: 'Arial, sans-serif', fontSize: '13px', color: '#888' }}>{item.subtitle}</p>
                     </div>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             )}
             {searchQuery.trim().length > 0 && searchResults.length === 0 && (
@@ -1144,14 +1169,17 @@ const ShopBars = ({ onToggleLightMode }) => {
 
               {/* Examples */}
               <h3 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '32px', letterSpacing: '3px', color: '#fff', margin: '0 0 20px' }}>EXAMPLES</h3>
-              <div style={{ aspectRatio: '16/9', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px' }}>
-                <div style={{ width: '56px', height: '56px', borderRadius: '50%', border: '2px solid rgba(255,255,255,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.4)"><polygon points="5,3 19,12 5,21" /></svg>
-                </div>
-                <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '13px', letterSpacing: '3px', color: 'rgba(255,255,255,0.3)', margin: 0 }}>COMING SOON</p>
+              <div style={{ position: 'relative', aspectRatio: '16/9', overflow: 'hidden' }}>
+                <iframe
+                  src="https://www.youtube.com/embed/enRR0Z80GCA"
+                  title="Cinestoke LUTs + Powergrades Examples"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', border: 'none' }}
+                />
               </div>
               <p style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '13px', letterSpacing: 0, color: 'rgba(255,255,255,0.4)', lineHeight: 1.7, margin: '12px 0 40px' }}>
-                Real client footage graded with this pack.
+                One workflow for every shot. See the before and after with the Cinestoke Powergrades.
               </p>
 
               <button
