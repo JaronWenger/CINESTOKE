@@ -1462,6 +1462,9 @@ const ShopBars = ({ onToggleLightMode }) => {
           </div>
         );
       })()}
+    <p style={{ textAlign: 'center', padding: '20px', fontFamily: "'Inter', -apple-system, sans-serif", fontSize: '12px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.3px', margin: 0 }}>
+      Powered by the <span onClick={() => window.location.href = '/shop/tmplt'} style={{ color: 'inherit', textDecoration: 'underline', cursor: 'default', fontFamily: 'inherit', fontSize: 'inherit', transition: 'color 0.2s ease, text-shadow 0.2s ease' }} onMouseEnter={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.8)'; e.currentTarget.style.textShadow = '0 0 12px rgba(255,255,255,0.6)'; }} onMouseLeave={e => { e.currentTarget.style.color = 'inherit'; e.currentTarget.style.textShadow = 'none'; }}>Cinestoke Template</span>.
+    </p>
     </div>
   );
 };
