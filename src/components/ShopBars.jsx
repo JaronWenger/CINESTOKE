@@ -3,7 +3,6 @@ import { useNavigate, useLocation, useParams } from 'react-router-dom';
 import useScrollReveal from '../hooks/useScrollReveal';
 import SlideColor from './SlideColor';
 import ContactV2 from './ContactV2';
-import IPhoneDisplay from './IPhoneDisplay';
 import cinestokesite from '../assets/cinestokesite.webp';
 import powergradePng from '../assets/SHOP/POWERGRADE.webp';
 import sfxV1Cover from '../assets/SHOP/SFXv1.webp';
@@ -11,6 +10,7 @@ import sfxV2Cover from '../assets/SHOP/SFXv2.webp';
 import lutsCover from '../assets/SHOP/LUTS.webp';
 import overlayCover from '../assets/SHOP/OVERLAYS.webp';
 import iphoneCinestokeScreenshot from '../assets/iphonecinestoke.webp';
+import iphoneFrameImg from '../assets/iPhone.webp';
 import smallWorldColorVideo from '../assets/CASESTUDIES/SmallWorldcolor.mp4';
 import smallWorldRawVideo from '../assets/CASESTUDIES/SmallWorldraw.mp4';
 import seadooColorVideo from '../assets/CASESTUDIES/Seadoocolor.mp4';
@@ -375,6 +375,12 @@ const ShopBars = ({ onToggleLightMode }) => {
   const [selectedGrade, setSelectedGrade] = useState(init.grade);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [templateView, setTemplateView] = useState('desktop');
+  const [templateTab, setTemplateTab] = useState('Overview');
+  const [visibleTab, setVisibleTab] = useState('Overview');
+  const [tabFading, setTabFading] = useState(false);
+  const [openFeatures, setOpenFeatures] = useState({});
+  const [openFaqs, setOpenFaqs] = useState({});
   const searchInputRef = useRef(null);
   const shopBarsRef = useRef(null);
   useScrollReveal(shopBarsRef);
@@ -384,6 +390,16 @@ const ShopBars = ({ onToggleLightMode }) => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  const handleTabChange = (tab) => {
+    if (tab === templateTab) return;
+    setTemplateTab(tab);
+    setTabFading(true);
+    setTimeout(() => {
+      setVisibleTab(tab);
+      setTabFading(false);
+    }, 110);
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -1263,209 +1279,189 @@ const ShopBars = ({ onToggleLightMode }) => {
         </div>
       )}
 
-      {selected === 'template' && (
-        <div className="shop-content-reveal">
+      {selected === 'template' && (() => {
+        const inter = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+        const body = { fontFamily: inter, fontSize: '15px', color: 'rgba(255,255,255,0.55)', letterSpacing: 0, lineHeight: 1.8, margin: 0 };
+        const bold = { color: '#fff', fontWeight: 600, fontFamily: 'inherit' };
+        const sectionLabel = { fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '19px', letterSpacing: '2px', color: '#fff', margin: '0 0 10px' };
 
-          {/* ── 1. HOOK ── */}
-          <div style={{ textAlign: 'center', padding: '32px 40px 24px' }}>
-            <p style={{
-              fontFamily: 'Impact, sans-serif',
-              fontSize: '12px',
-              letterSpacing: '5px',
-              color: 'rgba(255,255,255,0.35)',
-              marginBottom: '16px',
-            }}>FOR VIDEOGRAPHERS &amp; VISUAL CREATIVES</p>
-            <h2 style={{
-              fontFamily: "'Bebas Neue', Impact, sans-serif",
-              fontSize: 'clamp(48px, 8vw, 96px)',
-              letterSpacing: '4px',
-              color: '#fff',
-              margin: '0 0 20px',
-              lineHeight: 1,
-            }}>Your Portfolio.<br />Built to Convert.</h2>
-            <p style={{
-              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-              fontSize: '17px',
-              color: 'rgba(255,255,255,0.6)',
-              letterSpacing: 0,
-              maxWidth: '520px',
-              margin: '0 auto',
-              lineHeight: 1.7,
-            }}>
-              The exact site you're on. Yours, with your brand, your clients, your reel.
-            </p>
-          </div>
+        const FEATURES = [
+          { name: 'Background video hero', desc: 'Your reel plays full-screen the moment someone lands on your site. First impression locked.' },
+          { name: 'Client case study carousel', desc: 'A dedicated slide carousel for each client. Add as many clients as you want.' },
+          { name: 'Before/after color grade slider', desc: 'Show the difference your grade makes. Drag to reveal the before and after side by side.' },
+          { name: 'Infinite image gallery', desc: 'A smooth, auto-scrolling strip of your photos that loops endlessly.' },
+          { name: 'Digital shop', desc: 'Polar-powered checkout with instant download delivery. No backend required.' },
+          { name: 'Contact form', desc: 'Clients fill out a form and it lands straight in your inbox. Ready to go from day one.' },
+          { name: 'Light & dark mode', desc: 'Persisted to localStorage across sessions. One-click toggle via the logo.' },
+          { name: 'Hosting included', desc: 'Fully managed hosting. Fast load times worldwide. Nothing for you to set up or maintain.' },
+          { name: 'Mobile responsive', desc: 'Dedicated mobile layouts, videos, and interactions. Tested on iOS & Android.' },
+          { name: 'Video embeds', desc: 'Embed your YouTube or Vimeo links to display videos anywhere on the site.' },
+          { name: 'Link landing page', desc: 'A clean page built for your social media bio link. Everything in one place: your reel, work, shop, and contact.', link: 'https://www.cinestoke.com/links' },
+          { name: 'Ongoing updates included', desc: 'New client, new reel, new copy. Send it over and it\'s handled.' },
+        ];
 
-          {/* ── 2. DEVICES ── */}
-          {isMobile ? (
-            <div style={{ maxWidth: '980px', margin: '0 auto 40px', padding: '0 24px' }}>
-              <img
-                src={cinestokesite}
-                alt="Cinestoke website on MacBook"
-                style={{ width: '100%', height: 'auto', display: 'block' }}
-              />
-            </div>
-          ) : (
-            <div style={{
-              maxWidth: '980px',
-              margin: '0 auto 40px',
-              padding: '0 40px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0px',
-            }}>
-              <div style={{ flex: 1 }}>
-                <img
-                  src={cinestokesite}
-                  alt="Cinestoke website on MacBook"
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-              </div>
-              <div style={{ flex: '0 0 420px', marginLeft: '-60px' }}>
-                <IPhoneDisplay screenshot={iphoneCinestokeScreenshot} alt="Cinestoke website on iPhone" />
-              </div>
-            </div>
-          )}
+        const FAQS = [
+          { q: 'What do I need to provide?', a: 'Your reels, client videos, logos, brand colors, and any copy you want on the site. If you don\'t have files ready, just send me your social handles and I can pull content directly from there.' },
+          { q: 'How long does the build take?', a: 'The build can be done in a day. Send your assets and I\'ll get it live fast.' },
+          { q: 'Do you host it for me?', a: 'Yes. I handle all the hosting for a small monthly fee. You own your domain and it points to your site, but the infrastructure is fully managed on my end.' },
+          { q: 'What about my domain?', a: 'You buy and own your domain through any registrar (like Namecheap or Google Domains). I handle the rest: pointing it to your site, SSL, all of it. You keep full ownership of it no matter what.' },
+          { q: 'How do updates work?', a: 'Just send me what you need changed and I handle it. New client, new reel, copy update. Whatever it is, I\'ll get it live.' },
+          { q: 'Is the site optimized for SEO?', a: 'Yes. Try typing "cinestoke" into Google right now. This site is #1. Yours will be built the same way.' },
+          { q: 'Can I add more clients later?', a: 'Absolutely. Adding clients is one of the most common requests. Send your footage and I\'ll get it in.' },
+          { q: 'Do I need to know how to code?', a: 'Not at all. Everything is handled for you: setup, deployment, and ongoing changes.' },
+          { q: 'Are there any monthly fees?', a: 'There is a small monthly hosting fee. Reach out and I\'ll walk you through exactly what\'s included.' },
+        ];
 
-          {/* ── 3. CALLOUT ── */}
-          <div style={{ maxWidth: '760px', margin: '0 auto 64px', padding: '0 40px' }}>
-            <div style={{
-              border: '1px solid rgba(255,255,255,0.18)',
-              padding: '28px 32px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '20px',
-            }}>
-              <div className="shop-callout-bar" style={{ width: '5px', minHeight: '52px', backgroundColor: '#fff', flexShrink: 0 }} />
-              <p style={{
-                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-                fontSize: '16px',
-                letterSpacing: 0,
-                color: 'rgba(255,255,255,0.7)',
-                margin: 0,
-                lineHeight: 1.75,
-              }}>
-                You didn't spend years learning this craft to close clients on a drag-and-drop page. Your footage deserves a site that was built with the same intention.
+        return (
+          <div className="shop-content-reveal">
+
+            {/* ── HOOK (full width) ── */}
+            <div style={{ textAlign: 'center', padding: '32px 40px 40px' }}>
+              <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '12px', letterSpacing: '5px', color: 'rgba(255,255,255,0.35)', marginBottom: '16px' }}>CINESTOKE TEMPLATE</p>
+              <h2 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 'clamp(48px, 8vw, 96px)', letterSpacing: '4px', color: '#fff', margin: '0 0 20px', lineHeight: 1 }}>Your Portfolio.<br />Built to Close.</h2>
+              <p style={{ fontFamily: inter, fontSize: '17px', color: 'rgba(255,255,255,0.6)', letterSpacing: 0, maxWidth: '560px', margin: '0 auto', lineHeight: 1.7 }}>
+                The exact site you're on right now. Custom-built for you, on your domain, ready to close clients from day one.
               </p>
             </div>
-          </div>
 
-          {/* ── 4. HOW IT WORKS + INCLUDED ── */}
-          <div style={{ maxWidth: '860px', margin: '0 auto 72px', padding: '0 40px' }}>
-            <p style={{
-              fontFamily: 'Impact, sans-serif',
-              fontSize: '12px',
-              letterSpacing: '5px',
-              color: 'rgba(255,255,255,0.35)',
-              marginBottom: '28px',
-              textAlign: 'center',
-            }}>HOW IT WORKS</p>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px', marginBottom: '40px' }}>
-              {[
-                ['01 SEND YOUR ASSETS', 'Your reels, client videos, logos, and anything else that represents your work.'],
-                ['02 I BUILD YOUR SITE', 'Customized with your brand, your clients, and your case studies on this exact stack.'],
-                ['03 YOUR SITE GOES LIVE', 'On your own domain, fully tested on mobile and desktop, ready to close clients.'],
-                ['04 I MANAGE EVERYTHING', 'New reel, new client, new copy. Just send it over and it\'s handled.'],
-              ].map(([step, detail]) => (
-                <div key={step} style={{
-                  padding: '22px 24px',
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                }}>
-                  <p style={{
-                    fontFamily: "'Bebas Neue', Impact, sans-serif",
-                    fontSize: '17px',
-                    letterSpacing: '2px',
-                    color: '#fff',
-                    margin: '0 0 6px',
-                  }}>{step}</p>
-                  <p style={{
-                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-                    fontSize: '13px',
-                    letterSpacing: 0,
-                    color: 'rgba(255,255,255,0.45)',
-                    margin: 0,
-                    lineHeight: 1.6,
-                  }}>{detail}</p>
+            {/* ── DEVICES (full width) ── */}
+            {isMobile ? (
+              <div style={{ maxWidth: '980px', margin: '0 auto 40px', padding: '0 24px' }}>
+                <img src={cinestokesite} alt="Cinestoke website on MacBook" style={{ width: '100%', height: 'auto', display: 'block' }} />
+              </div>
+            ) : (
+              <>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
+                  <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: '999px', padding: '4px', gap: '2px' }}>
+                    {[['desktop', 'Desktop'], ['mobile', 'Mobile']].map(([val, lbl]) => (
+                      <button key={val} onClick={() => setTemplateView(val)} style={{ padding: '8px 24px', borderRadius: '999px', border: 'none', cursor: 'pointer', fontFamily: inter, fontSize: '14px', fontWeight: 500, letterSpacing: '0.5px', transition: 'background 0.2s ease, color 0.2s ease', background: templateView === val ? '#fff' : 'transparent', color: templateView === val ? '#000' : 'rgba(255,255,255,0.45)' }}>{lbl}</button>
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '10px' }}>
-              {[
-                ['Cinematic video carousel', 'Infinite scroll, auto-playing'],
-                ['Client case study system', 'Up to 7 clients, fully configurable'],
-                ['Color grade slider', 'Before/after comparison, 60fps drag'],
-                ['YouTube reel integration', 'One-click modal, no embed lag'],
-                ['Image gallery', 'Infinite scroll photo strip'],
-                ['Mobile responsive', 'Tested on iOS & Android'],
-              ].map(([feature, detail]) => (
-                <div key={feature} style={{
-                  padding: '18px 22px',
-                  background: 'rgba(255,255,255,0.03)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                }}>
-                  <p style={{
-                    fontFamily: "'Bebas Neue', Impact, sans-serif",
-                    fontSize: '17px',
-                    letterSpacing: '2px',
-                    color: '#fff',
-                    margin: '0 0 3px',
-                  }}>✓  {feature}</p>
-                  <p style={{
-                    fontFamily: 'Impact, sans-serif',
-                    fontSize: '12px',
-                    letterSpacing: '1px',
-                    color: 'rgba(255,255,255,0.35)',
-                    margin: 0,
-                  }}>{detail}</p>
+                <div style={{ maxWidth: '900px', margin: '0 auto 56px', padding: '0 40px' }}>
+                  <div style={{ position: 'relative', width: '100%', aspectRatio: '1.4', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                    {templateView === 'desktop' ? (
+                      <img src={cinestokesite} alt="Cinestoke website on MacBook" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', transform: 'scale(1.13)' }} />
+                    ) : (
+                      <div style={{ position: 'relative', height: '100%', aspectRatio: '1 / 1' }}>
+                        <div style={{ position: 'absolute', top: '3.5%', left: '5.5%', width: '89%', height: '93%', backgroundImage: `url(${iphoneCinestokeScreenshot})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', borderRadius: '8%', overflow: 'hidden', zIndex: 1 }} />
+                        <img src={iphoneFrameImg} alt="Cinestoke website on iPhone" style={{ position: 'relative', width: '100%', height: '100%', display: 'block', zIndex: 2 }} />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ))}
+              </>
+            )}
+
+            {/* ── TWO-COLUMN LAYOUT ── */}
+            <div style={{ display: 'flex', gap: isMobile ? 0 : '64px', maxWidth: '1100px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 40px', flexDirection: isMobile ? 'column' : 'row', alignItems: 'flex-start' }}>
+
+              {/* LEFT COLUMN */}
+              <div style={{ flex: '1 1 0', minWidth: 0, paddingBottom: '0', minHeight: isMobile ? 'auto' : '520px' }}>
+
+                {/* About — above tabs */}
+                <p style={{ ...body, marginBottom: '32px' }}>
+                  <span style={{ fontStyle: 'italic', fontFamily: 'inherit' }}>The Cinestoke Template</span> is a <strong style={bold}>done-for-you</strong> portfolio crafted for creative filmmakers. Built on years of industry experience, it addresses all needs of filmmakers, photographers, production studios, and video creators. Showcase your work and close leads with a site that moves as fast as your footage, sell digital products to generate passive income, and tell client stories with a full case study system.
+                </p>
+
+                {/* TABS */}
+                <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.12)', marginBottom: '40px' }}>
+                  {['Overview', 'License', 'Support', 'FAQ'].map(tab => (
+                    <button key={tab} onClick={() => handleTabChange(tab)} style={{ background: 'none', border: 'none', borderBottom: templateTab === tab ? '2px solid #fff' : '2px solid transparent', marginBottom: '-1px', color: templateTab === tab ? '#fff' : 'rgba(255,255,255,0.4)', cursor: 'pointer', fontFamily: inter, fontSize: '14px', fontWeight: templateTab === tab ? 500 : 400, padding: '0 20px 14px', transition: 'color 0.2s ease, border-color 0.2s ease' }}>{tab}</button>
+                  ))}
+                </div>
+
+                {/* TAB CONTENT — fades between tabs */}
+                <div style={{ opacity: tabFading ? 0 : 1, transition: 'opacity 0.12s ease' }}>
+
+                {/* OVERVIEW */}
+                {visibleTab === 'Overview' && (
+                  <>
+                    {/* Sub-sections */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', marginBottom: '56px', textAlign: 'left' }}>
+                      <div><p style={sectionLabel}>For Photographers &amp; Filmmakers</p><p style={body}>Videographers and production studios use this site as their <strong style={bold}>go-to portfolio</strong>. Display their work, attract better clients, and build a presence that matches the quality of their craft.</p></div>
+                      <div><p style={sectionLabel}>Built-In Shop Included</p><p style={body}>The template includes the full shop you're browsing right now. Sell presets, LUTs, overlays, or any digital product directly from your site. <strong style={bold}>Instant delivery. No platform cut.</strong> Powered by Polar with instant delivery.</p></div>
+                      <div><p style={sectionLabel}>Customizable in 5 Minutes</p><p style={body}>Send your assets (reels, client videos, logos) and your site ships within a day. Every detail is handled. Change your look, update a client, swap your reel. <strong style={bold}>Just send it over and it's live.</strong></p></div>
+                      <div><p style={sectionLabel}>Ongoing Support Included</p><p style={body}>This isn't a handoff-and-goodbye. New client won? Add them. Shot a new reel? It's up. Update colors and appearance? Done. <strong style={bold}>Your site stays current</strong> as your business grows.</p></div>
+                    </div>
+
+                  </>
+                )}
+
+                {/* LICENSE */}
+                {visibleTab === 'License' && (
+                  <div>
+                    <p style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '24px', letterSpacing: '2px', color: '#fff', margin: '0 0 20px' }}>Single Use License</p>
+                    <p style={{ ...body, marginBottom: '24px', fontSize: '16px', color: 'rgba(255,255,255,0.65)' }}>Can only be used by you or one client for one end product. You cannot resell or redistribute this site in its original or modified state.</p>
+                    <p style={{ ...body, fontSize: '15px' }}>This license covers the custom build of the Cinestoke portfolio for a single brand or individual. Each new client requires a separate engagement.</p>
+                  </div>
+                )}
+
+                {/* SUPPORT */}
+                {visibleTab === 'Support' && (
+                  <div>
+                    <p style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '24px', letterSpacing: '2px', color: '#fff', margin: '0 0 8px' }}>24/7 Support</p>
+                    <p style={{ ...body, marginBottom: '32px', fontSize: '16px', color: 'rgba(255,255,255,0.65)' }}>Questions about your build, updates, or anything on the site? Reach out and I'll get back to you right away. Typically within a few hours.</p>
+                    <button onClick={() => setIsContactOpen(true)} className="shop-get-in-touch" style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '16px', letterSpacing: '4px', color: '#000', backgroundColor: '#fff', padding: '14px 40px', border: 'none', cursor: 'pointer', transition: 'opacity 0.2s ease' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.85'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>GET IN TOUCH</button>
+                  </div>
+                )}
+
+                {/* FAQ */}
+                {visibleTab === 'FAQ' && (
+                  <div>
+                    {FAQS.map((faq, i) => (
+                      <div key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.1)', padding: '0' }}>
+                        <button onClick={() => setOpenFaqs(s => ({ ...s, [i]: !s[i] }))} style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 0', gap: '16px', textAlign: 'left' }}>
+                          <span style={{ fontFamily: inter, fontSize: '15px', color: '#fff', fontWeight: 500, letterSpacing: 0 }}>{faq.q}</span>
+                          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '20px', lineHeight: 1, flexShrink: 0, fontWeight: 300 }}>{openFaqs[i] ? '−' : '+'}</span>
+                        </button>
+                        <div style={{ display: 'grid', gridTemplateRows: openFaqs[i] ? '1fr' : '0fr', transition: 'grid-template-rows 0.35s ease' }}>
+                          <div style={{ overflow: 'hidden' }}>
+                            <p style={{ ...body, paddingBottom: '20px' }}>{faq.a}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }} />
+                  </div>
+                )}
+
+                </div> {/* end fade wrapper */}
+              </div>
+
+              {/* RIGHT COLUMN — features accordion */}
+              <div style={{ flex: isMobile ? '1 1 auto' : '0 0 260px', paddingTop: isMobile ? '0' : '58px', width: isMobile ? '100%' : undefined }}>
+                <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '12px', letterSpacing: '5px', color: 'rgba(255,255,255,0.35)', marginBottom: '4px' }}>FEATURES</p>
+                {FEATURES.map((f, i) => (
+                  <div key={i} style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                    <button onClick={() => setOpenFeatures(s => ({ ...s, [i]: !s[i] }))} style={{ width: '100%', background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '10px', padding: '13px 0', textAlign: 'left' }}>
+                      <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', flexShrink: 0 }}>✓</span>
+                      <span style={{ flex: 1, fontFamily: inter, fontSize: '13px', color: '#fff', letterSpacing: 0, fontWeight: 500 }}>{f.name}</span>
+                      <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: '16px', lineHeight: 1, flexShrink: 0, fontWeight: 300 }}>{openFeatures[i] ? '×' : '+'}</span>
+                    </button>
+                    <div style={{ display: 'grid', gridTemplateRows: openFeatures[i] ? '1fr' : '0fr', transition: 'grid-template-rows 0.35s ease' }}>
+                      <div style={{ overflow: 'hidden' }}>
+                        <p style={{ fontFamily: inter, fontSize: '13px', color: 'rgba(255,255,255,0.5)', letterSpacing: 0, lineHeight: 1.7, margin: f.link ? '0 0 8px' : '0 0 14px', paddingLeft: '22px' }}>{f.desc}</p>
+                        {f.link && <a href={f.link} target="_blank" rel="noreferrer" style={{ display: 'block', fontFamily: inter, fontSize: '12px', color: 'rgba(255,255,255,0.35)', letterSpacing: 0, paddingLeft: '22px', marginBottom: '14px', textDecoration: 'underline' }}>See example</a>}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)' }} />
+              </div>
+
             </div>
-          </div>
 
-          {/* ── 5. CTA ── */}
-          <div style={{
-            textAlign: 'center',
-            borderTop: '1px solid rgba(255,255,255,0.1)',
-            padding: '64px 40px 80px',
-          }}>
-            <p style={{
-              fontFamily: "'Bebas Neue', Impact, sans-serif",
-              fontSize: '52px',
-              letterSpacing: '6px',
-              color: '#fff',
-              margin: '0 0 6px',
-            }}>LET'S BUILD YOUR SITE</p>
-            <p style={{
-              fontFamily: 'Impact, sans-serif',
-              fontSize: '12px',
-              letterSpacing: '3px',
-              color: 'rgba(255,255,255,0.3)',
-              margin: '0 0 36px',
-            }}>REACH OUT AND WE'LL TALK THROUGH YOUR PROJECT</p>
-            <button
-              onClick={() => setIsContactOpen(true)}
-              className="shop-get-in-touch"
-              style={{
-                fontFamily: "'Bebas Neue', Impact, sans-serif",
-                fontSize: '18px',
-                letterSpacing: '4px',
-                color: '#000',
-                backgroundColor: '#fff',
-                padding: '16px 56px',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'opacity 0.2s ease',
-              }}
-              onMouseEnter={e => e.currentTarget.style.opacity = '0.85'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '1'}
-            >
-              GET IN TOUCH
-            </button>
-          </div>
+            {/* ── CTA (full width, below two-column) ── */}
+            <div style={{ textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '48px 40px 80px', marginTop: '0' }}>
+              <p style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 'clamp(36px, 6vw, 56px)', letterSpacing: '6px', color: '#fff', margin: '0 0 8px' }}>LET'S BUILD YOUR SITE</p>
+              <p style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '15px', letterSpacing: 0, color: 'rgba(255,255,255,0.5)', margin: '0 0 36px' }}>Send your assets and you'll have a site worth sending to clients.</p>
+              <button onClick={() => setIsContactOpen(true)} className="shop-get-in-touch" style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '18px', letterSpacing: '4px', color: '#000', backgroundColor: '#fff', padding: '16px 56px', border: 'none', cursor: 'pointer', transition: 'opacity 0.2s ease' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.85'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>GET IN TOUCH</button>
+            </div>
 
-        </div>
-      )}
+          </div>
+        );
+      })()}
     </div>
   );
 };
