@@ -1928,7 +1928,7 @@ video {
 .bars-section .mui-box1 > *,
 .bars-section .mui-box2 > * {
   opacity: 0;
-  transition: opacity 0.32s ease;
+  transition: opacity 0.32s ease, filter 0.3s ease;
 }
 
 .bars-section.is-visible .bars-hline { transform: scaleX(1); }
@@ -2188,6 +2188,7 @@ body.light-mode .clients-fade-right {
 }
 .shop-page * {
   transition: color 0.5s ease, border-color 0.5s ease, background-color 0.5s ease;
+  cursor: default !important;
 }
 /* Shop page */
 body.light-mode .shop-page {

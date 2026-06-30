@@ -294,7 +294,7 @@ const Main = ({ onToggleLightMode }) => {
           </svg>
         </div>
       )}
-      <div className='overlay' onClick={() => setIsReelOpen(true)} style={{ cursor: 'pointer', pointerEvents: 'auto' }} />
+      <div className='overlay' />
       {/* Render appropriate video based on screen size */}
       <video
         ref={videoRef}
@@ -312,7 +312,7 @@ const Main = ({ onToggleLightMode }) => {
         // Disable picture-in-picture for better performance
         disablePictureInPicture
       />
-      <div className='cinestoke' onClick={() => setIsReelOpen(true)} style={{ cursor: 'pointer' }}>
+      <div className='cinestoke' onClick={() => setIsReelOpen(true)}>
         <h1>C I N E S T O K E</h1>
       </div>
       <div className="main-video-bottom-fade" />

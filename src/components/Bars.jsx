@@ -24,7 +24,7 @@ const Bars = ({ onOpenReel, onScrollToStudies, onToggleLightMode }) => {
         <div className="vertical-line remove" />
         <FilmIcon width="100" height="100" className="film-icon" />
         <div className="vertical-line short" />
-        <p className="cinestoke-text" onClick={onOpenReel} style={{ cursor: 'pointer' }}>CINESTOKE</p>
+        <p className="cinestoke-text" onClick={onOpenReel}>CINESTOKE</p>
         <div className="vertical-line short" />
         <DroneIcon width="100" height="100" className="drone-icon" />
         <div className="vertical-line remove" />
@@ -39,13 +39,13 @@ const Bars = ({ onOpenReel, onScrollToStudies, onToggleLightMode }) => {
       <div className="mui-box2">
         <div className="vertical-line2black remove" />
         <div className='twotext'>
-          <p className="concept-text" style={{ cursor: 'pointer' }} onClick={onScrollToStudies}>Case Studies</p>
+          <p className="concept-text" onClick={onScrollToStudies}>Case Studies</p>
         </div>
         <div className="vertical-line2 remove" />
-        <WingsIcon width="400" height="100" className="wings-icon" onClick={onToggleLightMode} style={{ cursor: 'pointer' }} />
+        <WingsIcon width="400" height="100" className="wings-icon" onClick={onToggleLightMode} />
         <div className="vertical-line2 remove" />
         <div className='twotext'>
-          <p className="moments-text" onClick={() => navigate('/shop')} style={{ cursor: 'pointer' }}>Shop</p>
+          <p className="moments-text" onClick={() => navigate('/shop')}>Shop</p>
         </div>
         <div className="vertical-line2black remove" />
       </div>
