@@ -858,7 +858,7 @@ const ShopBars = ({ onToggleLightMode }) => {
 
               {/* Buy Now */}
               <button
-                className="shop-add-to-cart"
+                className="shop-add-to-cart buy_now_click"
                 style={{
                   display: 'block', width: '100%', padding: '16px',
                   background: selectedProduct.checkoutUrl ? '#fff' : 'rgba(255,255,255,0.08)',
@@ -1081,7 +1081,7 @@ const ShopBars = ({ onToggleLightMode }) => {
               <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '22px', letterSpacing: '1px', color: '#fff', margin: '0 0 28px' }}>{selectedGrade.price}</p>
 
               <button
-                className="shop-add-to-cart"
+                className="shop-add-to-cart buy_now_click"
                 style={{
                   display: 'block', width: '100%', padding: '16px',
                   background: selectedGrade.checkoutUrl ? '#fff' : 'rgba(255,255,255,0.08)',
@@ -1195,11 +1195,11 @@ const ShopBars = ({ onToggleLightMode }) => {
               </p>
 
               <button
-                className="shop-add-to-cart"
+                className="shop-add-to-cart buy_now_click"
                 style={{ display: 'block', width: '100%', padding: '15px', background: '#fff', color: '#000', border: 'none', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', transition: 'opacity 0.2s ease' }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
                 onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-                onClick={() => window.open('https://buy.polar.sh/polar_cl_jh480rUCVqaieESyP9kCnhcGnZEe9ffImmwRh2UA9wc', '_blank')}
+                onClick={() => window.open(GRADE_PACK.checkoutUrl, '_blank')}
               >Buy Now $35</button>
             </div>
           </div>
