@@ -13,7 +13,7 @@ import iphoneFrameImg from '../assets/iPhone.png';
 import iPhoneScreenPng from '../assets/iPhoneScreen.png';
 import macbookPng from '../assets/Macbook.png';
 import macbookScreenPng from '../assets/MacbookScreen.png';
-import cinestokeWebp from '../assets/cinestoke.webp';
+
 import smallWorldColorVideo from '../assets/CASESTUDIES/SmallWorldcolor.mp4';
 import smallWorldRawVideo from '../assets/CASESTUDIES/SmallWorldraw.mp4';
 import seadooColorVideo from '../assets/CASESTUDIES/Seadoocolor.mp4';
