@@ -372,6 +372,7 @@ const ShopBars = ({ onToggleLightMode }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isContactOpen, setIsContactOpen] = useState(false);
+  const [contactMessage, setContactMessage] = useState('');
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [reviewProduct, setReviewProduct] = useState({ id: '', title: '' });
   const [localReviews, setLocalReviews] = useState([]);
@@ -714,7 +715,7 @@ const ShopBars = ({ onToggleLightMode }) => {
         </div>
       )}
 
-      <ContactV2 isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} subtitle="Have any questions or comments? Use this form to contact me at any time." formKey="ba5f1fec-0276-4fe9-b2f5-2c0a060201a1" subject="CINESTOKE SHOP QUERY" />
+      <ContactV2 isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} subtitle="Have any questions or comments? Use this form to contact me at any time." formKey="ba5f1fec-0276-4fe9-b2f5-2c0a060201a1" subject="CINESTOKE SHOP QUERY" defaultMessage={contactMessage} />
       <ReviewModal
         isOpen={isReviewOpen}
         onClose={() => setIsReviewOpen(false)}
@@ -1698,7 +1699,7 @@ const ShopBars = ({ onToggleLightMode }) => {
                   <div>
                     <p style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '24px', letterSpacing: '2px', color: '#fff', margin: '0 0 8px' }}>24/7 Support</p>
                     <p style={{ ...body, marginBottom: '32px', fontSize: '16px', color: 'rgba(255,255,255,0.65)' }}>Questions about your build, updates, or anything on the site? Reach out and I'll get back to you right away. Typically within a few hours.</p>
-                    <button onClick={() => setIsContactOpen(true)} className="shop-get-in-touch" style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '16px', letterSpacing: '4px', color: '#000', backgroundColor: '#fff', padding: '14px 40px', border: 'none', cursor: 'pointer', transition: 'opacity 0.2s ease' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.85'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>GET IN TOUCH</button>
+                    <button onClick={() => { setContactMessage(''); setIsContactOpen(true); }} className="shop-get-in-touch" style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '16px', letterSpacing: '4px', color: '#000', backgroundColor: '#fff', padding: '14px 40px', border: 'none', cursor: 'pointer', transition: 'opacity 0.2s ease' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.85'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>GET IN TOUCH</button>
                   </div>
                 )}
 
@@ -1752,7 +1753,7 @@ const ShopBars = ({ onToggleLightMode }) => {
             <div style={{ textAlign: 'center', borderTop: '1px solid rgba(255,255,255,0.1)', padding: '48px 40px 80px', marginTop: '0' }}>
               <p style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 'clamp(36px, 6vw, 56px)', letterSpacing: '6px', color: '#fff', margin: '0 0 8px' }}>LET'S BUILD YOUR SITE</p>
               <p style={{ fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", fontSize: '15px', letterSpacing: 0, color: 'rgba(255,255,255,0.5)', margin: '0 0 36px' }}>Send your assets and you'll have a site worth sending to clients.</p>
-              <button onClick={() => setIsContactOpen(true)} className="shop-get-in-touch" style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '18px', letterSpacing: '4px', color: '#000', backgroundColor: '#fff', padding: '16px 56px', border: 'none', cursor: 'pointer', transition: 'opacity 0.2s ease' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.85'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>GET IN TOUCH</button>
+              <button onClick={() => { setContactMessage('I want this site!!!'); setIsContactOpen(true); }} className="shop-get-in-touch" style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '18px', letterSpacing: '4px', color: '#000', backgroundColor: '#fff', padding: '16px 56px', border: 'none', cursor: 'pointer', transition: 'opacity 0.2s ease' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.85'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>GET IN TOUCH</button>
             </div>
 
             </div>

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Contact.css';
 
-const ContactV2 = ({ isOpen, onClose, subtitle, formKey = '152bc921-6006-46a7-a309-9c58d44bff4a', subject = 'CINESTOKE HOMEPAGE' }) => {
+const ContactV2 = ({ isOpen, onClose, subtitle, formKey = '152bc921-6006-46a7-a309-9c58d44bff4a', subject = 'CINESTOKE HOMEPAGE', defaultMessage = '' }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -10,6 +10,13 @@ const ContactV2 = ({ isOpen, onClose, subtitle, formKey = '152bc921-6006-46a7-a3
 
   const [statusMessage, setStatusMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setFormData(prev => ({ ...prev, message: defaultMessage }));
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
