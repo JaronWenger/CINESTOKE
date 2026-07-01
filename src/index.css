@@ -1926,7 +1926,7 @@ video {
 .bars-section .mui-box1 > *,
 .bars-section .mui-box2 > * {
   opacity: 0;
-  transition: opacity 0.32s ease, filter 0.3s ease;
+  transition: opacity 0.32s ease;
 }
 
 .bars-section.is-visible .bars-hline { transform: scaleX(1); }
