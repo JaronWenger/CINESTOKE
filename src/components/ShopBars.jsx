@@ -9,8 +9,11 @@ import sfxV1Cover from '../assets/SHOP/SFXv1.webp';
 import sfxV2Cover from '../assets/SHOP/SFXv2.webp';
 import lutsCover from '../assets/SHOP/LUTS.webp';
 import overlayCover from '../assets/SHOP/OVERLAYS.webp';
-import iphoneCinestokeScreenshot from '../assets/iphonecinestoke.webp';
-import iphoneFrameImg from '../assets/iPhone.webp';
+import iphoneFrameImg from '../assets/iPhone.png';
+import iPhoneScreenPng from '../assets/iPhoneScreen.png';
+import macbookPng from '../assets/Macbook.png';
+import macbookScreenPng from '../assets/MacbookScreen.png';
+import cinestokeWebp from '../assets/cinestoke.webp';
 import smallWorldColorVideo from '../assets/CASESTUDIES/SmallWorldcolor.mp4';
 import smallWorldRawVideo from '../assets/CASESTUDIES/SmallWorldraw.mp4';
 import seadooColorVideo from '../assets/CASESTUDIES/Seadoocolor.mp4';
@@ -381,6 +384,24 @@ const ShopBars = ({ onToggleLightMode }) => {
   const [tabFading, setTabFading] = useState(false);
   const [openFeatures, setOpenFeatures] = useState({});
   const [openFaqs, setOpenFaqs] = useState({});
+  const [iframesReady, setIframesReady] = useState(false);
+  const [deviceVisible, setDeviceVisible] = useState(false);
+  const [deviceSectionVisible, setDeviceSectionVisible] = useState(init.tab === 'template');
+  const [screenPopup, setScreenPopup] = useState({ visible: false, x: 0, y: 0 });
+  const [screenPopupIn, setScreenPopupIn] = useState(false);
+  const screenPopupRef = useRef(null);
+  const popupDismissTimer = useRef(null);
+  const iframesEverShown = useRef(init.tab === 'template');
+  const [iframeScale, setIframeScale] = useState(0.42);
+  const macbookContainerRef = useRef(null);
+  const macbookMaskRef = useRef(null);
+  const iframeRef = useRef(null);
+  const macbookScreenRef = useRef(null);
+  const [iphoneScale, setIphoneScale] = useState(0.52);
+  const iphoneContainerRef = useRef(null);
+  const iphoneMaskRef = useRef(null);
+  const iphoneIframeRef = useRef(null);
+  const iphoneScreenRef = useRef(null);
   const searchInputRef = useRef(null);
   const shopBarsRef = useRef(null);
   useScrollReveal(shopBarsRef);
@@ -389,6 +410,98 @@ const ShopBars = ({ onToggleLightMode }) => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (selected === 'template') {
+      const raf = requestAnimationFrame(() => setDeviceSectionVisible(true));
+      return () => cancelAnimationFrame(raf);
+    } else {
+      setDeviceSectionVisible(false);
+    }
+  }, [selected]);
+
+  useEffect(() => {
+    if (document.readyState === 'complete') {
+      setIframesReady(true);
+    } else {
+      const onLoad = () => setIframesReady(true);
+      window.addEventListener('load', onLoad);
+      return () => window.removeEventListener('load', onLoad);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (deviceSectionVisible) {
+      iframesEverShown.current = true;
+      const t = setTimeout(() => setDeviceVisible(true), 250);
+      return () => clearTimeout(t);
+    } else {
+      setDeviceVisible(false);
+    }
+  }, [deviceSectionVisible]);
+
+  useEffect(() => {
+    const el = macbookContainerRef.current;
+    if (!el) return;
+    const update = () => setIframeScale((el.offsetWidth * 0.74) / 1440);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const el = iphoneContainerRef.current;
+    if (!el) return;
+    // 24.87% = screen width as % of the 3840×2160 canvas
+    const update = () => setIphoneScale((el.offsetWidth * 0.2487) / 390);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const el = macbookScreenRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      try {
+        const cw = iframeRef.current?.contentWindow;
+        if (!cw) return;
+        e.preventDefault();
+        const { scrollY, innerHeight } = cw;
+        const scrollHeight = cw.document.documentElement.scrollHeight;
+        const maxScroll = scrollHeight - innerHeight - 1;
+        const atTop = scrollY <= 0 && e.deltaY < 0;
+        const atBottom = scrollY >= maxScroll && e.deltaY > 0;
+        if (atTop || atBottom) return;
+        cw.scrollTo(0, Math.min(scrollY + e.deltaY, maxScroll));
+      } catch (_) {}
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
+  useEffect(() => {
+    const el = iphoneScreenRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      try {
+        const cw = iphoneIframeRef.current?.contentWindow;
+        if (!cw) return;
+        e.preventDefault();
+        const { scrollY, innerHeight } = cw;
+        const scrollHeight = cw.document.documentElement.scrollHeight;
+        const maxScroll = scrollHeight - innerHeight - 1;
+        const atTop = scrollY <= 0 && e.deltaY < 0;
+        const atBottom = scrollY >= maxScroll && e.deltaY > 0;
+        if (atTop || atBottom) return;
+        cw.scrollTo(0, Math.min(scrollY + e.deltaY, maxScroll));
+      } catch (_) {}
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
   }, []);
 
   const handleTabChange = (tab) => {
@@ -440,6 +553,34 @@ const ShopBars = ({ onToggleLightMode }) => {
       setSearchQuery('');
     }
   }, [isSearchOpen]);
+
+  const openScreenPopup = (x, y) => {
+    clearTimeout(popupDismissTimer.current);
+    setScreenPopup({ visible: true, x, y });
+    requestAnimationFrame(() => setScreenPopupIn(true));
+  };
+
+  const closeScreenPopup = () => {
+    setScreenPopupIn(false);
+    popupDismissTimer.current = setTimeout(() => setScreenPopup({ visible: false, x: 0, y: 0 }), 180);
+  };
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!screenPopup.visible) return;
+    const dismiss = (e) => {
+      if (screenPopupRef.current && screenPopupRef.current.contains(e.target)) return;
+      closeScreenPopup();
+    };
+    document.addEventListener('mousedown', dismiss);
+    document.addEventListener('scroll', dismiss, true);
+    document.addEventListener('wheel', dismiss, true);
+    return () => {
+      document.removeEventListener('mousedown', dismiss);
+      document.removeEventListener('scroll', dismiss, true);
+      document.removeEventListener('wheel', dismiss, true);
+    };
+  }, [screenPopup.visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const searchResults = searchQuery.trim().length > 0
     ? SEARCH_ITEMS.filter(item => {
@@ -1279,7 +1420,7 @@ const ShopBars = ({ onToggleLightMode }) => {
         </div>
       )}
 
-      {selected === 'template' && (() => {
+      {(() => {
         const inter = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
         const body = { fontFamily: inter, fontSize: '15px', color: 'rgba(255,255,255,0.55)', letterSpacing: 0, lineHeight: 1.8, margin: 0 };
         const bold = { color: '#fff', fontWeight: 600, fontFamily: 'inherit' };
@@ -1313,46 +1454,201 @@ const ShopBars = ({ onToggleLightMode }) => {
         ];
 
         return (
-          <div className="shop-content-reveal">
+          <>
 
-            {/* ── HOOK (full width) ── */}
-            <div style={{ textAlign: 'center', padding: '32px 40px 40px' }}>
-              <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '12px', letterSpacing: '5px', color: 'rgba(255,255,255,0.35)', marginBottom: '16px' }}>CINESTOKE TEMPLATE</p>
-              <h2 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 'clamp(48px, 8vw, 96px)', letterSpacing: '4px', color: '#fff', margin: '0 0 20px', lineHeight: 1 }}>Your Portfolio.<br />Built to Close.</h2>
-              <p style={{ fontFamily: inter, fontSize: '17px', color: 'rgba(255,255,255,0.6)', letterSpacing: 0, maxWidth: '560px', margin: '0 auto', lineHeight: 1.7 }}>
-                The exact site you're on right now. Custom-built for you, on your domain, ready to close clients from day one.
-              </p>
-            </div>
-
-            {/* ── DEVICES (full width) ── */}
-            {isMobile ? (
-              <div style={{ maxWidth: '980px', margin: '0 auto 40px', padding: '0 24px' }}>
-                <img src={cinestokesite} alt="Cinestoke website on MacBook" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            {/* ── HOOK + mobile fallback — only when on template page ── */}
+            {selected === 'template' && (
+              <div className="shop-content-reveal">
+                <div style={{ textAlign: 'center', padding: '32px 40px 40px' }}>
+                  <p style={{ fontFamily: 'Impact, sans-serif', fontSize: '12px', letterSpacing: '5px', color: 'rgba(255,255,255,0.35)', marginBottom: '16px' }}>CINESTOKE TEMPLATE</p>
+                  <h2 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: 'clamp(48px, 8vw, 96px)', letterSpacing: '4px', color: '#fff', margin: '0 0 20px', lineHeight: 1 }}>Your Portfolio.<br />Built to Close.</h2>
+                  <p style={{ fontFamily: inter, fontSize: '17px', color: 'rgba(255,255,255,0.6)', letterSpacing: 0, maxWidth: '560px', margin: '0 auto', lineHeight: 1.7 }}>
+                    The exact site you're on right now. Custom-built for you, on your domain, ready to close clients from day one.
+                  </p>
+                </div>
+                {isMobile && (
+                  <div style={{ maxWidth: '980px', margin: '0 auto 40px', padding: '0 24px' }}>
+                    <img src={cinestokesite} alt="Cinestoke website on MacBook" style={{ width: '100%', height: 'auto', display: 'block' }} />
+                  </div>
+                )}
               </div>
-            ) : (
-              <>
+            )}
+
+            {/* ── DEVICES — always mounted so iframes never reload; CSS hides when not on template ── */}
+            {!isMobile && (
+              <div style={{ display: deviceSectionVisible ? 'block' : 'none' }}>
+                {/* Toggle */}
                 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '32px' }}>
-                  <div style={{ display: 'inline-flex', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: '999px', padding: '4px', gap: '2px' }}>
+                  <div style={{ position: 'relative', display: 'inline-flex', background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: '999px', padding: '4px', gap: '2px' }}>
+                    {/* Sliding pill */}
+                    <div style={{
+                      position: 'absolute',
+                      top: '4px', left: '4px',
+                      width: 'calc(50% - 5px)',
+                      height: 'calc(100% - 8px)',
+                      background: '#fff',
+                      borderRadius: '999px',
+                      transform: templateView === 'mobile' ? 'translateX(calc(100% + 2px))' : 'translateX(0)',
+                      transition: 'transform 0.22s ease',
+                      pointerEvents: 'none',
+                    }} />
                     {[['desktop', 'Desktop'], ['mobile', 'Mobile']].map(([val, lbl]) => (
-                      <button key={val} onClick={() => setTemplateView(val)} style={{ padding: '8px 24px', borderRadius: '999px', border: 'none', cursor: 'pointer', fontFamily: inter, fontSize: '14px', fontWeight: 500, letterSpacing: '0.5px', transition: 'background 0.2s ease, color 0.2s ease', background: templateView === val ? '#fff' : 'transparent', color: templateView === val ? '#000' : 'rgba(255,255,255,0.45)' }}>{lbl}</button>
+                      <button key={val} onClick={() => setTemplateView(val)} style={{ position: 'relative', zIndex: 1, padding: '8px 24px', borderRadius: '999px', border: 'none', cursor: 'pointer', fontFamily: inter, fontSize: '14px', fontWeight: 500, letterSpacing: '0.5px', background: 'transparent', color: templateView === val ? '#000' : 'rgba(255,255,255,0.45)', transition: 'color 0.22s ease' }}>{lbl}</button>
                     ))}
                   </div>
                 </div>
+
+                {/* Device mockup — padding-bottom gives definite height so phone percentage heights resolve */}
                 <div style={{ maxWidth: '900px', margin: '0 auto 56px', padding: '0 40px' }}>
-                  <div style={{ position: 'relative', width: '100%', aspectRatio: '1.4', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-                    {templateView === 'desktop' ? (
-                      <img src={cinestokesite} alt="Cinestoke website on MacBook" style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block', transform: 'scale(1.13)' }} />
-                    ) : (
-                      <div style={{ position: 'relative', height: '100%', aspectRatio: '1 / 1' }}>
-                        <div style={{ position: 'absolute', top: '3.5%', left: '5.5%', width: '89%', height: '93%', backgroundImage: `url(${iphoneCinestokeScreenshot})`, backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', borderRadius: '8%', overflow: 'hidden', zIndex: 1 }} />
-                        <img src={iphoneFrameImg} alt="Cinestoke website on iPhone" style={{ position: 'relative', width: '100%', height: '100%', display: 'block', zIndex: 2 }} />
+                  <div style={{ position: 'relative', paddingBottom: '56.25%' }}>
+
+                    {/* Desktop */}
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      opacity: templateView === 'desktop' ? 1 : 0,
+                      pointerEvents: templateView === 'desktop' ? 'auto' : 'none',
+                      transition: 'opacity 0.28s ease',
+                      willChange: 'opacity',
+                    }}>
+                      <div ref={macbookContainerRef} style={{ position: 'relative', width: '100%' }}>
+                        <img src={macbookPng} alt="" style={{ width: '100%', display: 'block', opacity: deviceVisible ? 1 : 0, transition: 'opacity 0.5s ease' }} />
+                        <div ref={macbookMaskRef} style={{
+                          position: 'absolute', top: 0, left: 0,
+                          width: '100%', height: '100%',
+                          overflow: 'hidden',
+                          WebkitMaskImage: `url(${macbookScreenPng})`,
+                          maskImage: `url(${macbookScreenPng})`,
+                          WebkitMaskSize: '100% 100%',
+                          maskSize: '100% 100%',
+                          zIndex: 1,
+                          pointerEvents: 'none',
+                        }}>
+                          <iframe
+                            ref={iframeRef}
+                            src={iframesReady && iframesEverShown.current ? '/' : 'about:blank'}
+                            title="Cinestoke live preview"
+                            allow="autoplay"
+                            style={{
+                              position: 'absolute',
+                              top: '2.3%',
+                              left: '13.5%',
+                              width: '1440px',
+                              height: '900px',
+                              border: 'none',
+                              transform: `scale(${iframeScale})`,
+                              transformOrigin: 'top left',
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        </div>
+                        {/* Transparent overlay exactly over screen — captures wheel events only here */}
+                        <div ref={macbookScreenRef} onClick={(e) => openScreenPopup(e.clientX, e.clientY)} style={{
+                          position: 'absolute',
+                          top: '7.73%', left: '16.74%',
+                          width: '66.59%', height: '77.18%',
+                          zIndex: 2,
+                          cursor: 'pointer',
+                        }} />
                       </div>
-                    )}
+                    </div>
+
+                    {/* Mobile */}
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      opacity: templateView === 'mobile' ? 1 : 0,
+                      pointerEvents: templateView === 'mobile' ? 'auto' : 'none',
+                      transition: 'opacity 0.28s ease',
+                      willChange: 'opacity',
+                    }}>
+                      <div ref={iphoneContainerRef} style={{ height: '100%', position: 'relative' }}>
+                        {/* Live site masked to iPhone screen shape */}
+                        <div ref={iphoneMaskRef} style={{
+                          position: 'absolute', top: 0, left: 0,
+                          width: '100%', height: '100%',
+                          overflow: 'hidden',
+                          WebkitMaskImage: `url(${iPhoneScreenPng})`,
+                          maskImage: `url(${iPhoneScreenPng})`,
+                          WebkitMaskSize: '100% 100%',
+                          maskSize: '100% 100%',
+                          zIndex: 1,
+                          pointerEvents: 'none',
+                        }}>
+                          <iframe
+                            ref={iphoneIframeRef}
+                            src={iframesReady && iframesEverShown.current ? '/' : 'about:blank'}
+                            title="Cinestoke mobile preview"
+                            allow="autoplay"
+                            style={{
+                              position: 'absolute',
+                              top: '3.19%',
+                              left: '37.5%',
+                              width: '390px',
+                              height: '900px',
+                              border: 'none',
+                              transform: `scale(${iphoneScale})`,
+                              transformOrigin: 'top left',
+                              pointerEvents: 'none',
+                            }}
+                          />
+                        </div>
+                        {/* iPhone frame sits on top of the masked content */}
+                        <img src={iphoneFrameImg} alt="Cinestoke website on iPhone" style={{ height: '100%', width: 'auto', display: 'block', position: 'relative', zIndex: 2, opacity: deviceVisible ? 1 : 0, transition: 'opacity 0.5s ease' }} />
+                        {/* Transparent overlay exactly over screen — captures wheel events only here */}
+                        <div ref={iphoneScreenRef} onClick={(e) => openScreenPopup(e.clientX, e.clientY)} style={{
+                          position: 'absolute',
+                          top: '3.19%', left: '37.5%',
+                          width: '24.87%', height: '93.89%',
+                          zIndex: 3,
+                          cursor: 'pointer',
+                        }} />
+                      </div>
+                    </div>
+
                   </div>
                 </div>
-              </>
+              </div>
             )}
 
+            {/* ── SCREEN CLICK POPUP ── */}
+            {screenPopup.visible && (
+              <div
+                ref={screenPopupRef}
+                onClick={() => { window.open('/', '_blank'); closeScreenPopup(); }}
+                style={{
+                  position: 'fixed',
+                  top: screenPopup.y + 12,
+                  left: screenPopup.x + 12,
+                  zIndex: 9999,
+                  opacity: screenPopupIn ? 1 : 0,
+                  transition: 'opacity 0.15s ease',
+                  background: 'rgba(20,20,20,0.96)',
+                  border: '1px solid rgba(255,255,255,0.15)',
+                  borderRadius: '8px',
+                  padding: '8px 14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  cursor: 'pointer',
+                  backdropFilter: 'blur(8px)',
+                  WebkitBackdropFilter: 'blur(8px)',
+                  boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
+                  userSelect: 'none',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                <span style={{ fontFamily: "'Inter', -apple-system, sans-serif", fontSize: '13px', fontWeight: 500, color: '#fff', letterSpacing: '0.2px' }}>View in Browser</span>
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 11L11 2M11 2H5.5M11 2V7.5" stroke="rgba(255,255,255,0.7)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </div>
+            )}
+
+            {/* ── TWO-COLUMN + CTA — only when on template page ── */}
+            {selected === 'template' && (
+            <div className="shop-content-reveal">
             {/* ── TWO-COLUMN LAYOUT ── */}
             <div style={{ display: 'flex', gap: isMobile ? 0 : '64px', maxWidth: '1100px', margin: '0 auto', padding: isMobile ? '0 24px' : '0 40px', flexDirection: isMobile ? 'column' : 'row', alignItems: 'flex-start' }}>
 
@@ -1459,7 +1755,9 @@ const ShopBars = ({ onToggleLightMode }) => {
               <button onClick={() => setIsContactOpen(true)} className="shop-get-in-touch" style={{ fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '18px', letterSpacing: '4px', color: '#000', backgroundColor: '#fff', padding: '16px 56px', border: 'none', cursor: 'pointer', transition: 'opacity 0.2s ease' }} onMouseEnter={e => e.currentTarget.style.opacity = '0.85'} onMouseLeave={e => e.currentTarget.style.opacity = '1'}>GET IN TOUCH</button>
             </div>
 
-          </div>
+            </div>
+            )}
+          </>
         );
       })()}
     <p style={{ textAlign: 'center', padding: '20px', fontFamily: "'Inter', -apple-system, sans-serif", fontSize: '12px', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.3px', margin: 0 }}>
