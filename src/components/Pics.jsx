@@ -20,9 +20,9 @@ import kayak from '../assets/cinestoke-kayak.webp';
 import mtnbike from '../assets/cinestoke-mtn-bike.webp';
 
 const IMAGES = [
-  { src: mtnbike, alt: "Mountain Bike Cinematic Production", label: "Mtn Biking", youtubeId: '9aTVsDySZAg' },
-  { src: surf, alt: "Surf Cinematic Production", label: "Surf", youtubeId: 'mtsroKGlRy0' },
   { src: kayak, alt: "Kayak Cinematic Production", label: "Kayaking", youtubeId: 'sEhpFnuSe5o' },
+  { src: surf, alt: "Surf Cinematic Production", label: "Surf", youtubeId: 'mtsroKGlRy0' },
+  { src: mtnbike, alt: "Mountain Bike Cinematic Production", label: "Mtn Biking", youtubeId: '9aTVsDySZAg' },
   { src: rollers, alt: "Rollers Cinematic Production", label: "Rollers" },
   { src: drone, alt: "Drone Cinematic Production", label: "Drone" },
   { src: FPV, alt: "FPV Cinematic Production", label: "FPV" },
@@ -31,7 +31,7 @@ const IMAGES = [
   { src: nature, alt: "Nature Cinematic Production", label: "Outdoors", youtubeId: '4fiAeCwZKcI' },
   { src: snowboard, alt: "Snowboarding Cinematic Production", label: "Snow", youtubeId: 'H7DYKGW9oYc' },
   { src: jetski, alt: "Jet Ski Cinematic Production", label: "Jet Ski", youtubeId: 'Q7v0qqDOEL8' },
-  { src: moto, alt: "Motorcycle Cinematic Production", label: "Motorcycles", youtubeId: 'YZC-6pU0dvM' },
+  { src: moto, alt: "Motorcycle Cinematic Production", label: "Moto", youtubeId: 'YZC-6pU0dvM' },
 ];
 
 // 21 sets = 252 fixed DOM nodes. Middle set (index 10) is the "home" zone.
@@ -230,28 +230,28 @@ const Pics = () => {
         container.scrollLeft = CENTER_SET * setWidth;
       }
 
-      const droneSlide = container.querySelector(`[data-set-index="${CENTER_SET}"][data-label="Drone"]`);
-      if (!droneSlide) {
+      const motoSlide = container.querySelector(`[data-set-index="${CENTER_SET}"][data-label="Moto"]`);
+      if (!motoSlide) {
         if (retryCount < 5) setTimeout(() => attemptCenter(retryCount + 1), 100);
         return;
       }
 
       const containerRect = container.getBoundingClientRect();
-      const droneRect = droneSlide.getBoundingClientRect();
-      if (containerRect.width === 0 || droneRect.width === 0) {
+      const motoRect = motoSlide.getBoundingClientRect();
+      if (containerRect.width === 0 || motoRect.width === 0) {
         if (retryCount < 5) setTimeout(() => attemptCenter(retryCount + 1), 100);
         return;
       }
 
-      const droneCenterX = droneRect.left + droneRect.width / 2 - containerRect.left;
-      const target = container.scrollLeft + (droneCenterX - containerRect.width / 2);
+      const motoCenterX = motoRect.left + motoRect.width / 2 - containerRect.left;
+      const target = container.scrollLeft + (motoCenterX - containerRect.width / 2);
       container.scrollLeft = Math.max(0, target);
 
       // Final sub-pixel refinement
       requestAnimationFrame(() => {
         if (!container) return;
         const r2 = container.getBoundingClientRect();
-        const d2 = droneSlide.getBoundingClientRect();
+        const d2 = motoSlide.getBoundingClientRect();
         const offset = (d2.left + d2.width / 2 - r2.left) - r2.width / 2;
         if (Math.abs(offset) > 0.5) container.scrollLeft += offset;
         hasInitializedRef.current = true;
@@ -303,7 +303,7 @@ const Pics = () => {
               key={`${setIndex}-${image.label}`}
               data-set-index={setIndex}
               data-label={image.label}
-              className="swiper-slide"
+              className={`swiper-slide${image.youtubeId ? ' swiper-slide--has-video' : ''}`}
               style={{
                 flex: '0 0 auto',
                 width: 'calc(100vw / 8)',
@@ -357,10 +357,6 @@ const Pics = () => {
 
         .swiper-slide img {
           transition: transform 0.3s ease;
-        }
-
-        .swiper-slide:hover img {
-          transform: scale(1.05);
         }
 
         @media (max-width: 1024px) {

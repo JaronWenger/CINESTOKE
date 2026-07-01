@@ -1028,7 +1028,11 @@ const ShopBars = ({ onToggleLightMode }) => {
                 }}
                 onMouseEnter={e => { if (selectedProduct.checkoutUrl) e.currentTarget.style.opacity = '0.85'; }}
                 onMouseLeave={e => { if (selectedProduct.checkoutUrl) e.currentTarget.style.opacity = '1'; }}
-                onClick={() => selectedProduct.checkoutUrl && window.open(selectedProduct.checkoutUrl, '_blank')}
+                onClick={() => {
+                  if (!selectedProduct.checkoutUrl) return;
+                  window.dataLayer?.push({ event: 'buy_now_click', page_path: window.location.pathname });
+                  window.open(selectedProduct.checkoutUrl, '_blank');
+                }}
               >{selectedProduct.checkoutUrl ? 'Buy Now' : 'Coming Soon'}</button>
 
 
@@ -1251,7 +1255,11 @@ const ShopBars = ({ onToggleLightMode }) => {
                 }}
                 onMouseEnter={e => { if (selectedGrade.checkoutUrl) e.currentTarget.style.opacity = '0.85'; }}
                 onMouseLeave={e => { if (selectedGrade.checkoutUrl) e.currentTarget.style.opacity = '1'; }}
-                onClick={() => selectedGrade.checkoutUrl && window.open(selectedGrade.checkoutUrl, '_blank')}
+                onClick={() => {
+                  if (!selectedGrade.checkoutUrl) return;
+                  window.dataLayer?.push({ event: 'buy_now_click', page_path: window.location.pathname });
+                  window.open(selectedGrade.checkoutUrl, '_blank');
+                }}
               >{selectedGrade.checkoutUrl ? 'Buy Now' : 'Coming Soon'}</button>
 
               {selectedGrade.paragraphs.map((p, i) => (
@@ -1357,7 +1365,10 @@ const ShopBars = ({ onToggleLightMode }) => {
                 style={{ display: 'block', width: '100%', padding: '15px', background: '#fff', color: '#000', border: 'none', cursor: 'pointer', fontFamily: "'Bebas Neue', Impact, sans-serif", fontSize: '17px', letterSpacing: '4px', transition: 'opacity 0.2s ease' }}
                 onMouseEnter={e => { e.currentTarget.style.opacity = '0.85'; }}
                 onMouseLeave={e => { e.currentTarget.style.opacity = '1'; }}
-                onClick={() => window.open(GRADE_PACK.checkoutUrl, '_blank')}
+                onClick={() => {
+                  window.dataLayer?.push({ event: 'buy_now_click', page_path: window.location.pathname });
+                  window.open(GRADE_PACK.checkoutUrl, '_blank');
+                }}
               >Buy Now $35</button>
             </div>
           </div>

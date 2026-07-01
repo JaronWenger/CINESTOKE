@@ -312,8 +312,11 @@ const Main = ({ onToggleLightMode }) => {
         // Disable picture-in-picture for better performance
         disablePictureInPicture
       />
-      <div className='cinestoke' onClick={() => setIsReelOpen(true)}>
-        <h1>C I N E S T O K E</h1>
+      <div className='cinestoke' onClick={() => {
+        const el = document.querySelector('.bars-section');
+        if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 48, behavior: 'smooth' });
+      }}>
+        <h1 onClick={(e) => { e.stopPropagation(); setIsReelOpen(true); }}>C I N E S T O K E</h1>
       </div>
       <div className="main-video-bottom-fade" />
 
